@@ -15,7 +15,7 @@
  */
 
 angular.module(PKG.name + '.commons')
-  .service('WidgetFactory', function() {
+  .service('WidgetFactory', function () {
     this.registry = {
       'number': {
         element: '<my-number-widget></my-number-widget>',
@@ -256,6 +256,13 @@ angular.module(PKG.name + '.commons')
       },
       'radio-group': {
         element: '<my-radio-group></my-radio-group>',
+        attributes: {
+          'ng-model': 'model',
+          'config': 'myconfig'
+        }
+      },
+      'content-switcher': {
+        element: '<my-content-switcher-widget></my-content-switcher-widget>',
         attributes: {
           'ng-model': 'model',
           'config': 'myconfig'
