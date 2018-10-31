@@ -261,8 +261,8 @@ angular.module(PKG.name + '.commons')
           'config': 'myconfig'
         }
       },
-      'content-switcher': {
-        element: '<my-content-switcher-widget></my-content-switcher-widget>',
+      'content-filter': {
+        element: '<my-content-filter></my-content-filter>',
         attributes: {
           'ng-model': 'model',
           'config': 'myconfig'

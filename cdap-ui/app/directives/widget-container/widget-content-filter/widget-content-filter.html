@@ -13,14 +13,10 @@
   License for the specific language governing permissions and limitations under
   the License.
 -->
-<div class="content-switcher-container">
+<div class="content-filter-container">
   <select class="form-control"
-		ng-model="ContentSwitcher.model"
-		ng-options="option for option in ContentSwitcher.fieldOptions">
+		ng-model="model"
+    ng-options="option for option in fieldOptions"
+    ng-change="onSelect()">
   </select>
-  <p class="selected">{{ContentSwitcher.model}}</p>
-
-  <div class="content-container" ng-repeat="option in ContentSwitcher.fieldOptions | filter: { value: ContentSwitcher.model} : true">
-    Showing div: {{ContentSwitcher.model}}
-  </div>
 </div>
