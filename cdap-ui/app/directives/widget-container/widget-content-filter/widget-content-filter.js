@@ -28,34 +28,36 @@ angular.module(PKG.name + '.commons')
       controller: function ContentFilterController($scope, myHelpers, EventPipe) {
         'ngInject';
 
-
         function init() {
           try {
             // Initialize select element options.
             $scope.fieldOptions = [];
             $scope.fieldOptions = $scope.config['widget-attributes'].options;
-
             // Initial value of select element.
-            $scope.model = '*';
-
-            // Callback for select element value change.
-            $scope.onSelect = function () {
-              // Event to notify listeners that values has changed.
-              EventPipe.emit('content-filter.changed', $scope.config['name'], $scope.model);
-            };
-
-            $scope.$on('$destroy', function () {
-              // Event to notify listeners that widgets is destroyed
-              EventPipe.emit('content-filter.destroyed', $scope.config['name']);
-            });
-
+            let previousValue = $scope.model;
+            if(!previousValue) {
+              previousValue = '';
+            }
+            $scope.filterValue = previousValue;
           } catch (e) {
             console.log('Error', e);
           }
         }
-
         init();
-      },
-      controllerAs: 'ContentFilter'
+
+        let filterValueListener = $scope.$watch('filterValue', () => {
+          $scope.model = $scope.filterValue;
+
+          if($scope.filterValue !== '') {
+            EventPipe.emit('content-filter.changed', $scope.config['name'], $scope.filterValue);
+          }
+        }, true);
+
+        $scope.$on('$destroy', function () {
+          // Event to notify listeners that widgets is destroyed
+          EventPipe.emit('content-filter.destroyed', $scope.config['name']);
+          filterValueListener();
+        });
+      }
     };
   });
