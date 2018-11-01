@@ -153,8 +153,6 @@ class HydratorPlusPlusNodeConfigCtrl {
   shouldHideWidgetBasedOnFilter(widget) {
     if(widget.hasOwnProperty('widget-attributes') && widget['widget-attributes'].hasOwnProperty('filters')) {
       try {
-        // By default no need to hide.
-        let matchingFilterFound = false;
         let filters = widget['widget-attributes']['filters'];
         for(let index = 0; index < filters.length; index++) {
           let filter = filters[index];
@@ -172,16 +170,17 @@ class HydratorPlusPlusNodeConfigCtrl {
             // If emitted value of a content filter widget is present in current widget's filter array
             // then hide it.
             if(filterValues.indexOf(this.contentFilterWidgetWiseLastEvent[filterWidgetName]) !== -1) {
-              matchingFilterFound = true;
+              return false;
             }
           }
         }
-        return matchingFilterFound;
+        // By default hide everything.
+        return true;
       } catch(e) {
         console.log('Error', e);
         // If any mismatch/error happens due to invalid widget-attributes then by default do
         // not hide the widget.
-        return false;
+        return true;
       }
     }
     // By default no need to hide a widget
