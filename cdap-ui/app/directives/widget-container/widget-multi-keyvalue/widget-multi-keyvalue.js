@@ -52,8 +52,9 @@ angular.module(PKG.name + '.commons')
             $scope.keyValuePairSeparator = myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-value-pair-separator') || DEFAULT_KEY_VALUE_PAIR_SEPARTOR;
 
             // Get the dropdown options for key and value pairs.
-            $scope.keyOptions = getKeyOptions();
-            $scope.valueOptions = getValueOptions();
+            $scope.keyOptions = getOptions('key');
+            $scope.valueOptions = getOptions('value');
+
 
             // TODO: Change the definition to accept whole object as dropdown option instead of flat array of options.
             $scope.keyOptions = $scope.keyOptions.map((option) => {
@@ -102,7 +103,6 @@ angular.module(PKG.name + '.commons')
           }
 
           $scope.model = str;
-          console.log(str);
         }, true);
 
         init();
@@ -122,6 +122,11 @@ angular.module(PKG.name + '.commons')
           };
           $scope.properties.push(prop);
         };
+
+        // Add a default key value input pair.
+        if($scope.properties.length === 0) {
+          $scope.addProperty();
+        }
 
         // Removes a key value pair from the user interface.
         $scope.removeProperty = function(property) {
@@ -162,14 +167,18 @@ angular.module(PKG.name + '.commons')
         // Refill the values by desearilizing the model when popup opens.
         function addPropertiesFromModel() {
           try {
-            if($scope.model === undefined || $scope.model === '') {
+            if($scope.model === undefined || $scope.model === '' || $scope.model === null) {
               return;
             }
             let keyValuePairs = $scope.model.split($scope.keyValuePairSeparator);
             keyValuePairs.map(pair => {
               let keyValue = pair.split($scope.keyValueSeparator);
               let key = keyValue[0];
-              let values = keyValue[1].split($scope.valueSeparator);
+
+              let values = [];
+              if(keyValue[1]) {
+                values = keyValue[1].split($scope.valueSeparator);
+              }
 
               let isKeyExistInKeyOptions = false;
               $scope.keyOptions.map(keyObj => {
@@ -191,7 +200,7 @@ angular.module(PKG.name + '.commons')
                 keySelectValue: (isKeyExistInKeyOptions) ? key : '',
 
                 inputValue: (areCustomValues) ? values : '',
-                selectedValues: (areCustomValues) ? '' : deserializeMultiSelectValues(values) ,
+                selectedValues: (areCustomValues) ? [] : deserializeMultiSelectValues(values) ,
 
                 enableCustomKeyInput: (isKeyExistInKeyOptions) ? false : true,
                 enableCustomValueInput: (areCustomValues) ? true: false
@@ -206,18 +215,24 @@ angular.module(PKG.name + '.commons')
         }
 
         // Returns dropdown options for key
-        function getKeyOptions() {
+        function getOptions(type) {
           switch($scope.keyInputType) {
             case CUSTOM_KEYVALUE_INPUT_TYPE: {
               return [];
             }
 
             case PREDEFINED_KEYVALUE_INPUT_TYPE: {
-              return myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-options') || [];
+              if(type === 'key') {
+                return myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-options') || [];
+              } else if(type === 'value') {
+                return myHelpers.objectQuery($scope.config, 'widget-attributes', 'value-options') || [];
+              }
+
+              return [];
             }
 
             case INPUT_SCHEMA_KEYVALUE_INPUT_TYPE: {
-              return getKeyOptionsFromInputSchema();
+              return getOptionsFromInputSchema();
             }
 
             default: {
@@ -239,35 +254,8 @@ angular.module(PKG.name + '.commons')
           return selectedValuesObj;
         }
 
-        // Returns dropdown options for value
-        // TODO: See if this function can be combined with 'getKeyOptions'
-        function getValueOptions() {
-          switch($scope.valueInputType) {
-            case CUSTOM_KEYVALUE_INPUT_TYPE: {
-              return [];
-            }
-
-            case PREDEFINED_KEYVALUE_INPUT_TYPE: {
-              return myHelpers.objectQuery($scope.config, 'widget-attributes', 'value-options') || [];
-            }
-
-            case INPUT_SCHEMA_KEYVALUE_INPUT_TYPE: {
-              return getValueOptionsFromInputSchema();
-            }
-
-            default: {
-              return [];
-            }
-          }
-        }
-
-        function getKeyOptionsFromInputSchema() {
+        function getOptionsFromInputSchema() {
           // TODO: provide implementation
-          return [];
-        }
-
-        function getValueOptionsFromInputSchema() {
-          // TODO: provide implementation.
           return [];
         }
       }
