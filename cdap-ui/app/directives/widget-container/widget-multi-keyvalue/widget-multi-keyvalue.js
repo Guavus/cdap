@@ -55,23 +55,6 @@ angular.module(PKG.name + '.commons')
             $scope.keyOptions = getOptions('key');
             $scope.valueOptions = getOptions('value');
 
-
-            // TODO: Change the definition to accept whole object as dropdown option instead of flat array of options.
-            $scope.keyOptions = $scope.keyOptions.map((option) => {
-              return {
-                id: option,
-                label: option
-              };
-            });
-
-            // TODO: Change the definition to accept whole object as dropdown option instead of flat array of options.
-            $scope.valueOptions = $scope.valueOptions.map((option) => {
-              return {
-                id: option,
-                label: option
-              };
-            });
-
             $scope.extraSettings = {
               externalProp: '',
               checkBoxes: true,
