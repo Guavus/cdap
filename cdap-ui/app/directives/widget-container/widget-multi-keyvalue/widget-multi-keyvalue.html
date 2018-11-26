@@ -18,17 +18,17 @@
   <div ng-repeat="property in properties" class="row" ng-keypress="enter($event, $last)">
     <div class="col-xs-10 col-lg-8">
       <div class="custom-input-wrapper" ng-if="property.enableCustomKeyInput">
-          <input type="text" class="form-control" ng-model="property.key" placeholder="{{ keyPlaceholder }}"/>
+          <input type="text" class="form-control" ng-model="property.keyInputValue" placeholder="{{ keyPlaceholder }}"/>
           <span class="custom-input-span" ng-click="onKeyInputClose(property)" ng-if="!isCustomInputType(keyInputType)">
             <i class="fa fa-times"></i>
           </span>
       </div>
 
       <div class="select-container" style="display: inline-block" ng-if="!property.enableCustomKeyInput">
-        <select class="form-control"
+        <select class="form-control key-value-input"
           ng-options="option as option.label for option in keyOptions"
           ng-change="onKeyChange(property)"
-          ng-model="property.key">
+          ng-model="property.keySelectValue">
         </select>
         <span class="custom-input-span" ng-click="onCustomKey(property)">
           <i class="fa fa-edit"></i>
@@ -36,8 +36,8 @@
       </div>
 
       <div class="custom-input-wrapper" ng-if="property.enableCustomValueInput">
-        <input type="text" class="form-control" placeholder="{{ valuePlaceholder }}"/>
-        <span class="custom-input-span" ng-model="property.value" ng-click="onValueInputClose(property)" ng-if="!isCustomInputType(valueInputType)">
+        <input type="text" class="form-control" ng-model="property.inputValue" placeholder="{{ valuePlaceholder }}"/>
+        <span class="custom-input-span" ng-click="onValueInputClose(property)" ng-if="!isCustomInputType(valueInputType)">
             <i class="fa fa-times"></i>
         </span>
       </div>
@@ -48,7 +48,7 @@
         options="valueOptions"
         checkboxes="true"
         translation-texts="{dynamicButtonTextSuffix: 'Selected'}"
-        selected-model="property.selectedValue"
+        selected-model="property.selectedValues"
         extra-settings="extraSettings"
         style="display:inline-block"
         ></div>

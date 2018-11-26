@@ -42,10 +42,8 @@ angular.module(PKG.name + '.commons')
             $scope.keyPlaceholder = myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-placeholder') || 'key';
             $scope.valuePlaceholder = myHelpers.objectQuery($scope.config, 'widget-attributes', 'value-placeholder') || 'value';
 
-            // $scope.keyInputType = myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-input-type') || INPUT_SCHEMA_KEYVALUE_INPUT_TYPE;
-            $scope.keyInputType = PREDEFINED_KEYVALUE_INPUT_TYPE;
-            // $scope.valueInputType = myHelpers.objectQuery($scope.config, 'widget-attributes', 'value-input-type') || INPUT_SCHEMA_KEYVALUE_INPUT_TYPE;
-            $scope.valueInputType = PREDEFINED_KEYVALUE_INPUT_TYPE;
+            $scope.keyInputType = myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-input-type') || INPUT_SCHEMA_KEYVALUE_INPUT_TYPE;
+            $scope.valueInputType = myHelpers.objectQuery($scope.config, 'widget-attributes', 'value-input-type') || INPUT_SCHEMA_KEYVALUE_INPUT_TYPE;
 
             $scope.valueSeparator = myHelpers.objectQuery($scope.config, 'widget-attributes', 'value-separator') || DEFAULT_VALUE_SEPARATOR;
             $scope.keyValueSeparator = myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-value-separator') || DEFAULT_KEY_VALUE_SEPARTOR;
@@ -53,8 +51,6 @@ angular.module(PKG.name + '.commons')
 
             $scope.keyOptions = getKeyOptions();
             $scope.valueOptions = getValueOptions();
-
-            console.log($scope.keyOptions, $scope.valueOptions);
 
             $scope.keyOptions = $scope.keyOptions.map((option) => {
               return {
@@ -84,21 +80,41 @@ angular.module(PKG.name + '.commons')
         }
 
         $scope.$watch('properties', function() {
-          $scope.model = $scope.selectedOptions.map(o => o.id). join($scope.delimiter);
-          console.log($scope.properties);
+          let str = '';
+          for(let i=0; i<$scope.properties.length; i++) {
+            let property = $scope.properties[i];
+            let key = (property.enableCustomKeyInput) ? property.keyInputValue : property.keySelectValue.id;
+            str = str + key + $scope.keyValueSeparator;
+            let v;
+            if(property.enableCustomValueInput) {
+              v = property.inputValue;
+            } else {
+              v = property.selectedValues.map(value => value.id).join($scope.valueSeparator);
+            }
+            str = str + v;
+            if(i !== $scope.properties.length-1) {
+              str += $scope.keyValuePairSeparator;
+            }
+          }
+
+          $scope.model = str;
+          console.log(str);
         }, true);
 
         init();
+        addPropertiesFromModel();
 
         $scope.addProperty = function() {
           let prop = {
-            key: '',
-            value: '',
-            selectedValue: [],
+            keyInputValue: '',
+            keySelectValue: '',
+
+            inputValue: '',
+            selectedValues: [],
+
             enableCustomKeyInput: ($scope.keyInputType === CUSTOM_KEYVALUE_INPUT_TYPE) ? true : false,
             enableCustomValueInput: ($scope.valueInputType === CUSTOM_KEYVALUE_INPUT_TYPE) ? true : false
           };
-          console.log(prop);
           $scope.properties.push(prop);
         };
 
@@ -117,8 +133,7 @@ angular.module(PKG.name + '.commons')
           return (inputType === CUSTOM_KEYVALUE_INPUT_TYPE);
         };
 
-        $scope.onKeyChange = function(property) {
-          console.log(property.value);
+        $scope.onKeyChange = function() {
         };
 
         $scope.onCustomKey = function(property) {
@@ -136,6 +151,51 @@ angular.module(PKG.name + '.commons')
         $scope.onValueInputClose = function(property) {
           property.enableCustomValueInput = false;
         };
+
+        function addPropertiesFromModel() {
+          try {
+            if($scope.model === undefined || $scope.model === '') {
+              return;
+            }
+            let keyValuePairs = $scope.model.split($scope.keyValuePairSeparator);
+            keyValuePairs.map(pair => {
+              let keyValue = pair.split($scope.keyValueSeparator);
+              let key = keyValue[0];
+              let values = keyValue[1].split($scope.valueSeparator);
+
+              let isKeyExistInKeyOptions = false;
+              $scope.keyOptions.map(keyObj => {
+                if(keyObj.id === key) {
+                  isKeyExistInKeyOptions = true;
+                  key = keyObj;
+                }
+              });
+
+              let areCustomValues = true;
+              $scope.valueOptions.map(valueObj => {
+                if(valueObj.id === values[0]) {
+                  areCustomValues = false;
+                }
+              });
+
+              let prop = {
+                keyInputValue: (isKeyExistInKeyOptions) ? '' : key,
+                keySelectValue: (isKeyExistInKeyOptions) ? key : '',
+
+                inputValue: (areCustomValues) ? values : '',
+                selectedValues: (areCustomValues) ? '' : deserializeMultiSelectValues(values) ,
+
+                enableCustomKeyInput: (isKeyExistInKeyOptions) ? false : true,
+                enableCustomValueInput: (areCustomValues) ? true: false
+              };
+
+              $scope.properties.push(prop);
+
+            });
+          } catch(error) {
+            console.error('Unable to deserialize CSV widget values from model', error);
+          }
+        }
 
         function getKeyOptions() {
           switch($scope.keyInputType) {
@@ -157,6 +217,19 @@ angular.module(PKG.name + '.commons')
           }
         }
 
+        function deserializeMultiSelectValues(values) {
+          let selectedValuesObj = [];
+          values.forEach(value => {
+            $scope.valueOptions.forEach(valueOption => {
+              if(valueOption.id === value) {
+                selectedValuesObj.push(valueOption);
+              }
+            });
+          });
+
+          return selectedValuesObj;
+        }
+
         function getValueOptions() {
           switch($scope.valueInputType) {
             case CUSTOM_KEYVALUE_INPUT_TYPE: {
@@ -164,7 +237,6 @@ angular.module(PKG.name + '.commons')
             }
 
             case PREDEFINED_KEYVALUE_INPUT_TYPE: {
-              console.log('returning from here', $scope.config);
               return myHelpers.objectQuery($scope.config, 'widget-attributes', 'value-options') || [];
             }
 
