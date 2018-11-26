@@ -27,10 +27,12 @@ angular.module(PKG.name + '.commons')
       controller: function MultiKeyValueController($scope, myHelpers) {
         'ngInject';
 
+        // Types of input for a key or value.
         const INPUT_SCHEMA_KEYVALUE_INPUT_TYPE = 'input-schema';
         const PREDEFINED_KEYVALUE_INPUT_TYPE = 'predefined';
         const CUSTOM_KEYVALUE_INPUT_TYPE = 'custom';
 
+        // Delimeters used to serialize the value.
         const DEFAULT_VALUE_SEPARATOR = ',';
         const DEFAULT_KEY_VALUE_SEPARTOR = ':';
         const DEFAULT_KEY_VALUE_PAIR_SEPARTOR = ';';
@@ -49,9 +51,11 @@ angular.module(PKG.name + '.commons')
             $scope.keyValueSeparator = myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-value-separator') || DEFAULT_KEY_VALUE_SEPARTOR;
             $scope.keyValuePairSeparator = myHelpers.objectQuery($scope.config, 'widget-attributes', 'key-value-pair-separator') || DEFAULT_KEY_VALUE_PAIR_SEPARTOR;
 
+            // Get the dropdown options for key and value pairs.
             $scope.keyOptions = getKeyOptions();
             $scope.valueOptions = getValueOptions();
 
+            // TODO: Change the definition to accept whole object as dropdown option instead of flat array of options.
             $scope.keyOptions = $scope.keyOptions.map((option) => {
               return {
                 id: option,
@@ -59,6 +63,7 @@ angular.module(PKG.name + '.commons')
               };
             });
 
+            // TODO: Change the definition to accept whole object as dropdown option instead of flat array of options.
             $scope.valueOptions = $scope.valueOptions.map((option) => {
               return {
                 id: option,
@@ -70,15 +75,14 @@ angular.module(PKG.name + '.commons')
               externalProp: '',
               checkBoxes: true,
             };
-            $scope.selectedOptions = [];
-
-            $scope.value = $scope.model || '';
 
           } catch (e) {
             console.log('Error', e);
           }
         }
 
+        // Watch the changes in properties and serialize so that we can refill the values
+        // whenever popup reopens.
         $scope.$watch('properties', function() {
           let str = '';
           for(let i=0; i<$scope.properties.length; i++) {
@@ -104,6 +108,7 @@ angular.module(PKG.name + '.commons')
         init();
         addPropertiesFromModel();
 
+        // Add a new key value pair.
         $scope.addProperty = function() {
           let prop = {
             keyInputValue: '',
@@ -118,6 +123,7 @@ angular.module(PKG.name + '.commons')
           $scope.properties.push(prop);
         };
 
+        // Removes a key value pair from the user interface.
         $scope.removeProperty = function(property) {
           var index = $scope.properties.indexOf(property);
           $scope.properties.splice(index, 1);
@@ -129,6 +135,7 @@ angular.module(PKG.name + '.commons')
           }
         };
 
+        // Check if custom input type in enabled for a key or value.
         $scope.isCustomInputType = function(inputType) {
           return (inputType === CUSTOM_KEYVALUE_INPUT_TYPE);
         };
@@ -152,6 +159,7 @@ angular.module(PKG.name + '.commons')
           property.enableCustomValueInput = false;
         };
 
+        // Refill the values by desearilizing the model when popup opens.
         function addPropertiesFromModel() {
           try {
             if($scope.model === undefined || $scope.model === '') {
@@ -197,6 +205,7 @@ angular.module(PKG.name + '.commons')
           }
         }
 
+        // Returns dropdown options for key
         function getKeyOptions() {
           switch($scope.keyInputType) {
             case CUSTOM_KEYVALUE_INPUT_TYPE: {
@@ -230,6 +239,8 @@ angular.module(PKG.name + '.commons')
           return selectedValuesObj;
         }
 
+        // Returns dropdown options for value
+        // TODO: See if this function can be combined with 'getKeyOptions'
         function getValueOptions() {
           switch($scope.valueInputType) {
             case CUSTOM_KEYVALUE_INPUT_TYPE: {
@@ -251,12 +262,12 @@ angular.module(PKG.name + '.commons')
         }
 
         function getKeyOptionsFromInputSchema() {
-          // provide implementation
+          // TODO: provide implementation
           return [];
         }
 
         function getValueOptionsFromInputSchema() {
-          // provide implementation.
+          // TODO: provide implementation.
           return [];
         }
       }
