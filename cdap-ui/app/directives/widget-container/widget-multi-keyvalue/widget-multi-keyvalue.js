@@ -22,7 +22,8 @@ angular.module(PKG.name + '.commons')
       scope: {
         disabled: '=',
         model: '=ngModel',
-        config: '='
+        config: '=',
+        inputSchema: '='
       },
       controller: function MultiKeyValueController($scope, myHelpers) {
         'ngInject';
@@ -237,8 +238,25 @@ angular.module(PKG.name + '.commons')
           return selectedValuesObj;
         }
 
+        // Returs list of dropdown options from input schema.
         function getOptionsFromInputSchema() {
-          // TODO: provide implementation
+          try {
+            if($scope.inputSchema && $scope.inputSchema.length !== 0) {
+              let schemaString = $scope.inputSchema[0].schema;
+              let schemaJson = JSON.parse(schemaString);
+
+              // Because dropdown options are needed in specific format.
+              let options = schemaJson.fields.map(schemaObj => {
+                return {
+                  id: schemaObj.name,
+                  label: schemaObj.name
+                };
+              });
+              return options;
+            }
+          } catch(error) {
+            console.error('Unable to extract dropdown options from input schema', error);
+          }
           return [];
         }
       }

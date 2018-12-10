@@ -272,7 +272,8 @@ angular.module(PKG.name + '.commons')
         element: '<my-multi-key-value></my-multi-key-value>',
         attributes: {
           'ng-model': 'model',
-          'config': 'myconfig'
+          'config': 'myconfig',
+          'input-schema': 'inputSchema'
         }
       }
     };
