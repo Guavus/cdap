@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import './CorrelationContainer.scss';
+import { isNil } from 'lodash';
 
 
 class CorrelationContainer extends Component {
@@ -11,7 +12,7 @@ class CorrelationContainer extends Component {
     this.state = {
       algolist: this.algolist,
       openAlgoDropdown: false,
-      selectedAlog: { id: -1, name: 'Select' },
+      selectedAlgo: { id: -1, name: 'Select' },
     };
   }
 
@@ -23,11 +24,14 @@ class CorrelationContainer extends Component {
   }
 
   algoTypeChange = (item) => {
-    this.setState({ selectedAlog: item });
+    this.setState({ selectedAlgo: item });
   }
 
   applyCorrelation = () => {
-
+    const {applyCorrelation} = this.props;
+    if (!isNil(applyCorrelation)) {
+      applyCorrelation(this.state.selectedAlgo);
+    }
   }
 
 
@@ -38,7 +42,7 @@ class CorrelationContainer extends Component {
           <label className="algo-label">Algorithm: </label>
           <Dropdown isOpen={this.state.openAlgoDropdown} toggle={this.toggleAlgoDropDown}>
             <DropdownToggle caret>
-              {this.state.selectedAlog.name}
+              {this.state.selectedAlgo.name}
             </DropdownToggle>
             <DropdownMenu>
               {
