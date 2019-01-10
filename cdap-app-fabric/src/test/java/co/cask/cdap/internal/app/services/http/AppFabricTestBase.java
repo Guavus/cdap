@@ -497,7 +497,7 @@ public abstract class AppFabricTestBase {
     Location appJar = AppJarHelper.createDeploymentJar(locationFactory, cls, new Manifest());
 
     try {
-      return addArtifact(artifactId, Locations.newInputSupplier(appJar), null);
+      return addArtifact(artifactId, Locations.newInputSupplier(appJar), Collections.emptySet());
     } finally {
       appJar.delete();
     }
@@ -506,10 +506,27 @@ public abstract class AppFabricTestBase {
   protected HttpResponse addPluginArtifact(Id.Artifact artifactId, Class<?> cls,
                                            Manifest manifest,
                                            Set<ArtifactRange> parents) throws Exception {
+    return addPluginArtifact(artifactId, cls, manifest, parents, null);
+  }
 
+  /**
+   * Adds a plugin artifact. This method is present for testing invalid plugin class json and it usage is not
+   * recommended.
+   * @param artifactId the artifact id
+   * @param cls the application class
+   * @param manifest manifest
+   * @param parents parents range of artifact
+   * @param pluginClassesJSON JSON representation for plugin classes
+   * @return {@link HttpResponse} recieved response
+   * @throws Exception
+   */
+  protected HttpResponse addPluginArtifact(Id.Artifact artifactId, Class<?> cls,
+                                           Manifest manifest,
+                                           @Nullable Set<ArtifactRange> parents,
+                                           @Nullable String pluginClassesJSON) throws Exception {
     Location appJar = PluginJarHelper.createPluginJar(locationFactory, manifest, cls);
     try {
-      return addArtifact(artifactId, Locations.newInputSupplier(appJar), parents);
+      return addArtifact(artifactId, Locations.newInputSupplier(appJar), parents, pluginClassesJSON);
     } finally {
       appJar.delete();
     }
@@ -518,6 +535,15 @@ public abstract class AppFabricTestBase {
   // add an artifact and return the response code
   protected HttpResponse addArtifact(Id.Artifact artifactId, InputSupplier<? extends InputStream> artifactContents,
                                      Set<ArtifactRange> parents) throws Exception {
+    return addArtifact(artifactId, artifactContents, parents, null);
+  }
+
+  /**
+   * This method accepts GSON serialized form of plugin classes for testing purpose.
+   */
+  private HttpResponse addArtifact(Id.Artifact artifactId, InputSupplier<? extends InputStream> artifactContents,
+                                   Set<ArtifactRange> parents, @Nullable String pluginClassesJSON)
+    throws Exception {
     String path = getVersionedAPIPath("artifacts/" + artifactId.getName(), artifactId.getNamespace().getId());
     HttpEntityEnclosingRequestBase request = getPost(path);
     request.setHeader(Constants.Gateway.API_KEY, "api-key-example");
@@ -525,7 +551,12 @@ public abstract class AppFabricTestBase {
     if (parents != null && !parents.isEmpty()) {
       request.setHeader("Artifact-Extends", Joiner.on('/').join(parents));
     }
-
+    // Note: we purposefully do not check for empty string and let it pass as the header because we want to test the
+    // behavior where plugin classes header is set to empty string. This is what is passed by the UI. For more
+    // details see: https://issues.cask.co/browse/CDAP-14578
+    if (pluginClassesJSON != null) {
+      request.setHeader("Artifact-Plugins", pluginClassesJSON);
+    }
     request.setEntity(new ByteArrayEntity(ByteStreams.toByteArray(artifactContents)));
     return execute(request);
   }

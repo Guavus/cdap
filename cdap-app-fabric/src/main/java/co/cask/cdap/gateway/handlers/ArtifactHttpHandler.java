@@ -35,7 +35,6 @@ import co.cask.cdap.common.NamespaceNotFoundException;
 import co.cask.cdap.common.NotFoundException;
 import co.cask.cdap.common.conf.CConfiguration;
 import co.cask.cdap.common.conf.Constants;
-import co.cask.cdap.common.conf.PluginClassDeserializer;
 import co.cask.cdap.common.http.AbstractBodyConsumer;
 import co.cask.cdap.common.id.Id;
 import co.cask.cdap.common.namespace.NamespaceQueryAdmin;
@@ -132,7 +131,6 @@ public class ArtifactHttpHandler extends AbstractHttpHandler {
     new TypeToken<List<ArtifactSummaryProperties>>() { }.getType();
   private static final Gson GSON = new GsonBuilder()
     .registerTypeAdapter(Schema.class, new SchemaTypeAdapter())
-    .registerTypeAdapter(PluginClass.class, new PluginClassDeserializer())
     .create();
   private static final Type PLUGINS_TYPE = new TypeToken<Set<PluginClass>>() { }.getType();
 
@@ -501,6 +499,7 @@ public class ArtifactHttpHandler extends AbstractHttpHandler {
         for (PluginClass pluginClass : pluginsEntry.getValue()) {
           pluginSummaries.add(new PluginSummary(
             pluginClass.getName(), pluginClass.getType(), pluginClass.getDescription(),
+            pluginClass.getPluginInput(), pluginClass.getPluginOutput(), pluginClass.getPluginFunction(),
             pluginClass.getClassName(), pluginArtifactSummary));
         }
       }
@@ -695,15 +694,16 @@ public class ArtifactHttpHandler extends AbstractHttpHandler {
     final Set<ArtifactRange> parentArtifacts = parseExtendsHeader(namespace, parentArtifactsStr);
 
     final Set<PluginClass> additionalPluginClasses;
-    if (pluginClasses == null) {
+    if (pluginClasses == null || pluginClasses.isEmpty()) {
       additionalPluginClasses = ImmutableSet.of();
     } else {
       try {
         additionalPluginClasses = GSON.fromJson(pluginClasses, PLUGINS_TYPE);
+        additionalPluginClasses.forEach(PluginClass::validate);
       } catch (JsonParseException e) {
-        responder.sendString(HttpResponseStatus.BAD_REQUEST, String.format(
-          "%s header '%s' is invalid: %s", PLUGINS_HEADER, pluginClasses, e.getMessage()));
-        return null;
+        throw new BadRequestException(String.format("%s header '%s' is invalid.", PLUGINS_HEADER, pluginClasses), e);
+      } catch (IllegalArgumentException e) {
+        throw new BadRequestException(String.format("Invalid PluginClasses '%s'.", pluginClasses), e);
       }
     }
 
@@ -884,7 +884,7 @@ public class ArtifactHttpHandler extends AbstractHttpHandler {
 
     Set<ArtifactRange> parentArtifacts = Sets.newHashSet();
 
-    if (extendsHeader != null) {
+    if (extendsHeader != null && !extendsHeader.isEmpty()) {
       for (String parent : Splitter.on('/').split(extendsHeader)) {
         parent = parent.trim();
         ArtifactRange range;

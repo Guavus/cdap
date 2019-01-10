@@ -46,6 +46,7 @@ import co.cask.cdap.etl.spark.function.PairFlatMapFunc;
 import co.cask.cdap.etl.spark.function.PluginFunctionContext;
 import co.cask.cdap.etl.spark.function.TransformFunction;
 import co.cask.cdap.etl.spec.StageSpec;
+import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -162,9 +163,15 @@ public class RDDCollection<T> implements SparkCollection<T> {
   }
 
   @Override
-  public void store(StageSpec stageSpec, PairFlatMapFunction<T, Object, Object> sinkFunction) {
-    JavaPairRDD<Object, Object> sinkRDD = rdd.flatMapToPair(sinkFunction);
-    sinkFactory.writeFromRDD(sinkRDD, sec, stageSpec.getName(), Object.class, Object.class);
+  public Runnable createStoreTask(final StageSpec stageSpec,
+                                  final PairFlatMapFunction<T, Object, Object> sinkFunction) {
+    return new Runnable() {
+      @Override
+      public void run() {
+        JavaPairRDD<Object, Object> sinkRDD = rdd.flatMapToPair(sinkFunction);
+        sinkFactory.writeFromRDD(sinkRDD, sec, stageSpec.getName(), Object.class, Object.class);
+      }
+    };
   }
 
   @Override
