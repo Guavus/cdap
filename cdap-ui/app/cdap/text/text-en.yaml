@@ -29,8 +29,8 @@ commons:
       applications: Applications
       type: Type
     cdap-data-pipeline:
-      plural: Data Pipelines
-      singular: Data Pipeline
+      plural: Data Playbooks
+      singular: Data Playbook
     cdap-data-streams:
       plural: Data Streams
       singular: Data Stream
@@ -984,7 +984,7 @@ features:
       collapse: Collapse the side panel
       expand: Expand the side panel
     TopPanel:
-      addToPipelineBtnLabel: Create a Pipeline
+      addToPipelineBtnLabel: Create a Playbook
       addToPipelineModal:
         title: Choose the type of pipeline to create
         batchPipelineBtn: Batch pipeline

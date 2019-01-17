@@ -124,8 +124,8 @@ const GLOBALS = {
   artifactConvert: {
     'cdap-etl-batch': 'Batch (Deprecated)',
     'cdap-etl-realtime': 'Realtime (Deprecated)',
-    'cdap-data-pipeline': 'Data Pipeline - Batch',
-    'cdap-data-streams': 'Data Pipeline - Realtime'
+    'cdap-data-pipeline': 'Data Playbook - Batch',
+    'cdap-data-streams': 'Data Playbook - Realtime'
   },
 
   iconArtifact: {
