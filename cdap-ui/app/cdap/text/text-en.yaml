@@ -984,7 +984,7 @@ features:
       collapse: Collapse the side panel
       expand: Expand the side panel
     TopPanel:
-      addToPipelineBtnLabel: Create a Playbook
+      addToPipelineBtnLabel: New Data Playbook
       addToPipelineModal:
         title: Choose the type of pipeline to create
         batchPipelineBtn: Batch pipeline
