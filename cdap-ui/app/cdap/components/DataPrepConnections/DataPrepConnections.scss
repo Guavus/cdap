@@ -24,7 +24,7 @@ $connections-menu-item-color: $grey-01;
 $info-font-color: $grey-03;
 
 .dataprep-connections-container {
-  height: calc(100vh - 104px);
+  height: 100vh;
   border-right: 1px solid $connections-panel-border-color;
 
   .connections-panel,
