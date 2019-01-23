@@ -25,7 +25,7 @@ class FeatureTable extends React.Component {
       <table className='feature-table'>
         <thead>
           <tr>
-            <th>Pipeline</th>
+            <th>Playbook</th>
             <th>Status</th>
             <th>Last Run Time</th>
             <th></th>
@@ -47,7 +47,7 @@ class FeatureTable extends React.Component {
               <td >
                 <div className={(this.isViewable(item)) ? "view-link" : "disable-link"}
                   onClick={this.onView.bind(this, item)}>
-                  VIEW PIPELINE
+                  VIEW PLAYBOOK
                 </div>
               </td>
               <td className="center-align">

@@ -575,7 +575,7 @@ class LandingPage extends React.Component {
           : <div className="feature-generation">
             <div className='top-control'>
               <div className='type-selector'>
-                <div className="type-label">Pipeline Type:</div>
+                <div className="type-label">Playbook Type:</div>
                 <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown.bind(this)}>
                   <DropdownToggle caret>
                     {this.state.selectedPipelineType}
