@@ -77,11 +77,18 @@ class SchemaSelector extends React.Component {
       switch (type) {
         case 'ADD':
           {
-            if (this.isSchemaAlreadyAdded(data.schemaName)) {
-              alert("Schema already added");
-              return;
-            }
-            this.props.addSelectedSchema(data);
+            let selectedSchemas = [];
+            data.forEach((schema) => {
+              let schemaData = find(this.props.availableSchemas, { schemaName: schema });
+              if (!isEmpty(schemaData)) {
+                selectedSchemas.push({
+                  schemaName: schema,
+                  selected: true,
+                  schemaColumns: schemaData.schemaColumns
+                });
+              }
+            });
+            this.props.setSelectedSchemas(selectedSchemas);
           }
           break;
         case 'EDIT': {
@@ -114,17 +121,19 @@ class SchemaSelector extends React.Component {
   }
 
   render() {
+    let selectedSchemas = [];
     return (
       <div className="schema-step-container">
         <AddSchema operation={this.openSchemaSelectorModal.bind(this)} />
         {
           this.props.selectedSchemas.map((schemaItem) => {
+            selectedSchemas.push(schemaItem.schemaName);
             return (<AddSchema title={schemaItem.schemaName} data={schemaItem} key={schemaItem.schemaName} type='ADDED'
               operation={this.performAction.bind(this)} />);
           })
         }
         <SchemaSelectorModal open={this.state.openSchemaModal} onClose={this.onAddSchemaClose} showSchemaSelector={this.state.showSchemaSelector}
-          dataProvider={this.state.schemaDP} selectedSchema={this.state.schemaSelected} operationType={this.state.operationType} />
+          dataProvider={this.state.schemaDP} selectedSchemas ={selectedSchemas} operationType={this.state.operationType} />
         <AlertModal open={this.state.openAlertModal} message={this.state.alertMessage}
           onClose={this.onAlertClose} />
       </div>
