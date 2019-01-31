@@ -1,0 +1,10 @@
+{
+  "header": true,
+  "footer": true,
+  "pipelines": true,
+  "dataPreparation": true,
+  "featureEngineering": true,
+  "analyticsLink": true,
+  "rulesEngineLink": true,
+  "metadataLink": true
+}

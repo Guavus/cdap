@@ -38,6 +38,7 @@ import MetadataLink from 'components/Header/MetadataLink';
 import FELink from 'components/Header/FELink';
 import HubButton from 'components/Header/HubButton';
 import {NamespaceLinkContext} from 'components/Header/NamespaceLinkContext';
+import { default as CONFIG }  from '../../../config.json';
 
 require('./Header.scss');
 
@@ -122,12 +123,12 @@ export default class Header extends Component {
               nativeLink={this.props.nativeLink}
               namespace={this.state.currentNamespace}
             />
-            <PipelinesLink />
-            <DataPrepLink />
-            <FELink />
-            <AnalyticsLink />
-            <RulesEngineLink />
-            <MetadataLink />
+            {CONFIG.pipelines && <PipelinesLink />}
+            {CONFIG.dataPreparation && <DataPrepLink />}
+            {CONFIG.featureEngineering && <FELink />}
+            {CONFIG.analyticsLink && <AnalyticsLink />}
+            {CONFIG.rulesEngineLink && <RulesEngineLink />}
+            {CONFIG.metadataLink && <MetadataLink />}
           </ul>
         </NamespaceLinkContext.Provider>
         <div className={classnames("global-navbar-collapse", {

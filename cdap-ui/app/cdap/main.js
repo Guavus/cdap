@@ -53,6 +53,8 @@ import ErrorBoundary from 'components/ErrorBoundary';
 import OverlayFocus from 'components/OverlayFocus';
 import {Theme} from 'services/ThemeHelper';
 import AuthRefresher from 'components/AuthRefresher';
+import { default as CONFIG }  from '../config.json';
+
 const SampleTSXComponent = Loadable({
   loader: () => import (/* webpackChunkName: "SampleTSXComponent" */ 'components/SampleTSXComponent'),
   loading: LoadingSVGCentered
@@ -111,7 +113,7 @@ class CDAP extends Component {
       <BrowserRouter basename="/cdap">
         <div className="cdap-container">
           <Helmet title={Theme.productName} />
-          <Header />
+          {CONFIG.header && <Header />}
           <LoadingIndicator />
           <StatusAlertMessage />
           {
@@ -173,7 +175,7 @@ class CDAP extends Component {
                 </Switch>
               </div>
           }
-          <Footer />
+          {CONFIG.footer && <Footer />}
           <OverlayFocus />
           <AuthRefresher />
         </div>
@@ -185,8 +187,17 @@ class CDAP extends Component {
 CDAP.propTypes = {
   children: PropTypes.node
 };
+const appContainer = document.getElementById('app-container');
+let className = ''
+if(!CONFIG.header){
+  className = CONFIG.footer ? 'no-header' : 'no-header-footer';
+} else {
+  className = !CONFIG.footer ? 'no-footer' : ''
+}
+
+appContainer.classList.add(className);
 
 ReactDOM.render(
   <CDAP />,
-  document.getElementById('app-container')
+  appContainer
 );
