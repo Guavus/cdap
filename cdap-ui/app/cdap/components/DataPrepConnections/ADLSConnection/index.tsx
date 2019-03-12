@@ -104,7 +104,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
       return;
     }
 
-    this.setState({loading: true, isUsingJCEKfile: true});
+    this.setState({loading: true});
 
     const namespace = getCurrentNamespace();
 
@@ -125,6 +125,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
         const clientID = objectQuery(info, 'properties', 'clientID');
         const clientSecret = objectQuery(info, 'properties', 'clientSecret');
         const refreshURL = objectQuery(info, 'properties', 'refreshURL');
+        const isUsingJCEKfile = kvURL !== undefined ? true : false;
 
         this.setState({
           name,
@@ -136,6 +137,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
           clientID,
           clientSecret,
           refreshURL,
+          isUsingJCEKfile,
           loading: false,
         });
       }, (err) => {
@@ -351,7 +353,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <input
                 type="text"
                 className="form-control"
-                value={this.state.kvURL}
+                value={this.state.kvURL || ''}
                 onChange={this.handleChange.bind(this, 'kvURL')}
                 placeholder={T.translate(`${PREFIX}.Placeholders.kvURL`).toString()}
               />
@@ -369,7 +371,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <input
                 type="text"
                 className="form-control"
-                value={this.state.clientIDKey}
+                value={this.state.clientIDKey || ''}
                 onChange={this.handleChange.bind(this, 'clientIDKey')}
                 placeholder={T.translate(`${PREFIX}.Placeholders.clientIDKey`).toString()}
               />
@@ -387,7 +389,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <input
                 type="text"
                 className="form-control"
-                value={this.state.clientSecretKey}
+                value={this.state.clientSecretKey || ''}
                 onChange={this.handleChange.bind(this, 'clientSecretKey')}
                 placeholder={T.translate(`${PREFIX}.Placeholders.clientSecretKey`).toString()}
               />
@@ -405,7 +407,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <input
                 type="text"
                 className="form-control"
-                value={this.state.endPointURLKey}
+                value={this.state.endPointURLKey || ''}
                 onChange={this.handleChange.bind(this, 'endPointURLKey')}
                 placeholder={T.translate(`${PREFIX}.Placeholders.endPointURLKey`).toString()}
               />
@@ -425,7 +427,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <input
                 type="text"
                 className="form-control"
-                value={this.state.clientID}
+                value={this.state.clientID || '' }
                 onChange={this.handleChange.bind(this, 'clientID')}
                 placeholder={T.translate(`${PREFIX}.Placeholders.clientID`).toString()}
               />
@@ -443,7 +445,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <input
                 type="text"
                 className="form-control"
-                value={this.state.clientSecret}
+                value={this.state.clientSecret || ''}
                 onChange={this.handleChange.bind(this, 'clientSecret')}
                 placeholder={T.translate(`${PREFIX}.Placeholders.clientSecret`).toString()}
               />
@@ -461,7 +463,7 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <input
                 type="text"
                 className="form-control"
-                value={this.state.refreshURL}
+                value={this.state.refreshURL || ''}
                 onChange={this.handleChange.bind(this, 'refreshURL')}
                 placeholder={T.translate(`${PREFIX}.Placeholders.refreshURL`).toString()}
               />

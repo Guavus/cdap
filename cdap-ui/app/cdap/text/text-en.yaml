@@ -1264,14 +1264,14 @@ features:
           clientIDKey: Specify Key name for ADLS Client ID
           clientSecretKey: Specify Key name for ADLS Client Secret key
           endPointURLKey: Specify Key name for ADLS Tenant ID
-          accountFQDN: Specify Input Directory
+          accountFQDN: Specify Account FQDN
           clientID: Specify Client ID
           clientSecret: Specify Client Key
           refreshURL: Specify End Point Refresh URL
         clientIDKey: Key Name for ADLS Client ID
         clientSecretKey: Key Name for ADLS Client Secret Key
         endPointURLKey: Key Name for ADLS Tenant ID
-        accountFQDN: Input Directory
+        accountFQDN: Account FQDN
         name: Connection name
         kvURL: KeyVault URL
         clientID: Client ID
