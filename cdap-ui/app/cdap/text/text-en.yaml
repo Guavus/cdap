@@ -1268,9 +1268,9 @@ features:
           clientID: Specify Client ID
           clientSecret: Specify Client Key
           refreshURL: Specify End Point Refresh URL
-        clientIDKey: Key Name for ADLS Client ID
-        clientSecretKey: Key Name for ADLS Client Secret Key
-        endPointURLKey: Key Name for ADLS Tenant ID
+        clientIDKey: Client ID
+        clientSecretKey: Client Secret Key
+        endPointURLKey: Tenant ID
         accountFQDN: Account FQDN
         name: Connection name
         kvURL: KeyVault URL

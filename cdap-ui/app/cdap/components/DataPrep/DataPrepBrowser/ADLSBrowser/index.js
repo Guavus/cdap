@@ -502,46 +502,6 @@ export default class ADLSBrowser extends Component {
   }
 
   render() {
-   /*  return (
-      <div className="file-browser-container">
-        <DataprepBrowserTopPanel
-          allowSidePanelToggle={this.props.allowSidePanelToggle}
-          toggle={this.props.toggle}
-          browserTitle={this.props.browserTitle}
-        />
-
-        <div className="sub-panel">
-          <div className="path-container">
-
-          </div>
-
-          <div
-            className="info-container"
-            title={T.translate(`${PREFIX}.TopPanel.directoryMetrics`, {count: this.state.contents.length})}
-          >
-            <div className="info">
-              <span>
-                {T.translate(`${PREFIX}.TopPanel.directoryMetrics`, {count: this.state.contents.length})}
-              </span>
-            </div>
-
-            <div className="search-container">
-              <input
-                type="text"
-                className="form-control"
-                placeholder={T.translate(`${PREFIX}.TopPanel.searchPlaceholder`)}
-                value={this.state.search}
-                onChange={this.handleSearch}
-                autoFocus={this.state.searchFocus}
-              />
-            </div>
-          </div>
-        </div>
-
-        {this.renderContent()}
-      </div>
-    ); */
-
     return (
       <Provider store={DataPrepBrowserStore}>
         <div className="adls-browser file-browser-container">
