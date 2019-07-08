@@ -35,7 +35,7 @@ class CorrelationContainer extends Component {
       algolist: this.algolist,
       openAlgoDropdown: false,
       selectedAlgo: { id: -1, name: 'Select' },
-      selectedFeature: undefined,
+      selectedFeature: props.targetVariable,
       items: this.correlationItems,
       featureNames: cloneDeep(props.featureNames),
       activeApplyBtn: false
@@ -204,14 +204,16 @@ class CorrelationContainer extends Component {
           </div>
           <div className="feature-box">
             <div>
+            <label className="feature-label">Target Variable: {this.props.targetVariable}</label>
+            </div>
+            {/* <div>
               <label className="feature-label">Select Feature: </label>
               <InputGroup className="search-group">
                 <Input className="search-input" placeholder="search generated feature" onChange={this.onFeatureSearch.bind(this)} />
                 <i className="search-icon fa fa-search"></i>
               </InputGroup>
-            </div>
-
-            <ListGroup>
+            </div> */}
+            {/* <ListGroup>
               {
                 this.state.featureNames.map((item) => {
                   return (<ListGroupItem active={item.selected} key={item.id}
@@ -223,7 +225,7 @@ class CorrelationContainer extends Component {
                   </ListGroupItem>);
                 })
               }
-            </ListGroup>
+            </ListGroup> */}
 
           </div>
         </div>
@@ -244,6 +246,7 @@ export default CorrelationContainer;
 CorrelationContainer.propTypes = {
   applyCorrelation: PropTypes.func,
   featureNames: PropTypes.array,
-  onClear: PropTypes.func
+  onClear: PropTypes.func,
+  targetVariable: PropTypes.string
 };
 

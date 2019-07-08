@@ -79,6 +79,7 @@ class LandingPage extends React.Component {
       displayFeatureSelection: false,
       pipeLineData: this.sampleData,
       selectedPipeline: {},
+      selectedPipelineRequestConfig: {},
       isDataLoading: false,
       currentNamespace: NamespaceStore.getState().selectedNamespace,
       statusList: this.generateStatusList([])
@@ -204,6 +205,24 @@ class LandingPage extends React.Component {
 
   onFeatureSelection(pipeline) {
     this.currentPipeline = pipeline;
+    FEDataServiceApi.readPipeline({
+      namespace: NamespaceStore.getState().selectedNamespace,
+      pipeline: pipeline.pipelineName
+    }, {}, getDefaultRequestHeader()).subscribe(
+      result => {
+        if (checkResponseError(result) || isNil(result["featureGenerationRequest"])) {
+          this.handleError(result, READ_PIPELINE);
+        } else {
+          this.fetchPipelineData(pipeline,result["featureGenerationRequest"]);
+        }
+      },
+      error => {
+        this.handleError(error, READ_PIPELINE);
+      }
+    );
+  }
+
+  fetchPipelineData(pipeline, selectedPipelineRequestConfig){
     FEDataServiceApi.pipelineData({
       namespace: NamespaceStore.getState().selectedNamespace,
       pipeline: pipeline.pipelineName
@@ -216,6 +235,7 @@ class LandingPage extends React.Component {
             pipeLineData: result["featureStatsList"],
             data: result["featureStatsList"],
             selectedPipeline: this.currentPipeline,
+            selectedPipelineRequestConfig: selectedPipelineRequestConfig,
             displayFeatureSelection: true
           });
         }
@@ -224,7 +244,10 @@ class LandingPage extends React.Component {
         this.handleError(error, GET_PIPELINE);
       }
     );
+
   }
+
+
 
   viewPipeline(pipeline) {
     let navigatePath = `${window.location.origin}/pipelines/ns/${NamespaceStore.getState().selectedNamespace}/view/${pipeline.pipelineName}`;
@@ -648,6 +671,7 @@ class LandingPage extends React.Component {
           <div className="feature-selection">
             <FeatureSelection nagivateToParent={this.viewFeatureGeneration}
               selectedPipeline={this.state.selectedPipeline}
+              pipelineRequestConfig = { this.state.selectedPipelineRequestConfig }
               pipeLineData={this.state.pipeLineData}></FeatureSelection>
           </div>
           : <div className="feature-generation">

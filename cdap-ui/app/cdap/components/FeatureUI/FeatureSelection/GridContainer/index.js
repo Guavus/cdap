@@ -21,15 +21,22 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import './GridContainer.scss';
 import PropTypes from 'prop-types';
+import CorrelationRenderer from 'components/FeatureUI/GridRenderers/CorrelationRenderer';
 
 class GridContainer extends Component {
   gridApi;
   gridColumnApi;
+
   defaultColDef = {
     resizable: true
   }
   constructor(props) {
     super(props);
+    this.state ={
+      frameworkComponents: {
+        'correlationRenderer': CorrelationRenderer,
+      }
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -61,6 +68,7 @@ class GridContainer extends Component {
         className="ag-theme-balham grid-container"    >
         <AgGridReact
           suppressMenuHide = {true}
+          frameworkComponents={this.state.frameworkComponents}
           columnDefs={this.props.gridColums}
           defaultColDef={this.defaultColDef}
           enableFilter={true}
