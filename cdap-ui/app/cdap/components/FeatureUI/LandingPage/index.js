@@ -222,7 +222,7 @@ class LandingPage extends React.Component {
     );
   }
 
-  fetchPipelineData(pipeline, selectedPipelineRequestConfig){
+  fetchPipelineData(pipeline, selectedPipelineRequestConfig) {
     FEDataServiceApi.pipelineData({
       namespace: NamespaceStore.getState().selectedNamespace,
       pipeline: pipeline.pipelineName
@@ -241,10 +241,9 @@ class LandingPage extends React.Component {
         }
       },
       error => {
-        this.handleError(error, GET_PIPELINE);
+        this.handleError(error, GET_PIPE_LINE_DATA);
       }
     );
-
   }
 
 
@@ -618,9 +617,11 @@ class LandingPage extends React.Component {
           this.handleError(result, GET_PROPERTY);
         } else {
           let configParamList = result["configParamList"];
-          let mandatoryParamList = configParamList.filter(item => item.isMandatory);
-          let nonMandatoryParamList = configParamList.filter(item => !item.isMandatory);
-          this.props.setAvailableProperties(mandatoryParamList.concat(nonMandatoryParamList));
+          if (isNil(configParamList)) {
+            let mandatoryParamList = configParamList.filter(item => item.isMandatory);
+            let nonMandatoryParamList = configParamList.filter(item => !item.isMandatory);
+            this.props.setAvailableProperties(mandatoryParamList.concat(nonMandatoryParamList));
+          }
         }
       },
       error => {

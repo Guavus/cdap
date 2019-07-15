@@ -16,6 +16,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import isNil from 'lodash/isNil';
+
 
 require('./CorrelationRenderer.scss');
 
@@ -28,25 +30,66 @@ class CorrelationRenderer extends React.Component {
   }
 
   render() {
-    return (
-      <svg viewBox="0 0 400 100" preserveAspectRatio="none">
-        <rect x="0" y="12" width = "400"
-              height = "1"  class="baseBar" />
-        <rect x="0" y="7" width = "2"
-              height = "10" class="baseBar" />
-        <rect x="200" y="5" width = "2"
-              height = "15" class="baseBar" />
-        <rect x="398" y="7" width = "400"
-              height = "10" class="baseBar" />
-        <rect x= { (this.props.value < 0)? (this.props.value) * 200 + 200: 0 } y="8" width = { (this.props.value < 0)? (this.props.value) * -200: 0 }
-              height = "8" class="negativeBar" />
-        <rect x="200" y="8" width = { (this.props.value > 0)? (this.props.value) * 200: 0 }
-              height = "8" class="positiveBar" />
-      </svg>
-    );
+    const width = 400;
+    const height = 27;
+    const scaleHeight = 1;
+    const tickWidth = 2;
+    const barHeight = 8;
+    const baseTickHeight = 15;
+    const boundaryTickHeight = 10;
+    const vo = this.props.value;
+    let value;
+    let min;
+    let max;
+    let location;
+    const viewBoxRect = "0 0 " + width + " " + height;
+    if (vo.hasOwnProperty('value') && vo.hasOwnProperty('min') && vo.hasOwnProperty('max')) {
+      value = vo['value'];
+      min = vo['min'];
+      max = vo['max'];
+    }
+
+    if (isNil(value)) {
+      return "";
+    } else {
+      if (min < 0 ) {
+        location = (value / max ) * (width / 2);
+        return (
+          <svg viewBox = {viewBoxRect} preserveAspectRatio="none">
+            <rect x = "0" y = { height/2 - scaleHeight} width = { width }
+                  height = { scaleHeight }  className="baseBar" />
+            <rect x = "0" y = { height/2 - boundaryTickHeight/2}  width = { tickWidth }
+                  height = { boundaryTickHeight } className="baseBar" />
+            <rect x = { width/2 } y = { height/2 - baseTickHeight/2} width = { tickWidth }
+                  height = { baseTickHeight } className = "baseBar" />
+            <rect x = { width - tickWidth} y = { height/2 - boundaryTickHeight/2} width = { tickWidth }
+                  height = { boundaryTickHeight } className="baseBar" />
+            <rect x = { (location < 0) ? location + (width/2) : 0 } y = { height/2 - barHeight/2} width = { (location < 0)? (location * -1) : 0 }
+                  height = { barHeight } className="negativeBar" />
+            <rect x = { width/2 } y = { height/2 - barHeight/2 } width = { (location > 0)? location : 0 }
+                  height = { barHeight } className="positiveBar" />
+          </svg>
+        );
+      } else {
+        location = (value / max ) * width;
+        return (
+          <svg viewBox = { viewBoxRect } preserveAspectRatio="none">
+             <rect x = "0" y = { height/2 - scaleHeight} width = { width }
+                  height = { scaleHeight }  className="baseBar" />
+            <rect x = "0" y = { height/2 - baseTickHeight/2} width = { tickWidth }
+                  height = { baseTickHeight } className = "baseBar" />
+            <rect x = { width - tickWidth} y = { height/2 - boundaryTickHeight/2} width = { tickWidth }
+                  height = { boundaryTickHeight } className="baseBar" />
+            <rect x = "0" y = { height/2 - barHeight/2 } width = { location }
+                  height = { barHeight } className="valueBar" />
+          </svg>
+        );
+      }
+    }
+
   }
 }
 export default CorrelationRenderer;
 CorrelationRenderer.propTypes = {
-  value: PropTypes.string
+  value: PropTypes.Object
 };

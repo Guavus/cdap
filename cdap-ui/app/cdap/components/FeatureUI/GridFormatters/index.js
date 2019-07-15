@@ -14,7 +14,9 @@
  * the License.
  */
 
-import { isNil } from 'lodash';
+import {
+  isNil
+} from 'lodash';
 
 export function getEpochDateString(params) {
   if (!isNil(params)) {
@@ -30,10 +32,9 @@ export function getEpochDateString(params) {
 
 export function getRoundOfValue(params) {
   if (!isNil(params)) {
-    if(isNil(params.value)){
+    if (isNil(params.value)) {
       return "-";
-    }
-    else if (isNaN(params.value)) {
+    } else if (isNaN(params.value)) {
       return params.value;
     } else {
       return params.value.toFixed(3);
