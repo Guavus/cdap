@@ -144,7 +144,8 @@ class ModelContainer extends Component {
           </div>
           <div className="feature-box">
             <div>
-            <label className="feature-label">Target Variable: {this.props.targetVariable}</label>
+              <label className="feature-label">Target Variable:</label>
+              <label className="feature-variable">{this.props.targetVariable}</label>
             </div>
           </div>
         </div>
