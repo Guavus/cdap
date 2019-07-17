@@ -41,7 +41,7 @@ class GridHeader extends Component {
           </div>
         </div>
         <div className="header-control">
-          <div className = "selected-feature">{ "Selected Features: " + this.props.selectedCount + ' / ' + this.props.totalCount}</div>
+          <div className = "selected-feature">{ "Selected Features: " + this.props.selectedCount }</div>
           <button className = "feature-button left-margin" onClick={this.props.backnavigation}>Back</button>
           <button className = "feature-button left-margin" onClick={this.props.save}
             disabled={!this.props.enableSave}>Save</button>
