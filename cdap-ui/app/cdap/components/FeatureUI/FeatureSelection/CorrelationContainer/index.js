@@ -235,7 +235,7 @@ class CorrelationContainer extends Component {
         }
         <div className="control-box">
           <button className="feature-button" onClick={this.applyCorrelation} disabled={!this.state.activeApplyBtn}>Apply</button>
-          <button className="feature-button clear-button" onClick={this.applyClear} >Clear</button>
+          {/* <button className="feature-button clear-button" onClick={this.applyClear} >Clear</button> */}
         </div>
       </div>
     );

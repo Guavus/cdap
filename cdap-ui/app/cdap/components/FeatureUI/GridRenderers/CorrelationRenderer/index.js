@@ -38,6 +38,9 @@ class CorrelationRenderer extends React.Component {
     const baseTickHeight = 15;
     const boundaryTickHeight = 10;
     const vo = this.props.value;
+    if (isNil(vo)) {
+      return "";
+    }
     let value;
     let min;
     let max;
@@ -91,5 +94,5 @@ class CorrelationRenderer extends React.Component {
 }
 export default CorrelationRenderer;
 CorrelationRenderer.propTypes = {
-  value: PropTypes.Object
+  value: PropTypes.object
 };
