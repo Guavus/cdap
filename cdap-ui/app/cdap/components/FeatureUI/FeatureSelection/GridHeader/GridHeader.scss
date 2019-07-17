@@ -35,6 +35,15 @@
       color: #150e9a;
     }
   }
+  .header-control {
+    display: flex;
+    align-items: center;
+  }    
+  .selected-feature {
+    padding: 3px 6px;
+    font-weight: 600;
+    font-size: 14px;
+  }
   .left-margin {
     margin-left: 12px;
   }
