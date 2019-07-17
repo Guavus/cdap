@@ -369,7 +369,7 @@ class FeatureSelection extends Component {
       columDefs.push(
         {
           headerName: "Generated Feature",
-          field: this.identiferCol, 
+          field: this.identiferCol,
           width: 450,
           checkboxSelection: true,
           headerCheckboxSelection: true,
