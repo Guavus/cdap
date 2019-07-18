@@ -617,7 +617,7 @@ class LandingPage extends React.Component {
           this.handleError(result, GET_PROPERTY);
         } else {
           let configParamList = result["configParamList"];
-          if (isNil(configParamList)) {
+          if (!isNil(configParamList)) {
             let mandatoryParamList = configParamList.filter(item => item.isMandatory);
             let nonMandatoryParamList = configParamList.filter(item => !item.isMandatory);
             this.props.setAvailableProperties(mandatoryParamList.concat(nonMandatoryParamList));
