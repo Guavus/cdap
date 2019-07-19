@@ -246,14 +246,16 @@ class PropertySelector extends React.Component {
     if (type != "All") {
       if (item.columnType == type) {
         if (key != '') {
-          return item.columnName.indexOf(key) > -1;
+          const col = item.columnName.toLowerCase();
+          return col.indexOf(key.toLowerCase()) > -1;
         }
       } else {
         return false;
       }
     } else {
       if (key != '') {
-        return item.columnName.indexOf(key) > -1;
+        const col = item.columnName.toLowerCase();
+        return col.indexOf(key.toLowerCase()) > -1;
       }
     }
     return true;
