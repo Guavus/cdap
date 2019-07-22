@@ -68,7 +68,8 @@ function objectQuery(obj) {
     }
     obj = obj[arguments[i]];
   }
-  return obj;
+
+  return getKnoxPrefix()+obj;
 }
 export const HUMANREADABLESTORAGE = 'STORAGE';
 export const HUMANREADABLESTORAGE_NODECIMAL = 'NODECIMAL';
@@ -408,6 +409,10 @@ const parseQueryString = () => {
   return queryObj;
 };
 
+function getKnoxPrefix(){
+  return (window.CDAP_CONFIG.knoxEnabled ? window.CDAP_CONFIG.applicationAlias : '');
+}
+
 export {
   objectQuery,
   convertBytesToHumanReadable,
@@ -421,6 +426,7 @@ export {
   humanReadableDate,
   contructUrl,
   getIcon,
+  getKnoxPrefix,
   preventPropagation,
   requiredFieldsCompleted,
   defaultAction,

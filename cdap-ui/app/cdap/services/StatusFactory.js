@@ -22,6 +22,7 @@ import cookie from 'react-cookie';
 import isNil from 'lodash/isNil';
 import {Observable} from 'rxjs/Observable';
 import SystemServicesStore, {pollSystemServices} from 'services/SystemServicesStore';
+import { getKnoxPrefix } from './helpers';
 
 let pollingObservable;
 let systemServiceSubscription;
@@ -125,10 +126,10 @@ const startPolling = () => {
   stopPolling();
   startServicePolling();
   pollingObservable = Observable
-    .interval(2000)
+    .interval(12000)
     .mergeMap(() =>
       Observable
-        .fromPromise(fetch('/backendstatus', getRequestInfo()))
+        .fromPromise(fetch((getKnoxPrefix()+'/backendstatus'), getRequestInfo()))
         .catch(error => {
           dispatchNodeServerDown();
           return Observable.of(`Error: ${error}`);

@@ -152,7 +152,9 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       securityEnabled: authAddress.enabled,
       isEnterprise: isModeProduction(),
       sandboxMode: process.env.NODE_ENV,
-      authRefreshURL: cdapConfig['dashboard.auth.refresh.path'] || false
+      authRefreshURL: cdapConfig['dashboard.auth.refresh.path'] || false,
+      knoxEnabled: cdapConfig['knox.enabled'] === 'true',
+      applicationAlias: cdapConfig['application.prefix']
     });
 
     res.header({
