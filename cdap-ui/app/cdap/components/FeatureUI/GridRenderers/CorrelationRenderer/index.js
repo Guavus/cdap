@@ -58,7 +58,7 @@ class CorrelationRenderer extends React.Component {
       if (min < 0 ) {
         location = (value / max ) * (width / 2);
         return (
-          <svg viewBox = {viewBoxRect} preserveAspectRatio="none">
+          <svg className = "corrationSvg" viewBox = {viewBoxRect} preserveAspectRatio="none">
             <rect x = "0" y = { height/2 - scaleHeight} width = { width }
                   height = { scaleHeight }  className="baseBar" />
             <rect x = "0" y = { height/2 - boundaryTickHeight/2}  width = { tickWidth }
