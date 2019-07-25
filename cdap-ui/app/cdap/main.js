@@ -110,7 +110,7 @@ class CDAP extends Component {
 
   render() {
     return (
-      <BrowserRouter basename="/cdap">
+      <BrowserRouter basename={`${window.knoxPrefix}/cdap`}>
         <div className="cdap-container">
           <Helmet title={Theme.productName} />
           <Header />

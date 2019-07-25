@@ -69,8 +69,7 @@ function objectQuery(obj) {
     obj = obj[arguments[i]];
   }
 
-
-  return typeof obj === 'string' ? (getKnoxPrefix()+obj) : obj;
+  return obj;
 }
 export const HUMANREADABLESTORAGE = 'STORAGE';
 export const HUMANREADABLESTORAGE_NODECIMAL = 'NODECIMAL';
@@ -410,9 +409,7 @@ const parseQueryString = () => {
   return queryObj;
 };
 
-function getKnoxPrefix() {
-  return ( window.CDAP_CONFIG.knoxEnabled ? window.CDAP_CONFIG.applicationPrefix : '' );
-}
+window.knoxPrefix = (window.CDAP_CONFIG.knoxEnabled ? window.CDAP_CONFIG.applicationPrefix : '' );
 
 export {
   objectQuery,
@@ -427,7 +424,6 @@ export {
   humanReadableDate,
   contructUrl,
   getIcon,
-  getKnoxPrefix,
   preventPropagation,
   requiredFieldsCompleted,
   defaultAction,

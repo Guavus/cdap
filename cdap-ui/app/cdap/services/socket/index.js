@@ -16,7 +16,6 @@
 
 import SockJS from 'sockjs-client';
 import {Subject} from 'rxjs/Subject';
-import { getKnoxPrefix } from 'services/helpers';
 
 class Socket {
   constructor() {
@@ -30,7 +29,7 @@ class Socket {
   init(attempt) {
     attempt = attempt || 1;
     clearTimeout(this.timeout);
-    this.socket = new SockJS(getKnoxPrefix() +'/_sock');
+    this.socket = new SockJS(window.knoxPrefix+'/_sock');
 
     this.socket.onopen = () => {
       // Buffering request while Socket is still starting up
