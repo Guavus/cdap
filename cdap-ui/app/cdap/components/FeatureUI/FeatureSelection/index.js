@@ -61,7 +61,7 @@ class FeatureSelection extends Component {
   }
 
   componentWillMount() {
-    if (this.props.pipelineRequestConfig) {
+    if (this.props.pipelineRequestConfig &&  this.props.pipelineRequestConfig.targetColumn && this.props.pipelineRequestConfig.targetColumn.column) {
       this.targetVariable = this.props.pipelineRequestConfig.targetColumn.column;
     }
   }
@@ -330,10 +330,6 @@ class FeatureSelection extends Component {
       );
   }
 
-  clearCorrelation = () => {
-    this.onFeatureSelection(this.props.selectedPipeline);
-  }
-
 
 
   handleError(error, type) {
@@ -499,13 +495,13 @@ class FeatureSelection extends Component {
               <CorrelationContainer applyCorrelation={this.applyCorrelation}
                 targetVariable={this.targetVariable}
                 featureNames={this.state.featureNames}
-                onClear={this.clearCorrelation}></CorrelationContainer>
+                ></CorrelationContainer>
             </TabPane>
             <TabPane tabId="2" className="tab-pane">
               <ModelContainer applyModelSelection={this.applyModelSelection}
                 targetVariable={this.targetVariable}
                 featureNames={this.state.featureNames}
-                onClear={this.clearCorrelation}></ModelContainer>
+                ></ModelContainer>
             </TabPane>
           </TabContent>
         </div>

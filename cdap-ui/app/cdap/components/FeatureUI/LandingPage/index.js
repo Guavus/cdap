@@ -36,7 +36,8 @@ import {
   PIPELINE_SCHEMAS,
   CLONE_PIPELINE,
   GET_PIPE_LINE_DATA,
-  TOTAL
+  TOTAL,
+  ERROR_MESSAGES
 } from '../config';
 import { Observable } from 'rxjs/Observable';
 import AlertModal from '../AlertModal';
@@ -481,7 +482,11 @@ class LandingPage extends React.Component {
         result => {
           if (checkResponseError(result)) {
             this.handleError(result, type);
-            observer.error(result);
+            if (result && !isNil(result.message)) {
+              observer.error(result.message);
+            } else {
+              observer.error(ERROR_MESSAGES.SAVE_PIPELINE);
+            }
           } else {
             this.getPipelines(this.state.selectedPipelineType);
             observer.next(result);
@@ -490,7 +495,11 @@ class LandingPage extends React.Component {
         },
         err => {
           this.handleError(err, type);
-          observer.error(err);
+          if (err && !isNil(err.message)) {
+            observer.error(err.message);
+          } else {
+            observer.error(ERROR_MESSAGES.SAVE_PIPELINE);
+          }
         }
       );
     });

@@ -17,7 +17,7 @@
 import React, { Component } from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import './ModelContainer.scss';
-import { isNil, cloneDeep } from 'lodash';
+import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 
 class ModelContainer extends Component {
@@ -26,7 +26,6 @@ class ModelContainer extends Component {
     { id: 2, name: "ridge" },
     { id: 3, name: "randomForest" }
   ];
-  lastSelectedFeature = undefined;
 
   constructor(props) {
     super(props);
@@ -35,8 +34,6 @@ class ModelContainer extends Component {
       openAlgoDropdown: false,
       selectedAlgo: { id: -1, name: 'Select' },
       selectedFeature: props.targetVariable,
-      items: this.correlationItems,
-      featureNames: cloneDeep(props.featureNames),
       activeApplyBtn: false
     };
 
@@ -56,26 +53,8 @@ class ModelContainer extends Component {
     });
   }
 
-  onFeatrureClick(item) {
-    if (this.lastSelectedFeature) {
-      this.lastSelectedFeature.selected = false;
-    }
-    item.selected = true;
-    this.lastSelectedFeature = item;
-    this.setState({ selectedFeature: item });
 
-    setTimeout(() => {
-      this.updateApplyBtnStatus();
-    });
-  }
 
-  onFeatureSearch = (evt) => {
-    let value = "";
-    if (!isNil(evt)) {
-      value = evt.target.value.trim();
-    }
-    this.setState({ featureNames: this.props.featureNames.filter((item) => item.name.includes(value)) });
-  }
 
   updateApplyBtnStatus = () => {
     let isValidFilterItems = true;
@@ -100,22 +79,6 @@ class ModelContainer extends Component {
       };
       this.props.applyModelSelection(result);
     }
-  }
-
-  applyClear = () => {
-
-    if (!isNil(this.lastSelectedFeature)) {
-      this.lastSelectedFeature.enable = false;
-    }
-
-    this.setState({ featureNames: this.props.featureNames, selectedAlgo: { id: -1, name: 'Select' }, selectedfeature: undefined });
-
-    setTimeout(() => {
-      this.updateApplyBtnStatus();
-    });
-
-    this.props.onClear();
-
   }
 
 
@@ -149,12 +112,9 @@ class ModelContainer extends Component {
             </div>
           </div>
         </div>
-        {
-          // corelationItem
-        }
+
         <div className="control-box">
           <button className="feature-button" onClick={this.applyModelSelection} disabled={!this.state.activeApplyBtn}>Apply</button>
-          {/* <button className="feature-button clear-button" onClick={this.applyClear} >Clear</button> */}
         </div>
       </div>
     );
@@ -165,8 +125,6 @@ export default ModelContainer;
 
 ModelContainer.propTypes = {
   applyModelSelection: PropTypes.func,
-  featureNames: PropTypes.array,
-  onClear: PropTypes.func,
   targetVariable: PropTypes.string
 };
 
