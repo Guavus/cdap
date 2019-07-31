@@ -46,7 +46,7 @@ const PipelinesLink: React.SFC<IPipelinesLinkProps> = ({ context }) => {
       sortBy: '_stats.lastStartTime',
     },
   });
-  const isPipelinesViewActive = location.pathname.indexOf('/pipelines/') !== -1;
+  const isPipelinesViewActive = location.pathname.indexOf('/gateway/default/pipelines/') !== -1;
 
   return (
     <li
