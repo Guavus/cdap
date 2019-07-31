@@ -52,7 +52,7 @@ const RunLogs = ({currentRun, runs, appId, artifactName}) => {
       programId = GLOBALS.programId[artifactName],
       runId = objectQuery(currentRun, 'runid');
 
-  let path = `${window.knoxPrefix}/logviewer/view?namespace=${namespace}&appId=${appId}&programType=${programType}&programId=${programId}&runId=${runId}`;
+  let path = `/logviewer/view?namespace=${namespace}&appId=${appId}&programType=${programType}&programId=${programId}&runId=${runId}`;
 
   return (
     <a href={path} target="_blank">

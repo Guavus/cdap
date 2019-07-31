@@ -68,7 +68,7 @@ export default class LogAction extends Component {
         programId = this.props.entity.id,
         runId = this.state.runId;
 
-    let path = `${window.knoxPrefix}/logviewer/view?namespace=${namespace}&appId=${appId}&programType=${programType}&programId=${programId}&runId=${runId}`;
+    let path = `/logviewer/view?namespace=${namespace}&appId=${appId}&programType=${programType}&programId=${programId}&runId=${runId}`;
 
     return path;
   }

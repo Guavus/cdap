@@ -162,7 +162,7 @@ export default class LogsMetricsGraph extends Component {
     if (this.state.currentHoveredElement) {
       popOverData = this.props.runs.find(run => this.state.currentHoveredElement.runid === run.runid);
       let {namespaceId, appId, programType, programId} = this.props.runContext;
-      logUrl = `${window.knoxPrefix}/logviewer/view?namespace=${namespaceId}&appId=${appId}&programType=${convertProgramToApi(programType)}&programId=${programId}&runId=${popOverData.runid}`;
+      logUrl = `/logviewer/view?namespace=${namespaceId}&appId=${appId}&programType=${convertProgramToApi(programType)}&programId=${programId}&runId=${popOverData.runid}`;
     }
     return (
       <div className="graph-plot-container">
@@ -296,7 +296,7 @@ export default class LogsMetricsGraph extends Component {
         <tbody>
           {
             runs.map(run => {
-              let logUrl = `${window.knoxPrefix}/logviewer/view?namespace=${namespaceId}&appId=${appId}&programType=${convertProgramToApi(programType)}&programId=${programId}&runId=${run.runid}`;
+              let logUrl = `/logviewer/view?namespace=${namespaceId}&appId=${appId}&programType=${convertProgramToApi(programType)}&programId=${programId}&runId=${run.runid}`;
               let runid = run.runid;
               return (
                 <tr>
