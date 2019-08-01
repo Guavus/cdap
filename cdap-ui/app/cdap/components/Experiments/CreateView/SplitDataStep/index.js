@@ -36,7 +36,7 @@ const getSplitLogsUrl = (experimentId, splitInfo) => {
   let endTime = splitInfo.end;
   let baseUrl = `/logviewer/view?namespace=${getCurrentNamespace()}&appId=ModelManagementApp&programType=spark&programId=ModelManagerService`;
   let queryParams = `&filter=${encodeURIComponent(`MDC:experiment="${experimentId}" AND MDC:split=${splitId}`)}&startTime=${startTime}&endTime=${endTime}`;
-  return `${window.knoxPrefix}${baseUrl}${queryParams}`;
+  return `${baseUrl}${queryParams}`;
 };
 
 const getSplitFailedElem = (experimentId, splitInfo) => {

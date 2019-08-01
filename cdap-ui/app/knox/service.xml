@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
-        Licensed to the Apache Software Foundation (ASF) under one or more
+             Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
    this work for additional information regarding copyright ownership.
    The ASF licenses this file to You under the Apache License, Version 2.0
@@ -16,18 +16,16 @@
    limitations under the License.
 -->
 <service role="CDAP" name="cdap" version="0.0.1">
-    <routes>
-        <route path="/cdap">
-            <rewrite apply="CDAP/cdap/inbound/root" to="request.url"/>
-            <rewrite apply="CDAP/cdap/outbound/indexhtml/filter" to="response.body"/>
-        </route>
-        <route path="/cdap/**">
-            <rewrite apply="CDAP/cdap/inbound/path" to="request.url"/>
-        </route>
-        <route path="/cdap/**?**">
-            <rewrite apply="CDAP/cdap/inbound/query" to="request.url"/>
-        </route>
-        <route path="/pdie/config.js">
+   <routes>
+      <route path="/pdie/**">
+         <rewrite apply="CDAP/cdap/inbound/pdie" to="request.url"/>
+         <rewrite apply="CDAP/cdap/outbound/filter" to="response.body"/>
+      </route>
+      <route path="/pdie/**?**">
+         <rewrite apply="CDAP/cdap/inbound/pdie/query" to="request.url"/>
+        <rewrite apply="CDAP/cdap/outbound/filter" to="response.body"/>
+      </route>
+      <route path="/pdie/config.js">
             <rewrite apply="CDAP/cdap/inbound/configjs" to="request.url"/>
         </route>
         <route path="/pdie/ui-config.js">
@@ -39,38 +37,11 @@
         <route path="/pdie/dll_assets/**">
             <rewrite apply="CDAP/cdap/inbound/dllassets" to="request.url"/>
         </route>
-        <route path="/pdie/common_assets/**">
-            <rewrite apply="CDAP/cdap/inbound/commonassets" to="request.url"/>
-        </route>
-        <!--route path="/pdie/livereload.js.js">
-            <rewrite apply="CDAP/cdap/inbound/livereloadjs" to="request.url"/>
-        </route-->
-        <route path="/pdie/assets/**">
-            <rewrite apply="CDAP/cdap/inbound/assets" to="request.url"/>
-        </route>
         <route path="/pdie/cdap_assets/**">
             <rewrite apply="CDAP/cdap/inbound/cdapassets" to="request.url"/>
-            <rewrite apply="CDAP/cdap/outbound/cdapjs" to="response.body"/>
+            <rewrite apply="CDAP/cdap/outbound/filter" to="response.body"/>
         </route>
-         <route path="/pdie/_sock/**">
-            <rewrite apply="CDAP/cdap/inbound/sockinfo" to="request.url"/>
-        </route>
-        <route path="/pdie/pipelines/**">
-            <rewrite apply="CDAP/cdap/inbound/pipelines" to="request.url"/>
-            <rewrite apply="CDAP/cdap/outbound/indexhtml/filter" to="response.body"/>
-        </route>
-        <route path="/pdie/metadata/**">
-            <rewrite apply="CDAP/cdap/inbound/pdie/metadata" to="request.url"/>
-            <rewrite apply="CDAP/cdap/outbound/indexhtml/filter" to="response.body"/>
-        </route>
-        <route path="/pdie/cdap/**">
-            <rewrite apply="CDAP/cdap/inbound/pdie/cdap" to="request.url"/>
-            <rewrite apply="CDAP/cdap/outbound/indexhtml/filter" to="response.body"/>
-        </route>
-        <route path="/pdie/**">
-            <rewrite apply="CDAP/cdap/inbound/pdie" to="request.url"/>
-             <rewrite apply="CDAP/cdap/outbound/indexhtml/filter" to="response.body"/>
-        </route>
-    </routes>
-    <dispatch classname="org.apache.hadoop.gateway.dispatch.PassAllHeadersDispatch"/>
+   </routes>
+   <dispatch classname="org.apache.hadoop.gateway.dispatch.PassAllHeadersDispatch"/>
 </service>
+

@@ -5,6 +5,6 @@
     }
   ],
   "levels": {
-     "default" : "DEBUG"
+     "default" : "INFO"
   }
 }

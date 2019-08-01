@@ -211,7 +211,7 @@ const constructModelTrainingLogs = (model, experimentId) => {
   if (splitId) {
     let baseUrl = `/logviewer/view?namespace=${getCurrentNamespace()}&appId=ModelManagementApp&programType=spark&programId=ModelManagerService`;
     let queryParams = `&filter=${encodeURIComponent(`MDC:experiment="${experimentId}" AND MDC:model=${model.id}`)}&startTime=${startTime}&endTime=${endTime}`;
-    return `${window.knoxPrefix}${baseUrl}${queryParams}`;
+    return `${baseUrl}${queryParams}`;
   }
 };
 

@@ -40,7 +40,7 @@ export default class ControlCenterDropdown extends Component {
   isCDAPActive = () => {
     let location = window.location;
 
-    let basePath = `${window.knoxPrefix}/cdap/ns/${this.props.namespace}`;
+    let basePath = `/cdap/ns/${this.props.namespace}`;
 
     let dataprepBasePath = `${basePath}/dataprep`;
     let connectionsBasePath = `${basePath}/connections`;

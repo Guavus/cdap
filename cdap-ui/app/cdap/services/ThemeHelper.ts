@@ -214,7 +214,7 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
       For Production Deployment, Application Developers can optimise Playbooks using Developer Mode..`,
       productLogoNavbar: '/cdap_assets/img/company_logo.png',
       productLogoAbout: '/cdap_assets/img/Company_logo_darkgray.png',
-      favicon: `${window.knoxPrefix}/cdap_assets/img/favicon.png`,
+      favicon: `/cdap_assets/img/favicon.png`,
       footerText: 'Licensed under the Apache License, Version 2.0',
       footerLink: 'https://www.apache.org/licenses/LICENSE-2.0',
       showFooter: true,
