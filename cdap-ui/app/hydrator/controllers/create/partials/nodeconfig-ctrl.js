@@ -244,7 +244,8 @@ class HydratorPlusPlusNodeConfigCtrl {
       pluginEditNoConfigForm: '/assets/features/hydrator/templates/partial/node-config-modal/node-config/plugin-edit-noconfig-form.html',
       pluginEditPropertiesTemplate: '/assets/features/hydrator/templates/partial/node-config-modal/node-config/plugin-edit-properties-template.html',
       pluginEditOutputSchema: '/assets/features/hydrator/templates/partial/node-config-modal/node-config/plugin-edit-output-schema.html',
-      pluginEditInputSchema: '/assets/features/hydrator/templates/partial/node-config-modal/node-config/plugin-edit-input-schema.html'
+      pluginEditInputSchema: '/assets/features/hydrator/templates/partial/node-config-modal/node-config/plugin-edit-input-schema.html',
+      pluginEditValidatorTransform: '/assets/features/hydrator/templates/partial/node-config-modal/node-config/plugin-edit-validator-transform.html'
     };
 
     this.defaultState = angular.copy(this.state);
