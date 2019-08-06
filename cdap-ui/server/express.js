@@ -329,6 +329,32 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
 
   app.post('/accessToken', authentication);
 
+  app.get('/cdapToken', function (req, res) {
+    var knoxToken = req.cookies['hadoop-jwt'];
+    var knoxUrl = ['https://', cdapConfig['router.server.address'], ':', '10010','/knoxToken'].join('');
+    var options = {
+      url: knoxUrl,
+      headers: {
+        'User-Agent': 'request',
+        'knoxToken': knoxToken
+      }
+    };
+    request(options, (
+      error => {
+        log.error('KNOX INVALID TOKEN', error);
+        var err = {
+          error: error,
+          message: 'KNOX INVALID TOKEN',
+        };
+        res.status(401).send(err);
+      },
+      response => {
+        res.status(200).send(response);
+      }
+    ));
+  });
+
+
   /*
     Handle POST requests made outside of the websockets from front-end.
     For now it handles file upload POST /namespaces/:namespace/apps API
@@ -449,6 +475,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       }
     );
   }
+
 
   app.get('/test/playground', [
     function (req, res) {

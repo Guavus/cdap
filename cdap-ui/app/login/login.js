@@ -30,7 +30,7 @@ require('./login.scss');
 import T from 'i18n-react';
 T.setTexts(require('./text/text-en.yaml'));
 
-
+const isKnoxEnable = true;
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -92,6 +92,44 @@ class Login extends Component {
       rememberUser: true
     });
   }
+
+  componentDidMount() {
+    //this.scrollElement();
+    if(isKnoxEnable) {
+      this.getCdapToken();
+    }
+  }
+
+  //get cdap token
+
+  getCdapToken = () => {
+    fetch('/cdapToken', {
+      method: 'GET',
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+    })
+      .then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          return response.json();
+        } else {
+          this.setState({
+            message: 'Login failed. Username or Password incorrect.'
+          });
+          return Promise.reject();
+        }
+      })
+      .then((res) => {
+        cookie.save('CDAP_Auth_Token', res.access_token, { path: '/'});
+        cookie.save('CDAP_Auth_User', this.state.username);
+        var queryObj = util.getQueryParams(location.search);
+        queryObj.redirectUrl = queryObj.redirectUrl || '/';
+        window.location.href = queryObj.redirectUrl;
+      });
+
+
+  }
+
+
+
   render() {
     let footer;
     if (this.state.message) {
@@ -164,11 +202,11 @@ class Login extends Component {
     );
   }
 }
-ReactDOM.render(
-  <Login />,
-  document.getElementById('login-form')
-);
-ReactDOM.render(
-  <Footer />,
-  document.getElementById('footer-container')
-);
+// ReactDOM.render(
+//   isKnoxEnable ? <div/> :<Login />,
+//   document.getElementById('login-form')
+// );
+// ReactDOM.render(
+//   isKnoxEnable ? <div/> :<Footer />,
+//   document.getElementById('footer-container')
+// );
