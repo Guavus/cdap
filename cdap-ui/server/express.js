@@ -335,7 +335,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     var knoxToken = req.cookies['hadoop-jwt'];
     var userName = jwtDecode(knoxToken);
     var knoxUrl = ['http://', cdapConfig['router.server.address'], ':', '10010','/knoxToken'].join('');
-    log.info("AUTH ->" + knoxUrl);
+    log.info('AUTH ->' + knoxUrl);
     var options = {
       url: knoxUrl,
       headers: {
@@ -534,7 +534,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         port,
         '/v3/namespaces'
       ].join('');
-      log.info("BACKEND STATUS -> ", link);
+      log.info('BACKEND STATUS -> ', link);
       // FIXME: The reason for doing this is here: https://issues.cask.co/browse/CDAP-9059
       // TL;DR - The source of this issue is because of large browser urls
       // which gets added to headers while making /backendstatus http call.
