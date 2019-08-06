@@ -795,6 +795,50 @@ public class ArtifactHttpHandler extends AbstractHttpHandler {
     }
   }
 
+  // These *SPECIAL HANDLERS* are exposed on purpose.
+  // In order to successfully retrieve artifact jar location path
+  @GET
+  @Path("/namespaces/{namespace-id}/artifacts/{artifact-name}/versions/{artifact-version}/location")
+  public void getArtifactLocationExposed(HttpRequest request, HttpResponder responder,
+                                  @PathParam("namespace-id") String namespaceId,
+                                  @PathParam("artifact-name") String artifactName,
+                                  @PathParam("artifact-version") String artifactVersion) {
+    try {
+      ArtifactDetail artifactDetail = artifactRepository.getArtifact(
+              Id.Artifact.from(Id.Namespace.from(namespaceId), artifactName, artifactVersion));
+      responder.sendString(HttpResponseStatus.OK, artifactDetail.getDescriptor().getLocation().toURI().getPath());
+    } catch (Exception e) {
+      LOG.warn("Exception reading artifact metadata for namespace {} from the store.", namespaceId, e);
+      responder.sendString(HttpResponseStatus.INTERNAL_SERVER_ERROR,
+              "Error reading artifact metadata from the store.");
+    }
+  }
+
+  /**
+   * Handler used by to download .jar file for artifact by providing jar file location path as query param
+   * used in case of spark service to fetch "not found" dependency jar for which its trying to run a job.
+   * @param request
+   * @param responder
+   * @param pathToJarFile
+   */
+  @GET
+  @Path("/namespaces/{namespace-id}/artifacts/getJarFile")
+  public void getArtifactJarFileExposed(HttpRequest request, HttpResponder responder,
+                                         @QueryParam("path") String pathToJarFile) {
+    try {
+      JarFile artifactJar = new JarFile(pathToJarFile);
+      if(artifactJar==null){
+        throw new BadRequestException(
+                "Unable to determine valid jar file at path : "+pathToJarFile);
+      }
+      responder.sendFile(new File(pathToJarFile));
+    } catch (Exception e) {
+      LOG.warn("Exception reading artifact jar file from path <{}>.", pathToJarFile, e);
+      responder.sendString(HttpResponseStatus.INTERNAL_SERVER_ERROR,
+              "Error reading artifact metadata from the store.");
+    }
+  }
+
   // the following endpoints with path "artifact-internals" are only called by CDAP programs, not exposed via router.
   @GET
   @Path("/namespaces/{namespace-id}/artifact-internals/artifacts")
