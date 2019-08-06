@@ -16,6 +16,8 @@
 
 /* global require, module, process, __dirname */
 var UrlValidator = require('./urlValidator.js');
+var jwtDecode = require('jwt-decode');
+
 
 module.exports = {
   getApp: function () {
@@ -331,11 +333,12 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
 
   app.get('/cdapToken', function (req, res) {
     var knoxToken = req.cookies['hadoop-jwt'];
-    var knoxUrl = ['https://', cdapConfig['router.server.address'], ':', '10010','/knoxToken'].join('');
+    var userName = jwtDecode(knoxToken);
+    var knoxUrl = ['http://', cdapConfig['router.server.address'], ':', '10010','/knoxToken'].join('');
+    log.info("AUTH ->" + knoxUrl);
     var options = {
       url: knoxUrl,
       headers: {
-        'User-Agent': 'request',
         'knoxToken': knoxToken
       }
     };
@@ -349,6 +352,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         res.status(401).send(err);
       },
       response => {
+        response['userName'] = userName.sub;
         res.status(200).send(response);
       }
     ));
@@ -530,7 +534,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         port,
         '/v3/namespaces'
       ].join('');
-
+      log.info("BACKEND STATUS -> ", link);
       // FIXME: The reason for doing this is here: https://issues.cask.co/browse/CDAP-9059
       // TL;DR - The source of this issue is because of large browser urls
       // which gets added to headers while making /backendstatus http call.

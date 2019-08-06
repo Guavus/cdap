@@ -94,7 +94,6 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    //this.scrollElement();
     if(isKnoxEnable) {
       this.getCdapToken();
     }
@@ -112,23 +111,19 @@ class Login extends Component {
           return response.json();
         } else {
           this.setState({
-            message: 'Login failed. Username or Password incorrect.'
+            message: 'get CDAP token call failed.'
           });
           return Promise.reject();
         }
       })
       .then((res) => {
         cookie.save('CDAP_Auth_Token', res.access_token, { path: '/'});
-        cookie.save('CDAP_Auth_User', this.state.username);
+        cookie.save('CDAP_Auth_User', res.userName);
         var queryObj = util.getQueryParams(location.search);
         queryObj.redirectUrl = queryObj.redirectUrl || '/';
         window.location.href = queryObj.redirectUrl;
       });
-
-
   }
-
-
 
   render() {
     let footer;
@@ -202,11 +197,12 @@ class Login extends Component {
     );
   }
 }
-// ReactDOM.render(
-//   isKnoxEnable ? <div/> :<Login />,
-//   document.getElementById('login-form')
-// );
-// ReactDOM.render(
-//   isKnoxEnable ? <div/> :<Footer />,
-//   document.getElementById('footer-container')
-// );
+
+ReactDOM.render(
+  isKnoxEnable ? <div/> :<Login />,
+  document.getElementById('login-form')
+);
+ReactDOM.render(
+  isKnoxEnable ? <div/> :<Footer />,
+  document.getElementById('footer-container')
+);
