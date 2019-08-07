@@ -30,7 +30,6 @@ require('./login.scss');
 import T from 'i18n-react';
 T.setTexts(require('./text/text-en.yaml'));
 
-const isKnoxEnable = true;
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -39,7 +38,8 @@ class Login extends Component {
       password: '',
       message: '',
       formState: false,
-      rememberUser: false
+      rememberUser: false,
+      isKnoxEnable: window.CDAP_CONFIG['knoxEnabled']
     };
   }
   login(e) {
@@ -94,7 +94,7 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    if(isKnoxEnable) {
+    if(this.state.isKnoxEnable) {
       this.getCdapToken();
     }
   }
@@ -110,9 +110,8 @@ class Login extends Component {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          this.setState({
-            message: 'get CDAP token call failed.'
-          });
+          const url = window.CDAP_CONFIG['knoxLoginUrl'];
+          window.open(url, '_self');
           return Promise.reject();
         }
       })
@@ -137,72 +136,72 @@ class Login extends Component {
     }
 
     return (
-      <div>
-        <Card footer={footer}>
-          <div className="cdap-logo"></div>
-          <form
-            role="form"
-            onSubmit={this.login.bind(this)}
-          >
-            <div className="form-group">
-              <input
-                id="username"
-                className="form-control"
-                name="username"
-                value={this.state.username}
-                placeholder={T.translate('login.placeholders.username')}
-                onChange={this.onUsernameUpdate.bind(this)}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                id="password"
-                className="form-control"
-                placeholder={T.translate('login.placeholders.password')}
-                onChange={this.onPasswordUpdate.bind(this)}
-                type="password"
-              />
-            </div>
-            <div className="form-group">
-              <div className="clearfix">
-                <div className="float-xs-left">
-                  <div className="checkbox form-check">
-                    <label className="form-check-label">
+      !this.state.isKnoxEnable ?
+              <div>
+                <Card footer={footer}>
+                  <div className="cdap-logo"></div>
+                  <form
+                    role="form"
+                    onSubmit={this.login.bind(this)}
+                  >
+                    <div className="form-group">
                       <input
-                        type="checkbox"
-                        className="form-check-input"
-                        value={this.state.rememberUser}
-                        onClick={this.rememberUser.bind(this)}
+                        id="username"
+                        className="form-control"
+                        name="username"
+                        value={this.state.username}
+                        placeholder={T.translate('login.placeholders.username')}
+                        onChange={this.onUsernameUpdate.bind(this)}
                       />
-                    {T.translate('login.labels.rememberme')}
-                    </label>
-                  </div>
-                </div>
+                    </div>
+                    <div className="form-group">
+                      <input
+                        id="password"
+                        className="form-control"
+                        placeholder={T.translate('login.placeholders.password')}
+                        onChange={this.onPasswordUpdate.bind(this)}
+                        type="password"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <div className="clearfix">
+                        <div className="float-xs-left">
+                          <div className="checkbox form-check">
+                            <label className="form-check-label">
+                              <input
+                                type="checkbox"
+                                className="form-check-input"
+                                value={this.state.rememberUser}
+                                onClick={this.rememberUser.bind(this)}
+                              />
+                            {T.translate('login.labels.rememberme')}
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <button
+                        id="submit"
+                        type="submit"
+                        className="btn btn-primary btn-block"
+                        disabled={!this.state.formState}
+                        onClick={this.login.bind(this)}
+                      >
+                        {T.translate('login.labels.loginbtn')}
+                      </button>
+                    </div>
+                  </form>
+                </Card>
               </div>
-            </div>
-            <div className="form-group">
-              <button
-                id="submit"
-                type="submit"
-                className="btn btn-primary btn-block"
-                disabled={!this.state.formState}
-                onClick={this.login.bind(this)}
-              >
-                {T.translate('login.labels.loginbtn')}
-              </button>
-            </div>
-          </form>
-        </Card>
-      </div>
+            : <div></div>
     );
   }
 }
 
-ReactDOM.render(
-  isKnoxEnable ? <div/> :<Login />,
+ReactDOM.render(<Login />,
   document.getElementById('login-form')
 );
-ReactDOM.render(
-  isKnoxEnable ? <div/> :<Footer />,
+ReactDOM.render(<Footer />,
   document.getElementById('footer-container')
 );

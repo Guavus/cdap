@@ -151,6 +151,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       },
       marketUrl: cdapConfig['market.base.url'],
       sslEnabled: cdapConfig['ssl.external.enabled'] === 'true',
+      knoxLoginUrl: cdapConfig['knox.login.url'],
       securityEnabled: authAddress.enabled,
       isEnterprise: isModeProduction(),
       sandboxMode: process.env.NODE_ENV,
@@ -332,8 +333,27 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
   app.post('/accessToken', authentication);
 
   app.get('/cdapToken', function (req, res) {
+    //Invalid Knox Token Handler
+    const onInvalidKnoxToken = function(errObj) {
+      log.error('KNOX INVALID TOKEN', errObj);
+          var err = {
+            error: errObj,
+            message: 'KNOX INVALID TOKEN',
+          };
+          res.status(401).send(err);
+    };
     var knoxToken = req.cookies['hadoop-jwt'];
+    if(!knoxToken) {
+      onInvalidKnoxToken({error: "Token not found"});
+      return;
+    }
+
     var userName = jwtDecode(knoxToken);
+    if(!userName || !userName.sub) {
+      onInvalidKnoxToken({error: "Username not found"});
+      return;
+    }
+
     var knoxUrl = ['http://', cdapConfig['router.server.address'], ':', '10010','/knoxToken'].join('');
     log.info('AUTH ->' + knoxUrl);
     var options = {
@@ -344,12 +364,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     };
     request(options, (
       error => {
-        log.error('KNOX INVALID TOKEN', error);
-        var err = {
-          error: error,
-          message: 'KNOX INVALID TOKEN',
-        };
-        res.status(401).send(err);
+       onInvalidKnoxToken(error);
       },
       response => {
         response['userName'] = userName.sub;
@@ -357,6 +372,9 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       }
     ));
   });
+
+
+
 
 
   /*

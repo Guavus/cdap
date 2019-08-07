@@ -14,5 +14,7 @@
   "ui.theme.file": "cdap-ui/server/config/themes/default.json",
   "white.list.ips": "http://market.cask.co",
   "application.prefix":"/gateway/default/pdie",
-  "knox.enabled":"true"
+  "knox.enabled":"true",
+  "knox.login.url":"abc.com"
+
 }
