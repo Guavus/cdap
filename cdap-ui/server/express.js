@@ -362,13 +362,17 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         'knoxToken': knoxToken
       }
     };
-    request(options, (error, response) => {
+    request(options, (error, response, body) => {
       if (error) {
         onInvalidKnoxToken(error);
       } else if (response) {
         if (response.statusCode == 200) {
-          response['userName'] = userName;
-          res.status(200).send(response);
+          var respObj = {};
+          if (body) {
+            respObj = JSON.parse(body);
+          }
+          respObj['userName'] = userName;
+          res.status(200).send(respObj);
         } else {
           onInvalidKnoxToken(response);
         }
