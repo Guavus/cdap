@@ -344,16 +344,16 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     };
     var knoxToken = req.cookies['hadoop-jwt'];
     if (!knoxToken) {
-      onInvalidKnoxToken({error: "Token not found"});
+      onInvalidKnoxToken({error: 'Token not found'});
       return;
     }
 
     var userName = jwtDecode(knoxToken);
     if (!userName || !userName.sub) {
-      onInvalidKnoxToken({error: "Username not found"});
+      onInvalidKnoxToken({error: 'Username not found'});
       return;
     }
-
+    userName = userName.sub;
     var knoxUrl = ['https://', cdapConfig['router.server.address'], ':', '10010','/knoxToken'].join('');
     log.info('AUTH ->' + knoxUrl);
     var options = {
@@ -366,7 +366,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       if (error) {
         onInvalidKnoxToken(error);
       } else if (response) {
-        if (response.statusCode == 200) {
+        if (response.statusCode === 200) {
           var respObj = {};
           if (body) {
             respObj = JSON.parse(body);
@@ -377,7 +377,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
           onInvalidKnoxToken(response);
         }
       } else {
-        onInvalidKnoxToken({ error: "Error retrieving data" });
+        onInvalidKnoxToken({ error: 'Error retrieving data' });
       }
     });
   });
