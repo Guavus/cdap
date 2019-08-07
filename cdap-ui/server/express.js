@@ -333,28 +333,28 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
   app.post('/accessToken', authentication);
 
   app.get('/cdapToken', function (req, res) {
-    //Invalid Knox Token Handler
+    // Invalid Knox Token Handler
     const onInvalidKnoxToken = function(errObj) {
       log.error('KNOX INVALID TOKEN', errObj);
           var err = {
             error: errObj,
             message: 'KNOX INVALID TOKEN',
           };
-          res.status(401).send(err);
+          res.status(err.statusCode?err.statusCode:402).send(err);
     };
     var knoxToken = req.cookies['hadoop-jwt'];
-    if(!knoxToken) {
+    if (!knoxToken) {
       onInvalidKnoxToken({error: "Token not found"});
       return;
     }
 
     var userName = jwtDecode(knoxToken);
-    if(!userName || !userName.sub) {
+    if (!userName || !userName.sub) {
       onInvalidKnoxToken({error: "Username not found"});
       return;
     }
 
-    var knoxUrl = ['http://', cdapConfig['router.server.address'], ':', '10010','/knoxToken'].join('');
+    var knoxUrl = ['https://', cdapConfig['router.server.address'], ':', '10010','/knoxToken'].join('');
     log.info('AUTH ->' + knoxUrl);
     var options = {
       url: knoxUrl,
@@ -362,20 +362,21 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         'knoxToken': knoxToken
       }
     };
-    request(options, (
-      error => {
-       onInvalidKnoxToken(error);
-      },
-      response => {
-        response['userName'] = userName.sub;
-        res.status(200).send(response);
+    request(options, (error, response) => {
+      if (error) {
+        onInvalidKnoxToken(error);
+      } else if (response) {
+        if (response.statusCode == 200) {
+          response['userName'] = userName;
+          res.status(200).send(response);
+        } else {
+          onInvalidKnoxToken(response);
+        }
+      } else {
+        onInvalidKnoxToken({ error: "Error retrieving data" });
       }
-    ));
+    });
   });
-
-
-
-
 
   /*
     Handle POST requests made outside of the websockets from front-end.
