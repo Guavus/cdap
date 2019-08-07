@@ -39,7 +39,7 @@ class Login extends Component {
       message: '',
       formState: false,
       rememberUser: false,
-      isKnoxEnable: window.CDAP_CONFIG['knoxEnabled']
+      isKnoxEnable: true // window.CDAP_CONFIG['knoxEnabled']
     };
   }
   login(e) {
@@ -94,15 +94,15 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    if(this.state.isKnoxEnable) {
+    if (this.state.isKnoxEnable) {
       this.getCdapToken();
     }
   }
 
-  //get cdap token
+  // get cdap token
 
   getCdapToken = () => {
-    fetch('/cdapToken', {
+    fetch(`/gateway/default/pdie/cdapToken`, {
       method: 'GET',
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
     })
@@ -110,7 +110,7 @@ class Login extends Component {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          const url = window.CDAP_CONFIG['knoxLoginUrl'];
+          const url = `${location.protocol}//${location.host}/gateway/knoxsso/api/v1/websso?originalUrl=${location.protocol}//${location.host}/gateway/default/pdie/cdap`;
           window.open(url, '_self');
           return Promise.reject();
         }

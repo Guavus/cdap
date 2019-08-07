@@ -37,6 +37,9 @@
     <rule dir="IN" name="CDAP/cdap/inbound/cdapassets" pattern="*://*:*/**/pdie/cdap_assets/{**}">
         <rewrite template="{$serviceUrl[CDAP]}/cdap_assets/{**}"/>
     </rule>
+    <rule dir="IN" name="CDAP/cdap/inbound/loginassets" pattern="*://*:*/**/pdie/login_assets/{**}">
+        <rewrite template="{$serviceUrl[CDAP]}/login_assets/{**}"/>
+    </rule>
    <!-- out rule -->
 
     <rule dir="OUT" name="CDAP/cdap/outbound/html/filter/configjs" pattern="/config.js">
@@ -56,6 +59,9 @@
     </rule>
     <rule dir="OUT" name="CDAP/cdap/outbound/js/filter/cdapassets" pattern="/cdap_assets/">
        <rewrite template="{$frontend[path]}/pdie/cdap_assets/"/>
+    </rule>
+    <rule dir="OUT" name="CDAP/cdap/outbound/js/filter/loginassets" pattern="/login_assets/">
+       <rewrite template="{$frontend[path]}/pdie/login_assets/"/>
     </rule>
     <rule dir="OUT" name="CDAP/cdap/outbound/html/filter/assets" pattern="/assets/{**}">
       <rewrite template="{$frontend[path]}/pdie/assets/{**}"/>
@@ -78,11 +84,17 @@
     <rule dir="OUT" name="CDAP/cdap/outbound/html/filter/pipelines" pattern="/pipelines/">
        <rewrite template="{$frontend[path]}/pdie/pipelines/"/>
     </rule>
+    <rule dir="OUT" name="CDAP/cdap/outbound/html/filter/loginassets" pattern="/login_assets/{**}">
+      <rewrite template="{$frontend[path]}/pdie/login_assets/{**}"/>
+    </rule>
     <rule dir="OUT" name="CDAP/cdap/outbound/js/filter/cdapns" pattern="/cdap/ns">
       <rewrite template="{$frontend[path]}/pdie/cdap/ns/"/>
     </rule>
     <rule dir="OUT" name="CDAP/cdap/outbound/js/filter/downloadLogs" pattern="/downloadLogs">
       <rewrite template="{$frontend[path]}/pdie/downloadLogs/"/>
+    </rule>
+    <rule dir="OUT" name="CDAP/cdap/outbound/js/filter/cdaptoken" pattern="/cdaptoken">
+      <rewrite template="{$frontend[path]}/pdie/cdaptoken"/>
     </rule>
    <!-- filters -->
 
@@ -98,6 +110,7 @@
           <apply path="javascripts/pipelines" rule="CDAP/cdap/outbound/html/filter/pipelines"/>
           <apply path="javascripts/logviewer" rule="CDAP/cdap/outbound/html/filter/logviewer"/>
           <apply path="javascripts/metadata" rule="CDAP/cdap/outbound/html/filter/metadata"/>
+          <apply path="javascripts/login_assets/*" rule="CDAP/cdap/outbound/html/filter/loginassets"/>
       </content>
       <content type="*/javascript">
           <apply path="/cdap_assets/" rule="CDAP/cdap/outbound/js/filter/cdapassets"/>
@@ -106,7 +119,8 @@
           <apply path="/cdap/ns/" rule="CDAP/cdap/outbound/js/filter/cdapns"/>
           <apply path="/logviewer/view" rule="CDAP/cdap/outbound/js/filter/logviewer/view"/>
           <apply path="/downloadLogs" rule="CDAP/cdap/outbound/js/filter/downloadLogs"/>
+          <apply path="/login_assets/" rule="CDAP/cdap/outbound/js/filter/loginassets"/>
+          <apply path="/cdaptoken" rule="CDAP/cdap/outbound/js/filter/cdaptoken"/>
       </content>
     </filter>
-
 </rules>

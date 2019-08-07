@@ -35,13 +35,13 @@
 */
 
 window.getAbsUIUrl = function(navigationObj = {}) {
-  let {uiApp = 'cdap', originalUrl, clientId, namespaceId, appId, entityType, entityId, runId} = navigationObj;
-  let baseUrl = `${location.protocol}//${location.host}/gateway/knoxsso/api/v1/websso?originalUrl=${uiApp}`; // `${location.protocol}//${location.host}${window.knoxPrefix}/${uiApp}`;
+  let {uiApp = 'cdap', redirectUrl, clientId, namespaceId, appId, entityType, entityId, runId} = navigationObj;
+  let baseUrl = `${location.protocol}//${location.host}${window.knoxPrefix}/${uiApp}`;
   if (uiApp === 'login') {
     baseUrl += `?`;
   }
-  if (originalUrl) {
-    baseUrl  = `${location.protocol}//${location.host}/gateway/knoxsso/api/v1/websso?originalUrl=${originalUrl}`;
+  if (redirectUrl) {
+    baseUrl += `redirectUrl=${encodeURIComponent(redirectUrl)}`;
   }
   if (clientId) {
     baseUrl += `&clientId=${clientId}`;

@@ -151,7 +151,6 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       },
       marketUrl: cdapConfig['market.base.url'],
       sslEnabled: cdapConfig['ssl.external.enabled'] === 'true',
-      knoxLoginUrl: cdapConfig['knox.login.url'],
       securityEnabled: authAddress.enabled,
       isEnterprise: isModeProduction(),
       sandboxMode: process.env.NODE_ENV,
@@ -178,7 +177,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       knoxEnabled: cdapConfig['knox.enabled'] === 'true',
       applicationPrefix: cdapConfig['application.prefix']
     });
-    log.info("Data -> ", data);
+    log.info('Data -> ', data);
     res.status(200).send(data);
   });
 

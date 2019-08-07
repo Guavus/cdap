@@ -409,7 +409,7 @@ const parseQueryString = () => {
   return queryObj;
 };
 
-window.knoxPrefix = (window.CDAP_CONFIG.knoxEnabled ? window.CDAP_CONFIG.applicationPrefix : '' );
+window.knoxPrefix = '/gateway/default/pdie'; // (window.CDAP_CONFIG && window.CDAP_CONFIG.knoxEnabled ? window.CDAP_CONFIG.applicationPrefix : '' );
 
 export {
   objectQuery,
