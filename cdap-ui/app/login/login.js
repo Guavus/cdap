@@ -102,8 +102,14 @@ class Login extends Component {
   // get cdap token
 
   getLoginConfig = () => {
-    fetch('/loginConfig', {
+    const knoxGatewayElement = document.getElementById('logingateway');
+    let knoxGateway = '';
+    if (knoxGatewayElement) {
+      knoxGateway = document.getElementById('logingateway').innerHTML.replace('/login','');
+    }
+    fetch((knoxGateway+'/loginConfig'), {
       method: 'GET',
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
     })
       .then((response) => {
         if (response.status >= 200 && response.status < 300) {
@@ -113,20 +119,21 @@ class Login extends Component {
             knoxUrl: result.knoxLoginUrl,
             applicationPrefix: result.applicationPrefix
           });
-
-          if(result.knoxEnabled){
-           this. getCdapToken(prefix);
+          console.log('response =>' + response);
+          console.log('result.knoxEnabled =>' + result.knoxEnabled);
+          console.log('result.applicationPrefix =>' + result.applicationPrefix);
+          if (result.knoxEnabled) {
+           this. getCdapToken(result.applicationPrefix);
           }
-
         } else {
-          console.log("login config call fail")
+          console.log('login config call fail');
         }
       });
   }
 
 
   getCdapToken = (prefix) => {
-    fetch(`${prefix}/cdapToken`, {
+    fetch((prefix+'/cdapToken'), {
       method: 'GET',
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
     })
