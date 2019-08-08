@@ -570,7 +570,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         port,
         '/v3/namespaces'
       ].join('');
-      log.info('BACKEND STATUS -> ', link);
+
       // FIXME: The reason for doing this is here: https://issues.cask.co/browse/CDAP-9059
       // TL;DR - The source of this issue is because of large browser urls
       // which gets added to headers while making /backendstatus http call.
