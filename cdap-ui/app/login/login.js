@@ -107,28 +107,27 @@ class Login extends Component {
     if (knoxGatewayElement) {
       knoxGateway = document.getElementById('logingateway').innerHTML.replace('/login','');
     }
-    fetch((knoxGateway+'/loginConfig'), {
+
+    fetch((knoxGateway + '/loginConfig'), {
       method: 'GET',
-      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    }).then((response) => {
+      if (response.status >= 200 && response.status < 300) {
+        return response.json();
+      } else {
+        return Promise.reject();
+      }
     })
-      .then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          var result = response.json();
-          this.setState({
-            isKnoxEnable: result.knoxEnabled,
-            knoxUrl: result.knoxLoginUrl,
-            applicationPrefix: result.applicationPrefix
-          });
-          console.log('response =>' + response);
-          console.log('result.knoxEnabled =>' + result.knoxEnabled);
-          console.log('result.applicationPrefix =>' + result.applicationPrefix);
-          if (result.knoxEnabled) {
-           this. getCdapToken(result.applicationPrefix);
-          }
-        } else {
-          console.log('login config call fail');
-        }
+    .then((result) => {
+      this.setState({
+        isKnoxEnable: result.knoxEnabled,
+        knoxUrl: result.knoxLoginUrl,
+        applicationPrefix: result.applicationPrefix
       });
+      if (result.knoxEnabled) {
+        this.getCdapToken(result.applicationPrefix);
+      }
+    });
   }
 
 

@@ -168,15 +168,14 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
 
    // serve the login config file
    app.get('/loginConfig', function (req, res) {
-    var data = JSON.stringify({
-      // the following will be available in angular via the "MY_CONFIG" injectable
+    var data = {
       marketUrl: cdapConfig['market.base.url'],
       sslEnabled: cdapConfig['ssl.external.enabled'] === 'true',
       knoxLoginUrl: cdapConfig['knox.login.url'],
       securityEnabled: authAddress.enabled,
       knoxEnabled: cdapConfig['knox.enabled'] === 'true',
       applicationPrefix: cdapConfig['application.prefix']
-    });
+    };
     log.info('Data -> ', data);
     res.status(200).send(data);
   });
