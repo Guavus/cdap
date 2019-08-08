@@ -39,9 +39,14 @@ class Login extends Component {
       message: '',
       formState: false,
       rememberUser: false,
-      isKnoxEnable: true // window.CDAP_CONFIG['knoxEnabled']
+      isKnoxEnable: true,
+      knoxUrl:'',
+      applicationPrefix:''
     };
+
+    this.getLoginConfig();
   }
+
   login(e) {
     e.preventDefault();
     if (this.state.rememberUser) {
@@ -93,16 +98,35 @@ class Login extends Component {
     });
   }
 
-  componentDidMount() {
-    if (this.state.isKnoxEnable) {
-      this.getCdapToken();
-    }
-  }
 
   // get cdap token
 
-  getCdapToken = () => {
-    fetch(`/gateway/default/pdie/cdapToken`, {
+  getLoginConfig = () => {
+    fetch('/loginConfig', {
+      method: 'GET',
+    })
+      .then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          var result = response.json();
+          this.setState({
+            isKnoxEnable: result.knoxEnabled,
+            knoxUrl: result.knoxLoginUrl,
+            applicationPrefix: result.applicationPrefix
+          });
+
+          if(result.knoxEnabled){
+           this. getCdapToken(prefix);
+          }
+
+        } else {
+          console.log("login config call fail")
+        }
+      });
+  }
+
+
+  getCdapToken = (prefix) => {
+    fetch(`${prefix}/cdapToken`, {
       method: 'GET',
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
     })
@@ -110,7 +134,7 @@ class Login extends Component {
         if (response.status >= 200 && response.status < 300) {
           return response.json();
         } else {
-          const url = `${location.protocol}//${location.host}/gateway/knoxsso/api/v1/websso?originalUrl=${location.protocol}//${location.host}/gateway/default/pdie/cdap`;
+          const url = `${location.protocol}//${location.host}/gateway/knoxsso/api/v1/websso?originalUrl=${location.protocol}//${location.host}${prefix}/cdap`;
           window.open(url, '_self');
           return Promise.reject();
         }
