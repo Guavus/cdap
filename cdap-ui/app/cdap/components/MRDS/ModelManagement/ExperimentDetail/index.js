@@ -19,7 +19,7 @@ class ExperimentDetail extends Component {
 
   constructor(props) {
     super(props);
-    const detail = this.getDetailWithDatasetSchemaList(this.props.location.state.detail);
+    const detail = this.getDetailWithDatasetSchemaList(this.props.detail);
     this.state = {
       experimentDetail: detail,
       context: { componentParent: this },
@@ -166,9 +166,10 @@ class ExperimentDetail extends Component {
   }
 
   navigateToExpPage = () => {
-    this.props.history.push('/');
+    if (this.props.navigateToParent) {
+      this.props.navigateToParent();
+    }
   }
-
 
   gridCellClick(event) {
     if (event.colDef.field === 'modelId') {
@@ -248,6 +249,6 @@ class ExperimentDetail extends Component {
 }
 export default ExperimentDetail;
 ExperimentDetail.propTypes = {
-  location: PropTypes.any,
-  history: PropTypes.any,
+  detail: PropTypes.any,
+  navigateToParent: PropTypes.func,
 };

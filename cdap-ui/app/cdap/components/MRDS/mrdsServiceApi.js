@@ -1,19 +1,22 @@
-const appPath = 'http://192.168.133.92:11015/v3/namespaces/default/apps/ModelRepoMgmtApp/spark/ModelRepoMgmtService/methods/';
-const experimentPath =  `${appPath}/experiments/`
+import DataSourceConfigurer from '../../services/datasource/DataSourceConfigurer';
+import remoteDataSource from './remoteDataSource';
+import {apiCreator} from '../../services/resource-helper';
+import { USE_REMOTE_SERVER } from './config';
+
+let dataSrc = DataSourceConfigurer.getInstance();
+
+const appPath = '/namespaces/:namespace/apps/ModelRepoMgmtApp';
+const servicePath = `${appPath}/spark/ModelRepoMgmtService/methods`;
 
 const MRDSServiceApi = {
-  fetchExperiments: serviceCreator(`${experimentPath}`),
-  fetchDataset: serviceCreator(`${experimentPath}/:experimentName`),
-  fetchModels: serviceCreator(`${experimentPath}/:experimentName/models`),
-  fetchLatestModel: serviceCreator(`${experimentPath}/:experimentName/models/latest`),
+  fetchExperimentsDetails: serviceCreator(dataSrc, "GET", "REQUEST",`${servicePath}/experimentsDetails`),
 };
 
-function serviceCreator (url) {
-  return fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      return data;
-    });
+function serviceCreator (dataSrc, method, type, path, options = {}) {
+  if (USE_REMOTE_SERVER) {
+    dataSrc = remoteDataSource;
+  }
+  return apiCreator(dataSrc, method, type, path, options);
 }
 
 export default MRDSServiceApi;
