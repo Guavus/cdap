@@ -14,17 +14,24 @@
  * the License.
  */
 
-.add-feature-wizard {
-  min-width: 70vw !important;
-  height: 90vh !important;
-  .modal-content {
-    .modal-body {
-      min-height: 75vh !important;
-      .cask-wizard {
-        .wizard-body {
-          height: 90%;
-        }
+@import "../../styles/variables.less";
+
+input-validator {
+  .input-validator-container {
+    display: flex;
+    flex-direction: column;
+
+    .input-container {
+      display: flex;
+      align-items: center;
+
+      .help-icon {
+        padding-left: 8px;
       }
+    }
+
+    .error-message {
+      color: red;
     }
   }
 }
