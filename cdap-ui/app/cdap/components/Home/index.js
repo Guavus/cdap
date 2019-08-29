@@ -136,7 +136,9 @@ export default class Home extends Component {
           {
             Theme.showFeatureEngineering && <Route path="/ns/:namespace/featureEngineering" component={FeatureUI} />
           }
-          <Route path="/ns/:namespace/mrds" component={MRDSComponent} />
+          {
+            Theme.showMRDS && <Route path="/ns/:namespace/mrds" component={MRDSComponent} />
+          }
           <Route path="/ns/:namespace/exploredataset" component={ExploreDatasetUI} />
 
           <Route path="/ns/:namespace/streams/:streamId" component={StreamDetailedView} />

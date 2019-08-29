@@ -27,7 +27,7 @@ interface IMRDSLinkProps {
 
 class MRDSLink extends React.PureComponent<IMRDSLinkProps> {
   public render() {
-    if (Theme.showFeatureEngineering === false) {
+    if (Theme.showMRDS === false) {
       return null;
     }
     const headerName = "Models";
