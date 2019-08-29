@@ -1,9 +1,9 @@
 .experiment-detail {
-  height: calc(100% - 106px);
+  height: 100%;
   padding: 15px;
   .detail-partition {
     padding-top: 5px;
-    height: 185px;
+    height: 205px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1);
     width: 100%;
     margin-bottom: 5px;
@@ -51,7 +51,7 @@
 
   .grid-partition {
     width: 100%;
-    height: calc(100% - 190px);
+    height: calc(100% - 210px);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1);
     .dataset-detail {
       width: 21%;

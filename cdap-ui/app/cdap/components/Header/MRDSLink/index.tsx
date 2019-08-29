@@ -30,7 +30,7 @@ class MRDSLink extends React.PureComponent<IMRDSLinkProps> {
     if (Theme.showFeatureEngineering === false) {
       return null;
     }
-    const headerName = "MRDS";
+    const headerName = "Models";
     const { namespace } = this.props.context;
 
     return (
