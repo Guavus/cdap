@@ -48,6 +48,9 @@ angular.module(PKG.name+'.services')
         }
         _transportTimeout() {
           if (this.readyState === SockJS.CONNECTING) {
+            if (this._transport) {
+              this._transport.removeAllListeners();
+            }
             this._close(2007, 'Transport timed out');
             this._transportClose(2007, 'Transport timed out');
           }
