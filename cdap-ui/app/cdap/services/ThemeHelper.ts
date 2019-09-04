@@ -368,8 +368,8 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
     if ('feature-engineering' in featuresJson && isBoolean(featuresJson['feature-engineering'])) {
       features.showFeatureEngineering = featuresJson['feature-engineering'];
     }
-    if ('feature-engineering' in featuresJson && isBoolean(featuresJson['mrds'])) {
-      features.showMRDS = featuresJson['mrds'];
+    if ('feature-engineering' in featuresJson && isBoolean(featuresJson.mrds)) {
+      features.showMRDS = featuresJson.mrds;
     }
     if ('EDA' in featuresJson && isBoolean(featuresJson.EDA)) {
       features.showEDA = featuresJson.EDA;
