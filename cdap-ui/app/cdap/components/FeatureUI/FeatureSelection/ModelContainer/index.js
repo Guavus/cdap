@@ -17,7 +17,7 @@
 import React, { Component } from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import './ModelContainer.scss';
-import { isNil } from 'lodash';
+import { isNil , isEmpty} from 'lodash';
 import PropTypes from 'prop-types';
 
 class ModelContainer extends Component {
@@ -32,13 +32,18 @@ class ModelContainer extends Component {
     this.state = {
       algolist: this.algolist,
       openAlgoDropdown: false,
-      selectedAlgo: { id: -1, name: 'Select' },
+      selectedAlgo: isEmpty(this.algolist)?{ id: -1, name: 'Select' } : this.algolist[0],
       selectedFeature: props.targetVariable,
       activeApplyBtn: false
     };
 
   }
 
+  componentDidMount = () => {
+    if (!isNil(this.state.selectedAlgo) && !isNil(this.state.selectedFeature)) {
+      this.applyModelSelection();
+    }
+  }
 
   toggleAlgoDropDown = () => {
     this.setState(prevState => ({

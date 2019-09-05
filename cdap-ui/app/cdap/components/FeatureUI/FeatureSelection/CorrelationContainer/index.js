@@ -17,7 +17,7 @@
 import React, { Component } from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroup, ListGroupItem, InputGroup, Input } from 'reactstrap';
 import './CorrelationContainer.scss';
-import { isNil, cloneDeep } from 'lodash';
+import { isNil, cloneDeep, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 
 class CorrelationContainer extends Component {
@@ -31,7 +31,7 @@ class CorrelationContainer extends Component {
     this.state = {
       algolist: this.algolist,
       openAlgoDropdown: false,
-      selectedAlgo: { id: -1, name: 'Select' },
+      selectedAlgo: isEmpty(this.algolist)?{ id: -1, name: 'Select' } : this.algolist[0],
       featureNames: cloneDeep(props.featureNames),
       activeApplyBtn: false,
       searchFeatureStr:'',
@@ -41,6 +41,11 @@ class CorrelationContainer extends Component {
 
   }
 
+  componentDidMount = () => {
+    if (!isNil(this.state.selectedAlgo) && !isNil(this.state.selectedFeature)) {
+      this.applyCorrelation();
+    }
+  }
 
   toggleAlgoDropDown = () => {
     this.setState(prevState => ({
