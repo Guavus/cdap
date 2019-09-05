@@ -24,7 +24,6 @@ import CardActionFeedback from 'components/CardActionFeedback';
 import classnames from 'classnames';
 import { CSSTransition } from 'react-transition-group';
 import T from 'i18n-react';
-import { Theme } from 'services/ThemeHelper';
 
 require('./PlusButtonModal.scss');
 

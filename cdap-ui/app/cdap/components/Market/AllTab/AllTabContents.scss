@@ -13,7 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 @import '../../../styles/variables.scss';
+
+$border-color: rgba(0, 0, 0, 0.15);
 
 .plus-button-modal {
   .cask-configurable-tab {
@@ -24,7 +27,27 @@
       overflow-y: auto;
 
       .tab-pane { width: 100%; }
+
       .all-tab-content {
+        .search-box {
+          margin-top: 10px;
+          width: 100%;
+          padding-left: 15px;
+          padding-right: 35px;
+
+          .input-group-text {
+            background-color: $grey-08;
+          }
+
+          .icon-search {
+            color: $border-color;
+          }
+
+          .search-input {
+            background-clip: border-box;
+            color: black;
+          }
+        }
 
         .body-section {
           text-align: center;
