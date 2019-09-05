@@ -146,6 +146,7 @@ interface IFeatureNames {
   featureEngineering: string;
   entities: string;
   hub: string;
+  localHub: string;
   metadata: string;
   pipelines: string;
   reports: string;
@@ -173,6 +174,7 @@ interface IThemeObj {
   showRulesEngine?: boolean;
   showMetadata?: boolean;
   showHub?: boolean;
+  showLocalHub?: boolean;
   showIngestData?: boolean;
   showAddNamespace?: boolean;
   featureNames?: IFeatureNames;
@@ -235,10 +237,12 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
         featureEngineering: 'Feature Engineering',
         entities: 'Entities',
         hub: 'Hub',
+        localHub: 'Local_Hub',
         metadata: 'Metadata',
         pipelines: 'Pipelines',
         reports: 'Reports',
         rulesEngine: 'Rules',
+
       },
     };
     if (isNilOrEmpty(contentJson)) {
@@ -315,6 +319,9 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
       if ('hub' in contentJson['feature-names']) {
         featureNames.hub = objectQuery(contentJson, 'feature-names', 'hub');
       }
+      if ('local-hub-name' in contentJson['feature-names']) {
+        featureNames.localHub = objectQuery(contentJson, 'feature-names', 'local-hub-name');
+      }
       if ('metadata' in contentJson['feature-names']) {
         featureNames.metadata = objectQuery(contentJson, 'feature-names', 'metadata');
       }
@@ -348,6 +355,7 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
       showRulesEngine: false,
       showMetadata: true,
       showHub: true,
+      showLocalHub: false,
       showIngestData: true,
       showAddNamespace: true,
       showAboutProductModal: true,
@@ -368,7 +376,7 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
     if ('feature-engineering' in featuresJson && isBoolean(featuresJson['feature-engineering'])) {
       features.showFeatureEngineering = featuresJson['feature-engineering'];
     }
-    if ('feature-engineering' in featuresJson && isBoolean(featuresJson.mrds)) {
+    if ('mrds' in featuresJson && isBoolean(featuresJson.mrds)) {
       features.showMRDS = featuresJson.mrds;
     }
     if ('EDA' in featuresJson && isBoolean(featuresJson.EDA)) {
@@ -388,6 +396,9 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
     }
     if ('hub' in featuresJson && isBoolean(featuresJson.hub)) {
       features.showHub = featuresJson.hub;
+    }
+    if ('local-hub' in featuresJson && isBoolean(featuresJson['local-hub'])) {
+      features.showLocalHub = featuresJson['local-hub'];
     }
     if ('ingest-data' in featuresJson && isBoolean(featuresJson['ingest-data'])) {
       features.showIngestData = featuresJson['ingest-data'];

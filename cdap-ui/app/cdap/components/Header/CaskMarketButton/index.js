@@ -22,6 +22,7 @@ import Loadable from 'react-loadable';
 import classnames from 'classnames';
 import ee from 'event-emitter';
 import globalEvents from 'services/global-events';
+import { Theme } from 'services/ThemeHelper';
 
 var PlusButtonModal = Loadable({
   loader: () => import(/* webpackChunkName: "PlusButtonModal" */ 'components/PlusButtonModal'),
@@ -32,7 +33,8 @@ export default class CaskMarketButton extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showMarketPlace: false
+      showMarketPlace: false,
+      marketType:Theme.featureNames.hub
     };
 
     this.openCaskMarketModal = this.openCaskMarketModal.bind(this);
@@ -59,6 +61,26 @@ export default class CaskMarketButton extends Component {
     });
   }
 
+  openClickHandler(event) {
+    let marketType = "";
+    if (event.target.innerText===Theme.featureNames.hub) {
+      marketType = Theme.featureNames.hub; // cdap open market place
+    } else {
+      marketType = Theme.featureNames.localHub; // local market place
+    }
+
+    let newState = !this.state.showMarketPlace;
+
+    if (newState === false) {
+      this.eventEmitter.emit(globalEvents.MARKETCLOSING);
+    }
+
+    this.setState({
+      marketType:marketType,
+      showMarketPlace: newState
+    });
+  }
+
   openCaskMarketModal () {
     this.setState({
       showMarketPlace: true
@@ -77,13 +99,14 @@ export default class CaskMarketButton extends Component {
       <div>
         <span
           className={classnames("cask-market-button", this.props.className, {'active': this.state.showMarketPlace})}
-          onClick={this.onClickHandler.bind(this)}
+          onClick={this.openClickHandler.bind(this)}
         >
           {this.props.children}
         </span>
         <PlusButtonModal
           isOpen={this.state.showMarketPlace}
           onCloseHandler={this.onClickHandler.bind(this)}
+          marketType ={this.state.marketType}
         />
       </div>
     );

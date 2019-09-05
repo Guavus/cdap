@@ -67,7 +67,6 @@ export default class PlusButtonModal extends Component {
     );
   }
   render() {
-    const market = Theme.featureNames.hub;
     const resourceCenter = T.translate('commons.resource-center');
 
     return (
@@ -86,7 +85,7 @@ export default class PlusButtonModal extends Component {
         <ModalHeader>
           <span className="float-xs-left">
             <span className="plus-modal-header-text">
-            { this.state.viewMode === 'resourcecenter' ? resourceCenter : market }
+            { this.state.viewMode === 'resourcecenter' ? resourceCenter : this.props.marketType }
             </span>
           </span>
           <div className="float-xs-right">
@@ -108,7 +107,7 @@ export default class PlusButtonModal extends Component {
           >
             {
               this.state.viewMode === 'marketplace' ?
-                <Market key="1"/>
+                <Market key="1" marketType={this.props.marketType}/>
               :
                 <ResourceCenter
                   key="2"
@@ -130,5 +129,6 @@ PlusButtonModal.defaultProps = {
 PlusButtonModal.propTypes = {
   onCloseHandler: PropTypes.func,
   isOpen: PropTypes.bool,
-  mode: PropTypes.oneOf(['marketplace', 'resourcecenter'])
+  mode: PropTypes.oneOf(['marketplace', 'resourcecenter']),
+  marketType: PropTypes.string
 };

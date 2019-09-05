@@ -22,8 +22,12 @@
     },
     "favicon-path": "/cdap_assets/img/favicon.png",
     "footer-text": "Licensed under the Apache License, Version 2.0",
-    "footer-link": "https://www.apache.org/licenses/LICENSE-2.0"
+    "footer-link": "https://www.apache.org/licenses/LICENSE-2.0",
+    "feature-names": {
+      "local-hub-name": "Guavus_Hub"
+    }
   },
+
   "features": {
     "about-product": true,
     "dashboard": true,
@@ -37,6 +41,7 @@
     "ingest-data": true,
     "add-namespace": true,
     "feature-engineering": true,
-    "mrds": true
+    "mrds": true,
+    "local-hub": true
   }
 }
