@@ -708,6 +708,12 @@
     </property>
 
     <property>
+      <name>local.market.base.url</name>
+      <value>http://artifacts.ggn.in.guavus.com/ggn-archive/marketplace/v2</value>
+    </property>
+    
+
+    <property>
       <name>master.collect.app.containers.log.level</name>
       <value>ERROR</value>
     </property>
@@ -1652,8 +1658,8 @@
     </property>
 
     <property>
-      <name>white.list.ips</name>
-      <value>http://market.cask.co</value>
+      <name>default.white.list.ips</name>
+      <value>http://market.cask.co,http://artifacts.ggn.in.guavus.com</value>
     </property>
 
     <property>

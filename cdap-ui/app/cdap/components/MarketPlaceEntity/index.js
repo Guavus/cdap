@@ -196,7 +196,7 @@ export default class MarketPlaceEntity extends Component {
     };
 
     const getRightCard = () => {
-      let beta = classnames('package-icon-container', {'beta' : this.props.entity.beta});
+      let beta = classnames('package-icon-container', {'beta' : this.props.entity.beta || this.props.entity.alpha});
 
       return !this.state.expandedMode ?
         (
@@ -205,12 +205,7 @@ export default class MarketPlaceEntity extends Component {
             onClick={this.openDetailedMode.bind(this)}
             size="LG"
           >
-            {
-              this.props.entity.beta ?
-                <ExperimentalBanner />
-              :
-                null
-            }
+            <ExperimentalBanner  entity={this.props.entity}/>
             <div className={beta}>
               {
                 this.state.imageError ?
@@ -236,12 +231,7 @@ export default class MarketPlaceEntity extends Component {
             cardStyle={style}
             onClick={this.openDetailedMode.bind(this)}
           >
-            {
-              this.props.entity.beta ?
-                <ExperimentalBanner />
-              :
-                null
-            }
+            <ExperimentalBanner  entity={this.props.entity}/>
             <div>
               <div
                 className={beta}>

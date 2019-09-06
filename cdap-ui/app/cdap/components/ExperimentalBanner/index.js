@@ -17,6 +17,15 @@
 import React from 'react';
 require('./ExperimentalBanner.scss');
 
-export default function ExperimentalBanner() {
-  return <div className="experimental-banner">BETA</div>;
+export default function ExperimentalBanner({...props}) {
+  let { entity } = props;
+  if(entity.beta) {
+    return <div className="experimental-banner">BETA</div>;
+  } else if (entity.alpha) {
+    return <div className=" experimental-banner alpha-background">ALPHA</div>;
+  } else {
+    return null;
+  }
+
+
 }

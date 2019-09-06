@@ -93,10 +93,16 @@ UrlValidator.prototype.getPortSplitSymbol = function (str) {
 UrlValidator.prototype.getWhiltListIps = function (config) {
   var whiteList = [];
   if (config) {
+    //default whitelist ips define in application
+    if (config.hasOwnProperty('default.white.list.ips') && config['default.white.list.ips'].trim() !== '') {
+      whiteList = whiteList.concat(config['default.white.list.ips'].trim().split(',').map((a) => a.trim()));
+    }
+
     // if user provide any white list from cdap config the it will addpend those ips in whitelisting
     if (config.hasOwnProperty('white.list.ips') && config['white.list.ips'].trim() !== '') {
-      whiteList = config['white.list.ips'].trim().split(',');
+      whiteList = whiteList.concat(config['white.list.ips'].trim().split(',').map((a) => a.trim()));
     }
+
     // generate whitelist based on cdap config
     var protocol = config['ssl.external.enabled'] === 'true' ? 'https://' : 'http://';
     var port = config['ssl.external.enabled'] === 'true' ? config['router.ssl.server.port'] : config['router.server.port'];
