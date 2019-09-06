@@ -42,6 +42,11 @@ class HydratorUpgradeService {
     return range === version;
   }
 
+  _checkVersionIsInVersionSet(version, range){
+    if (!range || !version) { return false; }
+    return (range.indexOf(version) === -1) ? false : true;
+  }
+
   checkPipelineArtifactVersion(config) {
     if (!config || !config.artifact) { return false; }
 
@@ -119,6 +124,7 @@ class HydratorUpgradeService {
 
         let highestVersion;
         let artifactVersionMap = {};
+        let range = _.uniq(allArtifacts.map(obj => obj.version));
 
         allArtifacts.forEach((artifact) => {
           if (!highestVersion) {
@@ -128,9 +134,11 @@ class HydratorUpgradeService {
           } else {
             let prevVersion = new window.CaskCommon.Version(highestVersion.version);
             let currVersion = new window.CaskCommon.Version(artifact.version);
-
-            if (currVersion.compareTo(prevVersion) === 1) {
+            let comparison = currVersion.compareTo(prevVersion);
+            if (comparison >= 0) {
               highestVersion = angular.copy(artifact);
+            } else if (comparison === -1) {
+              highestVersion = angular.copy(highestVersion);
             }
           }
         });
@@ -138,7 +146,8 @@ class HydratorUpgradeService {
         let value = {
           allArtifacts,
           highestVersion,
-          artifactVersionMap
+          artifactVersionMap,
+          range
         };
 
         pluginsMap[key] = value;
@@ -187,7 +196,7 @@ class HydratorUpgradeService {
 
       if (!pluginsMap[stageKey]) {
         data.error = 'NOTFOUND';
-      } else if (!this._checkVersionIsInRange(stageArtifact.version, pluginsMap[stageKey].highestVersion.version)) {
+      } else if (!this._checkVersionIsInVersionSet(stageArtifact.version, pluginsMap[stageKey].range)) {
         data.error = 'VERSION_MISMATCH';
         data.suggestion = pluginsMap[stageKey].highestVersion;
 
