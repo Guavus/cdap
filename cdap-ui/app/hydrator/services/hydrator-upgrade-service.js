@@ -124,7 +124,7 @@ class HydratorUpgradeService {
 
         let highestVersion;
         let artifactVersionMap = {};
-        let range = _.uniq(allArtifacts.map(obj => obj.version));
+        let versionSet = _.uniq(allArtifacts.map(obj => obj.version));
 
         allArtifacts.forEach((artifact) => {
           if (!highestVersion) {
@@ -147,7 +147,7 @@ class HydratorUpgradeService {
           allArtifacts,
           highestVersion,
           artifactVersionMap,
-          range
+          versionSet
         };
 
         pluginsMap[key] = value;
@@ -196,7 +196,7 @@ class HydratorUpgradeService {
 
       if (!pluginsMap[stageKey]) {
         data.error = 'NOTFOUND';
-      } else if (!this._checkVersionIsInVersionSet(stageArtifact.version, pluginsMap[stageKey].range)) {
+      } else if (!this._checkVersionIsInVersionSet(stageArtifact.version, pluginsMap[stageKey].versionSet)) {
         data.error = 'VERSION_MISMATCH';
         data.suggestion = pluginsMap[stageKey].highestVersion;
 
