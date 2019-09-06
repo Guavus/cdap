@@ -120,10 +120,10 @@ class FeatureSelection extends Component {
 
         // generate column def
         if (!isNil(item.featureName)) {
-          columDefs.push({ headerName: "Generated Feature", field: this.identiferCol, width: 500, checkboxSelection: true, headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, tooltipField: this.identiferCol });
+          columDefs.push({ headerName: "Generated Feature", headerTooltip: "Generated Feature", field: this.identiferCol, width: 500, checkboxSelection: true, headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, tooltipField: this.identiferCol });
         }
         columns.forEach(element => {
-          columDefs.push({ headerName: element.name, field: element.name, resizable: true, filter: 'agNumberColumnFilter' });
+          columDefs.push({ headerName: element.name, headerTooltip: element.name,  field: element.name, resizable: true, filter: 'agNumberColumnFilter' });
         });
       }
 
@@ -374,6 +374,7 @@ class FeatureSelection extends Component {
       columDefs.push(
         {
           headerName: "Generated Feature",
+          headerTooltip: "Generated Feature",
           field: this.identiferCol,
           width: 450,
           checkboxSelection: true,
@@ -392,6 +393,7 @@ class FeatureSelection extends Component {
       columDefs.push(
         {
           headerName: "Value",
+          headerTooltip: "Value",
           field: "value",
           width: 100,
           filter: 'agNumberColumnFilter',
