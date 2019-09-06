@@ -17,15 +17,15 @@
 @import '../../styles/variables.scss';
 
  .experimental-banner {
-  width: 47px;
-  display: inline-block;
-  position: relative;
-  color: white;
-  background-color: var(--brand-primary-color);
-  text-shadow: 0px 1px 2px $grey-04;
-  box-shadow: 0px 2px 4px $grey-03;
-  font-size: 12px;
-  display: block;
+    width: 47px;
+    display: inline-block;
+    position: relative;
+    color: white;
+    background-color: var(--brand-primary-color);
+    text-shadow: 0px 1px 2px $grey-04;
+    box-shadow: 0px 2px 4px $grey-03;
+    font-size: 12px;
+    display: block;
 
   &:before {
     content: ' ';

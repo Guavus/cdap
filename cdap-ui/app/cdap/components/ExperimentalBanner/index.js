@@ -14,18 +14,21 @@
  * the License.
 */
 
+import PropTypes from 'prop-types';
 import React from 'react';
 require('./ExperimentalBanner.scss');
 
 export default function ExperimentalBanner({...props}) {
   let { entity } = props;
-  if(entity.beta) {
+  if (entity.beta) {
     return <div className="experimental-banner">BETA</div>;
   } else if (entity.alpha) {
     return <div className=" experimental-banner alpha-background">ALPHA</div>;
   } else {
     return null;
   }
-
-
 }
+
+ExperimentalBanner.propTypes = {
+  entity: PropTypes.object,
+};

@@ -313,6 +313,7 @@ MarketPlaceEntity.propTypes = {
     created: PropTypes.number,
     cdapVersion: PropTypes.string,
     beta: PropTypes.bool,
+    alpha: PropTypes.bool,
     licenseInfo: PropTypes.shape({
       name: PropTypes.string,
       url: PropTypes.string
