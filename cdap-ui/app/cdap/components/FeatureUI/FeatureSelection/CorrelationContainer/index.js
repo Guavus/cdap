@@ -25,6 +25,7 @@ class CorrelationContainer extends Component {
 
 
   lastSelectedFeature = undefined;
+  appliedAlgorithm = isEmpty(this.algolist) ? null : this.algolist[0];
 
   constructor(props) {
     super(props);
@@ -116,6 +117,7 @@ class CorrelationContainer extends Component {
         selectedfeatures: this.state.selectedFeature
       };
       this.props.applyCorrelation(result);
+      this.appliedAlgorithm = this.state.selectedAlgo;
     }
   }
 
@@ -144,8 +146,12 @@ class CorrelationContainer extends Component {
     return (
       <div className="correlation-container">
         <div className="correlation-box">
+          <div className="selected-box">
+              <label className="selected-label">Applied Algorithm:</label>
+              <label className="selected-value">{ this.appliedAlgorithm?this.appliedAlgorithm.name: ""}</label>
+          </div>
           <div className="algo-box">
-            <label className="algo-label">Algorithm: </label>
+            <label className="algo-label">Select Algorithm: </label>
             <Dropdown isOpen={this.state.openAlgoDropdown} toggle={this.toggleAlgoDropDown}>
               <DropdownToggle caret>
                 {this.state.selectedAlgo.name}

@@ -26,7 +26,7 @@ class ModelContainer extends Component {
     { id: 2, name: "ridge" },
     { id: 3, name: "randomForest" }
   ];
-
+  appliedAlgorithm = isEmpty(this.algolist)? null : this.algolist[0];
   constructor(props) {
     super(props);
     this.state = {
@@ -36,7 +36,6 @@ class ModelContainer extends Component {
       selectedFeature: props.targetVariable,
       activeApplyBtn: false
     };
-
   }
 
   componentDidMount = () => {
@@ -83,6 +82,7 @@ class ModelContainer extends Component {
         selectedfeatures: this.state.selectedFeature
       };
       this.props.applyModelSelection(result);
+      this.appliedAlgorithm = this.state.selectedAlgo;
     }
   }
 
@@ -91,8 +91,12 @@ class ModelContainer extends Component {
     return (
       <div className="model-container">
         <div className="model-box">
+          <div className="selected-box">
+                <label className="selected-label">Applied Algorithm:</label>
+                <label className="selected-value">{ this.appliedAlgorithm?this.appliedAlgorithm.name: ""}</label>
+          </div>
           <div className="algo-box">
-            <label className="algo-label">Algorithm: </label>
+            <label className="algo-label">Select Algorithm: </label>
             <Dropdown isOpen={this.state.openAlgoDropdown} toggle={this.toggleAlgoDropDown}>
               <DropdownToggle caret>
                 {this.state.selectedAlgo.name}
