@@ -199,7 +199,7 @@ class HydratorUpgradeService {
         data.error = 'NOTFOUND';
       } else if (!this._checkVersionIsInVersionList(stageArtifact.version, pluginsMap[stageKey].versionList)) {
         data.error = 'VERSION_MISMATCH';
-        data.suggestion = pluginsMap[stageKey].highestVersion;
+        data.suggestion = pluginsMap[stageKey].highestVersion ? pluginsMap[stageKey].highestVersion : '';
         data.versionList = pluginsMap[stageKey].allArtifacts;
 
         if (typeof data.suggestion.scope !== 'string') {
@@ -214,7 +214,7 @@ class HydratorUpgradeService {
         }
       } else if (pluginsMap[stageKey].highestVersion.scope.indexOf(stageArtifact.scope) < 0) {
         data.error = 'SCOPE_MISMATCH';
-        data.suggestion = pluginsMap[stageKey].highestVersion;
+        data.suggestion = pluginsMap[stageKey].highestVersion ? pluginsMap[stageKey].highestVersion : '';
       }
 
       transformedStages.push(data);
