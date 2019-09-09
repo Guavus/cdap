@@ -42,7 +42,7 @@ class HydratorUpgradeService {
     return range === version;
   }
 
-  _checkVersionIsInVersionSet(version, range){
+  _checkVersionIsInVersionList(version, range){
     if (!range || !version) { return false; }
     return (range.indexOf(version) === -1) ? false : true;
   }
@@ -124,7 +124,7 @@ class HydratorUpgradeService {
 
         let highestVersion;
         let artifactVersionMap = {};
-        let versionSet = _.uniq(allArtifacts.map(obj => obj.version));
+        let versionList = _.uniq(allArtifacts.map(obj => obj.version));
 
         allArtifacts.forEach((artifact) => {
           if (!highestVersion) {
@@ -147,7 +147,7 @@ class HydratorUpgradeService {
           allArtifacts,
           highestVersion,
           artifactVersionMap,
-          versionSet
+          versionList
         };
 
         pluginsMap[key] = value;
@@ -191,14 +191,16 @@ class HydratorUpgradeService {
 
       let data = {
         stageInfo: stage,
-        error: null
+        error: null,
+        versionList: null
       };
 
       if (!pluginsMap[stageKey]) {
         data.error = 'NOTFOUND';
-      } else if (!this._checkVersionIsInVersionSet(stageArtifact.version, pluginsMap[stageKey].versionSet)) {
+      } else if (!this._checkVersionIsInVersionList(stageArtifact.version, pluginsMap[stageKey].versionList)) {
         data.error = 'VERSION_MISMATCH';
         data.suggestion = pluginsMap[stageKey].highestVersion;
+        data.versionList = pluginsMap[stageKey].allArtifacts;
 
         if (typeof data.suggestion.scope !== 'string') {
           // defaulting to USER scope when both version exists
