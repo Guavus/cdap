@@ -32,12 +32,14 @@ const BrandSection: React.SFC<IBrandSectionProps> = ({ context }) => {
   const brandLogoSrc = Theme.productLogoNavbar || '/cdap_assets/img/company_logo.png';
   return (
     <div className="brand-section">
-        <NavLinkWrapper
+      <img src={brandLogoSrc} />
+        {/* click on logo is not working so commenting below section */}
+        {/* <NavLinkWrapper
           isNativeLink={isNativeLink}
           to={isNativeLink ? `${window.knoxPrefix}/cdap${baseCDAPUrl}` : baseCDAPUrl}
         >
           <img src={brandLogoSrc} />
-        </NavLinkWrapper>
+        </NavLinkWrapper> */}
       </div>
   );
 };
