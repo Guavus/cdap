@@ -459,6 +459,7 @@ class PropertySelector extends React.Component {
                                   key={(propValue.header == "none") ? property : (propValue.header + propValue.isSelected)}
                                   header={(propValue.header == "none") ? undefined : propValue.displayName}
                                   headerClass={propValue.isSelected ? "list-header-selected" : "list-header"}
+                                  onPropertyRemoved={this.onPropertyRemoved.bind(this, property, propValue.header)}
                                   onHeaderClick={this.onHeaderClick.bind(this, property, propValue.header)} />);
                               })
                             }
