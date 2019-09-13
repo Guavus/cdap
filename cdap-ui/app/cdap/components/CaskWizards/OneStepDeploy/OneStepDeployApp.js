@@ -29,6 +29,7 @@ import T from 'i18n-react';
 import ee from 'event-emitter';
 import globalEvents from 'services/global-events';
 import isNil from 'lodash/isNil';
+import {marketHubBasepath} from 'api/market';
 
 export default class OneStepDeployApp extends Component {
   constructor(props) {
@@ -67,7 +68,7 @@ export default class OneStepDeployApp extends Component {
   }
 
   publishApp() {
-    const marketBasepath = `${window.CDAP_CONFIG.marketUrl}`;
+    const marketBasepath = marketHubBasepath;
 
     const {
       name,

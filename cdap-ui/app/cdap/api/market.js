@@ -19,41 +19,41 @@ import {apiCreatorAbsPath} from 'services/resource-helper';
 import { Theme } from 'services/ThemeHelper';
 
 let dataSrc = DataSourceConfigurer.getInstance();
-let basepath = `${window.CDAP_CONFIG.marketUrl}`;
+export let marketHubBasepath = `${window.CDAP_CONFIG.marketUrl}`;
 
 
 
 export function setMarketPath(marketType) {
   if (marketType===Theme.featureNames.hub) {
-    basepath = `${window.CDAP_CONFIG.marketUrl}`;
+    marketHubBasepath = `${window.CDAP_CONFIG.marketUrl}`;
   } else {
-    basepath = `${window.CDAP_CONFIG.localMarketUrl}`;
+    marketHubBasepath = `${window.CDAP_CONFIG.localMarketUrl}`;
   }
-  MyMarketApi['list'] = apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${basepath}/packages.json`);
-  MyMarketApi['getCategories'] = apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${basepath}/categories.json`);
-  MyMarketApi['get'] = apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${basepath}/packages/:packageName/:version/spec.json`);
+  MyMarketApi['list'] = apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${marketHubBasepath}/packages.json`);
+  MyMarketApi['getCategories'] = apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${marketHubBasepath}/categories.json`);
+  MyMarketApi['get'] = apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${marketHubBasepath}/packages/:packageName/:version/spec.json`);
   MyMarketApi['getCategoryIcon'] =  (category) => {
-    return `${basepath}/categories/${category}/icon.png`;
+    return `${marketHubBasepath}/categories/${category}/icon.png`;
   };
 
   MyMarketApi['getIcon'] = (entity) => {
-    return `${basepath}/packages/${entity.name}/${entity.version}/icon.png`;
+    return `${marketHubBasepath}/packages/${entity.name}/${entity.version}/icon.png`;
   };
 
-  MyMarketApi['getSampleData'] =  apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${basepath}/packages/:entityName/:entityVersion/:filename`);
+  MyMarketApi['getSampleData'] =  apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${marketHubBasepath}/packages/:entityName/:entityVersion/:filename`);
 
 }
 
 
 export let MyMarketApi = {
-  list: apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${basepath}/packages.json`),
-  getCategories: apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${basepath}/categories.json`),
-  get: apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${basepath}/packages/:packageName/:version/spec.json`),
+  list: apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${marketHubBasepath}/packages.json`),
+  getCategories: apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${marketHubBasepath}/categories.json`),
+  get: apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${marketHubBasepath}/packages/:packageName/:version/spec.json`),
   getCategoryIcon: (category) => {
-    return `${basepath}/categories/${category}/icon.png`;
+    return `${marketHubBasepath}/categories/${category}/icon.png`;
   },
   getIcon: (entity) => {
-    return `${basepath}/packages/${entity.name}/${entity.version}/icon.png`;
+    return `${marketHubBasepath}/packages/${entity.name}/${entity.version}/icon.png`;
   },
-  getSampleData: apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${basepath}/packages/:entityName/:entityVersion/:filename`)
+  getSampleData: apiCreatorAbsPath(dataSrc, 'GET', 'REQUEST', `${marketHubBasepath}/packages/:entityName/:entityVersion/:filename`)
 };

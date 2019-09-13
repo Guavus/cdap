@@ -26,7 +26,7 @@ import {Observable} from 'rxjs/Observable';
 import OneStepDeployWizard from 'components/CaskWizards/OneStepDeploy';
 import cookie from 'react-cookie';
 import T from 'i18n-react';
-import {MyMarketApi} from 'api/market';
+import {MyMarketApi, marketHubBasepath} from 'api/market';
 import {MyArtifactApi} from 'api/artifact';
 import ee from 'event-emitter';
 import globalEvents from 'services/global-events';
@@ -71,7 +71,7 @@ export default class OneStepDeployPlugin extends Component {
   }
 
   publishPlugin() {
-    const marketBasepath = `${window.CDAP_CONFIG.marketUrl}`;
+    const marketBasepath = marketHubBasepath;
 
     const {
       name,
