@@ -21,7 +21,8 @@ angular.module(PKG.name + '.commons')
       scope: {
         fnConfig: '=',
         node: '=',
-        isDisabled: '='
+        isDisabled: '=',
+        nodeConfig: '='
       },
       replace: false,
       link: function (scope, element) {

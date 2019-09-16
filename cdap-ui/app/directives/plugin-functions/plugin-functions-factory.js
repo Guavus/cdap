@@ -32,6 +32,14 @@ angular.module(PKG.name + '.commons')
           'fn-config': 'fnConfig',
           'class': 'pull-right'
         }
+      },
+      'getConfigValues': {
+        element: '<get-config-values></get-config-values>',
+        attributes: {
+          'node': 'node',
+          'fn-config': 'fnConfig',
+          'class': 'pull-right'
+        }
       }
     };
 
