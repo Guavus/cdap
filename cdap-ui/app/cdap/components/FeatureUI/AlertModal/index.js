@@ -26,16 +26,12 @@ class AlertModal extends React.Component {
     this.state = {
       title: 'Alert'
     };
-    this.onOk = this.onOk.bind(this);
-    this.onCancel = this.onCancel.bind(this);
   }
 
-  onCancel() {
-    this.props.onClose('CANCEL');
-  }
-
-  onOk() {
-    this.props.onClose('OK');
+  onBtnClick(btnText) {
+    if (this.props.onClose) {
+      this.props.onClose(btnText);
+    }
   }
 
   render() {
@@ -48,9 +44,9 @@ class AlertModal extends React.Component {
           </ModalBody>
           <ModalFooter>
             {
-              this.props.showCancel && <Button className="btn-margin" color="secondary" onClick={this.onCancel}>Cancel</Button>
+              this.props.showCancel && <Button className="btn-margin" color="secondary" onClick={this.onBtnClick.bind(this, this.props.secondaryBtnText)}>{this.props.secondaryBtnText}</Button>
             }
-            <Button className="btn-margin" color="primary" onClick={this.onOk}>OK</Button>{' '}
+            <Button className="btn-margin" color="primary" onClick={this.onBtnClick.bind(this, this.props.primaryBtnText)}>{this.props.primaryBtnText}</Button>{' '}
           </ModalFooter>
         </Modal>
       </div>
@@ -59,7 +55,9 @@ class AlertModal extends React.Component {
 }
 
 AlertModal.defaultProps = {
-  showCancel: true
+  showCancel: true,
+  primaryBtnText: "Ok",
+  secondaryBtnText: "Cancel"
 };
 
 export default AlertModal;
@@ -67,5 +65,7 @@ AlertModal.propTypes = {
   onClose: PropTypes.func,
   showCancel: PropTypes.bool,
   open: PropTypes.any,
-  message: PropTypes.string
+  message: PropTypes.string,
+  primaryBtnText: PropTypes.string,
+  secondaryBtnText: PropTypes.string
 };

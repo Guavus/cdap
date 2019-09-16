@@ -17,10 +17,6 @@
 .grid-container {
   height: calc(100% - 61px);
   width: 100%;
-  .ag-header-container,
-  .ag-center-cols-container {
-    width: 100% !important;
-  }
   .ag-header-row {
     width: 100% !important;
     font-size: 16px;

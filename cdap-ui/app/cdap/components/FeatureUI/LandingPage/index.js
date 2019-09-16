@@ -37,7 +37,14 @@ import {
   CLONE_PIPELINE,
   GET_PIPE_LINE_DATA,
   TOTAL,
-  ERROR_MESSAGES
+  ERROR_MESSAGES,
+  DELETE,
+  SAVE,
+  PIPELINE_SAVED_MSG,
+  CLOSE,
+  OK,
+  CANCEL,
+  SHOW_PIPELINE
 } from '../config';
 import { Observable } from 'rxjs/Observable';
 import AlertModal from '../AlertModal';
@@ -61,10 +68,12 @@ class LandingPage extends React.Component {
 
   featureTypes = [{ id: 1, name: FEATURE_GENERATED, selected: false }, { id: 2, name: FEATURE_SELECTED, selected: false }]
   currentPipeline;
+  savedFEPipeline;
   sampleData = [
     { "featureName": "plusonelog_first_errors_numwords_event_hostname____24", "featureStatistics": { "Mean": 0.04316484976694808, "Norm L1": 59.61065752815533, "Norm L2": 6.427982513741404, "Max": 0.6931471805599453, "50 Percentile": 0.6931471805599453, "Variance": 0.02807672037699529, "No. of Non Zeros": 86.0, "25 Percentile": 0.6931471805599453, "Min": 0.0, "No. of Nulls": 1295, "Inter Quartile Percentile": 0.0, "75 Percentile": 0.6931471805599453 } }
   ]
   data_original = [];
+  currentOperation = "";
   constructor(props) {
     super(props);
     this.toggleFeatureWizard = this.toggleFeatureWizard.bind(this);
@@ -75,6 +84,8 @@ class LandingPage extends React.Component {
       showFeatureWizard: false,
       openAlertModal: false,
       alertMessage: "",
+      primaryAlertBtnText: "OK",
+      secondaryAlertBtnText: "CANCEL",
       pipelineTypes: PIPELINE_TYPES,
       selectedPipelineType: 'All',
       displayFeatureSelection: false,
@@ -250,9 +261,15 @@ class LandingPage extends React.Component {
 
 
   viewPipeline(pipeline) {
-    let navigatePath = `${window.location.origin}/pipelines/ns/${NamespaceStore.getState().selectedNamespace}/view/${pipeline.pipelineName}`;
-    window.location.href = navigatePath;
+    if (pipeline && pipeline.pipelineName) {
+      this.nagivateToPipeline(pipeline.pipelineName);
+    }
   }
+
+  nagivateToPipeline(pipelineName) {
+    let navigatePath = `${window.location.origin}/pipelines/ns/${NamespaceStore.getState().selectedNamespace}/view/${pipelineName}`;
+    window.location.href = navigatePath;
+   }
 
   editPipeline(type, pipeline) {
     this.currentPipeline = pipeline;
@@ -406,15 +423,37 @@ class LandingPage extends React.Component {
 
   onDeletePipeline(pipeline) {
     this.currentPipeline = pipeline;
+    this.currentOperation = DELETE;
     this.setState({
       openAlertModal: true,
       alertMessage: 'Are you sure you want to delete: ' + pipeline.pipelineName,
+      primaryAlertBtnText: OK,
+      secondaryAlertBtnText: CANCEL,
+    });
+  }
+
+  onPipelineSaved(savedFEPipeline) {
+    this.savedFEPipeline = savedFEPipeline;
+    this.currentOperation = SAVE;
+    this.setState({
+      openAlertModal: true,
+      alertMessage: PIPELINE_SAVED_MSG,
+      primaryAlertBtnText: SHOW_PIPELINE,
+      secondaryAlertBtnText: CLOSE,
     });
   }
 
   onAlertClose(action) {
-    if (action === 'OK' && this.currentPipeline) {
-      this.deletePipeline(this.currentPipeline);
+     if (this.currentPipeline && this.currentOperation == DELETE) {
+      if (action === this.state.primaryAlertBtnText) {
+        this.deletePipeline(this.currentPipeline);
+      }
+    } else if (this.savedFEPipeline && this.currentOperation == SAVE) {
+      if (action === this.state.primaryAlertBtnText) {
+        this.nagivateToPipeline(this.savedFEPipeline);
+      } else {
+        this.getPipelines(this.state.selectedPipelineType);
+      }
     }
     this.setState({
       openAlertModal: false
@@ -488,7 +527,7 @@ class LandingPage extends React.Component {
               observer.error(ERROR_MESSAGES.SAVE_PIPELINE);
             }
           } else {
-            this.getPipelines(this.state.selectedPipelineType);
+            this.onPipelineSaved(featureObject.pipelineRunName);
             observer.next(result);
             observer.complete();
           }
@@ -721,6 +760,7 @@ class LandingPage extends React.Component {
               onClose={this.onWizardClose}
               onSubmit={this.saveFeature.bind(this)} />
             <AlertModal open={this.state.openAlertModal} message={this.state.alertMessage}
+              primaryBtnText = {this.state.primaryAlertBtnText} secondaryBtnText = {this.state.secondaryBtnText}
               onClose={this.onAlertClose.bind(this)} />
           </div>
       }

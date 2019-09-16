@@ -25,7 +25,9 @@ import {
   GET_FEATURE_CORRELAION,
   GET_PIPE_LINE_DATA,
   GET_PIPELINE,
-  PIPELINE_SAVED_MSG
+  PIPELINE_SAVED_MSG,
+  SHOW_PIPELINE,
+  CLOSE
 } from '../config';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import classnames from 'classnames';
@@ -39,6 +41,7 @@ import { getRoundOfValue } from '../GridFormatters';
 import ModelContainer from './ModelContainer';
 import AlertModal from '../AlertModal';
 import T from 'i18n-react';
+import { isNilOrEmpty } from 'services/helpers';
 const PREFIX = 'features.FeatureEngineering.FeatureSelection.SaveFeatureModal';
 
 class FeatureSelection extends Component {
@@ -48,6 +51,7 @@ class FeatureSelection extends Component {
   totalStatsFeature = 0;
   identiferCol = "featureName";
   setGridSelection;
+  savedFSPipeline;
 
   constructor(props) {
     super(props);
@@ -60,7 +64,7 @@ class FeatureSelection extends Component {
       isDataLoading: false,
       openAlertModal: false,
       showCancelButton: false,
-      alertMessage: ''
+      alertMessage: '',
     }, dataInfo);
 
     this.updateGridInfo(0, dataInfo.gridColumnDefs, dataInfo.gridRowData);
@@ -120,10 +124,10 @@ class FeatureSelection extends Component {
 
         // generate column def
         if (!isNil(item.featureName)) {
-          columDefs.push({ headerName: "Generated Feature", headerTooltip: "Generated Feature", field: this.identiferCol, width: 500, checkboxSelection: true, headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, tooltipField: this.identiferCol });
+          columDefs.push({ headerName: "Generated Feature", headerTooltip: "Generated Feature", sortable: true, field: this.identiferCol, width: 500, checkboxSelection: true, headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, tooltipField: this.identiferCol });
         }
         columns.forEach(element => {
-          columDefs.push({ headerName: element.name, headerTooltip: element.name,  field: element.name, resizable: true, filter: 'agNumberColumnFilter' });
+          columDefs.push({ headerName: element.name, headerTooltip: element.name,  sortable: true, field: element.name, resizable: true, filter: 'agNumberColumnFilter' });
         });
       }
 
@@ -397,6 +401,7 @@ class FeatureSelection extends Component {
         {
           headerName: "Generated Feature",
           headerTooltip: "Generated Feature",
+          sortable: true,
           field: this.identiferCol,
           width: 450,
           checkboxSelection: true,
@@ -437,8 +442,9 @@ class FeatureSelection extends Component {
     this.setState({ openSaveModal: true });
   }
 
-  onSaveModalClose = (message) => {
+  onSaveModalClose = (message, savedFSPipeline) => {
     if (message == T.translate(`${PREFIX}.okButton`)) {
+      this.savedFSPipeline = savedFSPipeline;
       this.onSaved();
     } else {
       this.setState({ openSaveModal: false });
@@ -449,8 +455,12 @@ class FeatureSelection extends Component {
     this.setState({ openSaveModal: false , openAlertModal: true, alertMessage: PIPELINE_SAVED_MSG });
   }
 
-  onAlertClose = () => {
+  onAlertClose = (btnText) => {
     this.setState({ openAlertModal: false, alertMessage: '' });
+    if (btnText == SHOW_PIPELINE && !isNilOrEmpty(this.savedFSPipeline)) {
+      let navigatePath = `${window.location.origin}/pipelines/ns/${NamespaceStore.getState().selectedNamespace}/view/${this.savedFSPipeline}`;
+       window.location.href = navigatePath;
+    }
   }
 
   onFeatureSelection(pipeline, isFilter = false) {
@@ -564,7 +574,7 @@ class FeatureSelection extends Component {
           onClose={this.onSaveModalClose} selectedPipeline={this.props.selectedPipeline}
           selectedFeatures={this.state.selectedFeatures} />
         <AlertModal open={this.state.openAlertModal} message={this.state.alertMessage}
-              showCancel = {this.state.showCancelButton}
+              primaryBtnText = {SHOW_PIPELINE} secondaryBtnText = {CLOSE}
               onClose={this.onAlertClose.bind(this)} />
       </div>
     );

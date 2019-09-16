@@ -61,7 +61,7 @@ class SaveFeatureModal extends React.Component {
 
   onCancel() {
     this.setState({name:"",hasError:false, errorMessage:"",loading:false});
-    this.props.onClose(T.translate(`${PREFIX}.cancelButton`));
+    this.props.onClose(T.translate(`${PREFIX}.cancelButton`), this.state.name);
   }
 
   onOk() {
@@ -82,8 +82,8 @@ class SaveFeatureModal extends React.Component {
             const message = getErrorMessage(result, ERROR_MESSAGES[SAVE_PIPELINE]);
             this.setState({hasError:true, errorMessage:message,loading:false});
           } else {
+            this.props.onClose(T.translate(`${PREFIX}.okButton`), this.state.name);
             this.setState({ name:"",loading:false});
-            this.props.onClose(T.translate(`${PREFIX}.okButton`));
           }
         },
         error => {
