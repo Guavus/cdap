@@ -25,13 +25,28 @@
     <h3 class="fa fa-spin fa-refresh"></h3>
   </div>
 
-  <fieldset disabled="true" ng-if="GetPropertyValueModalController.propertyValue">
-    <my-json-textbox
-      ng-model="GetPropertyValueModalController.propertyValue"
-      disabled="true"
-    >
-    </my-json-textbox>
-  </fieldset>
+  <div class="props-container" ng-if="GetPropertyValueModalController.propertyValue">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Property</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="propObj in GetPropertyValueModalController.properties">
+          <td>
+            <div class="checkbox-inline">
+              <label></label><input type="checkbox" value="" ng-model="propObj.state"></label>
+            </div>
+          </td>
+          <td>{{propObj.key}}</td>
+          <td>{{propObj.value}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <p class="text-danger" ng-if="GetPropertyValueModalController.error">
     Error: {{ GetPropertyValueModalController.error }}

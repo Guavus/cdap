@@ -87,6 +87,16 @@ angular.module(PKG.name + '.commons')
                   .then(function (res) {
                     mvm.error = null;
                     mvm.propertyValue = res;
+                    mvm.properties = [];
+
+                    Object.keys(res).filter(key => mvm.node._backendProperties.hasOwnProperty(key)).forEach(key => {
+                      mvm.properties.push({
+                        key: key,
+                        value: res[key],
+                        state: true
+                      });
+                    });
+
                     mvm.showLoading = false;
                   }, function (err) {
                     mvm.propertyValue = null;
@@ -96,7 +106,7 @@ angular.module(PKG.name + '.commons')
               };
 
               mvm.apply = function () {
-                $scope.$close(JSON.stringify(mvm.propertyValue));
+                $scope.$close(mvm.properties);
               };
 
               mvm.fetchValue();
@@ -111,11 +121,9 @@ angular.module(PKG.name + '.commons')
           });
 
           modal.result.then(function (values) {
-            let configValues = JSON.parse(values);
-            // Expects a map of input config key and its value.
-            Object.keys($scope.node.plugin.properties).forEach(key => {
-              if(configValues.hasOwnProperty(key)) {
-                $scope.node.plugin.properties[key] = configValues[key];
+            values.filter(value => value.state).forEach(elem => {
+              if($scope.node._backendProperties.hasOwnProperty(elem.key)) {
+                $scope.node.plugin.properties[elem.key] = elem.value;
               }
             });
           });
