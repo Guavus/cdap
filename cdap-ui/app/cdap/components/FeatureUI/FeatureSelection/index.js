@@ -19,7 +19,7 @@ import FilterContainer from './FilterContainer';
 import './FeatureSelection.scss';
 import GridHeader from './GridHeader';
 import GridContainer from './GridContainer';
-import { isNil } from 'lodash';
+import { isNil, cloneDeep } from 'lodash';
 import {
   GET_PIPE_LINE_FILTERED,
   GET_FEATURE_CORRELAION,
@@ -52,11 +52,13 @@ class FeatureSelection extends Component {
   identiferCol = "featureName";
   setGridSelection;
   savedFSPipeline;
+  checkColumns = []
 
   constructor(props) {
     super(props);
     this.initGridInfo(3);   // Number of tabs
     const dataInfo = this.dataParser(this.props.pipeLineData);
+    this.checkColumns = this.getCheckColumns(dataInfo.filterColumns);
     this.state = Object.assign({
       activeTab: "0", selectedFeatures: [],
       openSaveModal: false,
@@ -69,6 +71,14 @@ class FeatureSelection extends Component {
 
     this.updateGridInfo(0, dataInfo.gridColumnDefs, dataInfo.gridRowData);
     this.totalStatsFeature = dataInfo.gridRowData.length;
+  }
+
+  getCheckColumns(values) {
+    let checkList = cloneDeep(values);
+    checkList.forEach(element => {
+      element['checked'] = true;
+    });
+    return checkList;
   }
 
   componentWillMount() {
@@ -166,8 +176,41 @@ class FeatureSelection extends Component {
   }
 
   applyFilter = (filterObj) => {
-    const requestObject = this.requestGenerator(filterObj);
-    this.getFilteredRecords(requestObject);
+    const tab =0;
+    let checklist = [];
+    let selec_keys = [...filterObj.keys()];
+    let select_values = [...filterObj.values()];
+    for (var i=0; i<select_values.length; i++) {
+      if (select_values[i]) {
+        checklist.push(selec_keys[i]);
+      }
+    }
+
+    let columns = cloneDeep(this.state.gridColumnDefs);
+
+    columns.forEach( column => {
+      if (column.checkboxSelection || checklist.indexOf(column.field) != -1) {
+        column['hide'] = false;
+      } else {
+        column['hide'] = true;
+      }
+    });
+
+    //
+    this.checkColumns.forEach(item => {
+      item.checked = checklist.indexOf(item.name) != -1 ? true : false;
+    });
+
+    this.setState({
+      gridColumnDefs: columns,
+      gridRowData: this.state.gridRowData,
+    });
+
+    this.updateGridInfo(tab, columns, this.state.gridRowData);
+
+    // this code represent older implementation
+    // const requestObject = this.requestGenerator(filterObj);
+    // this.getFilteredRecords(requestObject);
   }
 
   requestGenerator = (value) => {
@@ -551,7 +594,7 @@ class FeatureSelection extends Component {
           </Nav>
           <TabContent activeTab={this.state.activeTab} className="tab-content">
             <TabPane tabId="0" className="tab-pane">
-              <FilterContainer filterColumns={this.state.filterColumns}
+              <FilterContainer filterColumns={this.checkColumns}
                 applyFilter={this.applyFilter}></FilterContainer>
             </TabPane>
             <TabPane tabId="1" className="tab-pane">

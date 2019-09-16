@@ -15,12 +15,13 @@
  */
 
 import React, { Component } from 'react';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, ButtonGroup } from 'reactstrap';
-import FilterItem from '../FilterItem/index';
+// import {InputGroup, Input,Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, ButtonGroup } from 'reactstrap';
+// import FilterItem from '../FilterItem/index';
 import './FilterContainer.scss';
 import { cloneDeep } from "lodash";
-import ToggleSwitch from 'components/ToggleSwitch';
+// import ToggleSwitch from 'components/ToggleSwitch';
 import PropTypes from 'prop-types';
+import CheckList from '../../CheckList';
 
 class FilterContainer extends Component {
   filterTypeList = [{ id: 1, name: 'TopN' }, { id: 2, name: 'LowN' }, { id: 3, name: 'Range' }]
@@ -41,7 +42,8 @@ class FilterContainer extends Component {
       maxLimitValue: "1000",
       activeApplyBtn: false,
       hasLimitError: false,
-      limitErrorMsg: ""
+      limitErrorMsg: "",
+      filterKey:""
     };
   }
 
@@ -199,27 +201,76 @@ class FilterContainer extends Component {
     this.props.applyFilter(this.state);
   }
 
+  onFilterKeyChange(event) {
+    this.setState({
+      filterKey: event.target.value
+    });
+  }
+
+  columnfilter(item, key) {
+    if (key != '') {
+      const col = item.name.toLowerCase();
+      return col.indexOf(key.toLowerCase()) > -1;
+    }
+    return true;
+  }
+
+  handleColumnChange(checkList) {
+    this.props.applyFilter(checkList);
+    // if (this.currentProperty) {
+    //   let schemaColumns = schema.schemaColumns.filter((item) => {
+    //     if (checkList.get(item.columnName) == undefined) {
+    //       return item.checked;
+    //     } else {
+    //       return checkList.get(item.columnName);
+    //     }
+    //   }).map(column => {
+    //     column.checked = true;
+    //     return column;
+    //   });
+    //   let updateObj = getPropertyUpdateObj(this.currentProperty, this.currentSubProperty, schema.schemaName, schemaColumns);
+    //   let updatePropMap = cloneDeep(this.props.propertyMap);
+    //   updatePropertyMapWithObj(updatePropMap, updateObj);
+    //   this.props.updatePropertyMap(updatePropMap);
+    // }
+
+    // this.setState({
+    //   schemas: this.getUpdateSchemas()
+    // });
+  }
+
 
   render() {
-    let filterItems = (
-      <div>
-        {
-          this.state.filterItemList.map((item, index) => {
-            return (<FilterItem
-              itemVO={item}
-              itemIndex={index}
-              changFilterItem={this.changFilterItem.bind(this)}
-              removeFilterItem={this.removeFilterItem.bind(this, index)}
-              key={'fi_' + index.toString()}>
-            </FilterItem>);
-          })
-        }
-      </div>
-    );
+    // let filterItems = (
+    //   <div>
+    //     {
+    //       this.state.filterItemList.map((item, index) => {
+    //         return (<FilterItem
+    //           itemVO={item}
+    //           itemIndex={index}
+    //           changFilterItem={this.changFilterItem.bind(this)}
+    //           removeFilterItem={this.removeFilterItem.bind(this, index)}
+    //           key={'fi_' + index.toString()}>
+    //         </FilterItem>);
+    //       })
+    //     }
+    //   </div>
+    // );
 
+    let columns = this.filterColumnList.filter((item) => this.columnfilter(item, this.state.filterKey));
     return (
       <div className="filter-container">
-        <div className="filter-content">
+        {/* <InputGroup>
+          <Input placeholder="search column name" onChange={this.onFilterKeyChange.bind(this)} />
+          <i className="search-icon fa fa-search"></i>
+        </InputGroup> */}
+
+      <div className="schemas">
+          <CheckList dataProvider={columns} isSingleSelect= {false}
+            handleChange={this.handleColumnChange.bind(this)} />
+      </div>
+
+        {/* <div className="filter-content">
 
           <div className="orderby-box">
             <label className="orderby-label">Orderby: </label>
@@ -263,8 +314,8 @@ class FilterContainer extends Component {
               <button className="feature-button-invert" onClick={this.addFilterItem}>+ Add</button>
             </div>
           </div>
-        </div>
-        <div className="limit-box">
+        </div> */}
+        {/* <div className="limit-box">
           <label className="limit-label">Limit Within*:   </label>
           <input className="limit-input" type="number" min="0" value={this.state.minLimitValue}
             onChange={this.minLimitChanged}></input>
@@ -278,7 +329,7 @@ class FilterContainer extends Component {
           this.state.hasLimitError ?
             <div className="error-box">{this.state.limitErrorMsg}</div>
             : null
-        }
+        } */}
       </div>
     );
 
