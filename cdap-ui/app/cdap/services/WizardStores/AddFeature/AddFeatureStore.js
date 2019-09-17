@@ -20,6 +20,7 @@ import isEmpty from 'lodash/isEmpty';
 import remove from 'lodash/remove';
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
+import { isNilOrEmpty } from 'services/helpers';
 
 
 const defaultAction = {
@@ -104,10 +105,10 @@ const isFeatureComplete = (state) => {
   } else {
     for (let property in state.sinkConfigurations) {
       if (property) {
-        const initialSinkConfig = state.sinkConfigurations[property];
-        if (!isEmpty(initialSinkConfig)) {
-          for (let subParams in initialSinkConfig) {
-            if (subParams.isMandatory && isEmpty(state.sinkConfigurations[property][subParams.paramName])) {
+        const initialSinkConfig = find(state.availableSinks, { paramName: property });
+        if (!isNilOrEmpty(initialSinkConfig) && !isNilOrEmpty(initialSinkConfig.subParams)) {
+          for (let subParam of initialSinkConfig.subParams) {
+            if (subParam.isMandatory && isEmpty(state.sinkConfigurations[property][subParam.paramName])) {
               return false;
             }
           }
