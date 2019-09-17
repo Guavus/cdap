@@ -105,15 +105,18 @@
     <rule dir="OUT" name="CDAP/cdap/outbound/js/filter/forwardMarketToCdap" pattern="/forwardMarketToCdap">
       <rewrite template="{$frontend[path]}/pdie/forwardMarketToCdap"/>
     </rule>
+    <rule dir="OUT" name="CDAPSSO/cdap/outbound/html/filter/favicon" pattern="/favicon.ico">
+      <rewrite template="{$frontend[path]}/cdapsso/favicon.ico"/>
+    </rule>
    <!-- filters -->
 
     <filter name="CDAP/cdap/outbound/filter">
        <content type="*/html">
           <apply path="javascripts/config.js" rule="CDAP/cdap/outbound/html/filter/configjs"/>
           <apply path="javascripts/ui-config.js" rule="CDAP/cdap/outbound/html/filter/uiconfigjs"/>
-	  <apply path="javascripts/ui-theme.js" rule="CDAP/cdap/outbound/html/filter/uithemejs"/>
+	        <apply path="javascripts/ui-theme.js" rule="CDAP/cdap/outbound/html/filter/uithemejs"/>
           <apply path="javascripts/dll_assets/*" rule="CDAP/cdap/outbound/html/filter/dllassets"/>
-	  <apply path="javascripts/cdap_assets/*" rule="CDAP/cdap/outbound/html/filter/cdapassets"/>
+	        <apply path="javascripts/cdap_assets/*" rule="CDAP/cdap/outbound/html/filter/cdapassets"/>
           <apply path="javascripts/assets/*" rule="CDAP/cdap/outbound/html/filter/assets"/>
           <apply path="javascripts/common_assets/*" rule="CDAP/cdap/outbound/html/filter/commonassets"/>
           <apply path="javascripts/pipelines" rule="CDAP/cdap/outbound/html/filter/pipelines"/>
@@ -121,6 +124,7 @@
           <apply path="javascripts/metadata" rule="CDAP/cdap/outbound/html/filter/metadata"/>
           <apply path="javascripts/login_assets/*" rule="CDAP/cdap/outbound/html/filter/loginassets"/>
           <apply path="javascripts/login" rule="CDAP/cdap/outbound/html/filter/bashhref"/>
+          <apply path="javascripts/favicon.ico" rule="CDAPSSO/cdap/outbound/html/filter/favicon"/>
       </content>
       <content type="*/javascript">
           <apply path="/cdap_assets/" rule="CDAP/cdap/outbound/js/filter/cdapassets"/>
