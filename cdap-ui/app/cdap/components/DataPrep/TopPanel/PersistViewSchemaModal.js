@@ -202,8 +202,7 @@ export default class PersistViewSchemaModal extends Component {
 
    navigateToFeature = () => {
     const namespace = NamespaceStore.getState().selectedNamespace;
-    const feURL = `/ns/${namespace}/featureEngineering`;
-    const fePath = `/cdap${feURL}`;
+    const fePath = `/cdap/ns/${namespace}/featureEngineering`;
     window.location.href = fePath;
   }
 
