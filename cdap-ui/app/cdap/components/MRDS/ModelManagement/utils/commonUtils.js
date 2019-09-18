@@ -43,14 +43,3 @@ export function timeFormatter(params) {
     return value;
   }
 
-  export function hyperParameterFormater(params) {
-      const ValueOb= stringToObj(params.value);
-      return ValueOb['default'];
-  }
-
-  export function metricParameterFormater(params) {
-    const ValueOb= stringToObj(params.value);
-    const ss = params.colDef.headerName.split('_');
-    const field = ss.length>0 ? ss[ss.length-1] : "";
-    return ValueOb[field];
-}

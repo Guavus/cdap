@@ -39,7 +39,7 @@ export default class AllTabContents extends Component {
 
     this.unsub = MarketStore.subscribe(() => {
       const { loading, isError, filter } = MarketStore.getState();
-      if(this.filterType !== filter) {
+      if (this.filterType !== filter) {
         this.filterType = filter;
         const unSubFilteredEntities = this.getFilteredEntities();
         this.setState({

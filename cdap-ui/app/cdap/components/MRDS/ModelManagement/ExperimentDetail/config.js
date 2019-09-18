@@ -56,9 +56,9 @@ export const DATASET_SCHEMA_LIST_COLUMN_DEF = [
 ];
 
 export const MODEL_DETAIL_COLUMN_DEF = [
-  { headerName: "Creation Date", field: "createtime", valueFormatter: timeFormatter, width: 150, resizable: true },
+  { headerName: "Creation Date", field: "createtime", valueFormatter: timeFormatter, width: 160, resizable: true },
   { headerName: "Version", field: "modelId", tooltipField: "modelId", cellRenderer: modelLinkRenderer, width: 300, resizable: true },
-  { headerName: "Status", field: "modelStatus", cellRenderer: modelStatusRenderer.bind(this), width: 100, resizable: true },
+  { headerName: "Status", field: "modelStatus", cellRenderer: modelStatusRenderer.bind(this), width: 120, resizable: true },
   {
     headerName: "Hyper-parameter",
     children: [],

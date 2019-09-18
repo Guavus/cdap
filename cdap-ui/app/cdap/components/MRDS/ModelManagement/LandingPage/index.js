@@ -31,7 +31,7 @@ require('./Landing.scss');
 class LandingPage extends Component {
   gridApi;
   gridColumnApi;
-  experimentDetail;
+
   baseUrl = "";
 
   constructor(props) {
@@ -45,7 +45,8 @@ class LandingPage extends Component {
       isFeatureColumnModal: false,
       featuredColumns: '',
       rowHeight: ROW_HEIGHT,
-      headerHeight: HEADER_HEIGHT
+      headerHeight: HEADER_HEIGHT,
+      experimentDetail:undefined
     };
   }
 

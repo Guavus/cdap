@@ -21,7 +21,6 @@ import { AgGridReact } from 'ag-grid-react';
 import { cloneDeep, find, findIndex, isNil } from 'lodash';
 import React, { Component } from 'react';
 import FeatureColumnModal from '../FeatureColumnModal/index';
-import { hyperParameterFormater, metricParameterFormater, stringToObj } from '../utils/commonUtils';
 import { DATASET_SCHEMA_LIST_COLUMN_DEF, MODEL_DETAIL_COLUMN_DEF } from './config';
 import { ROW_HEIGHT, HEADER_HEIGHT } from 'components/MRDS/ModelManagementStore/constants';
 require('./ExperimentDetail.scss');
@@ -69,14 +68,13 @@ class ExperimentDetail extends Component {
     return { id, name, value, greyedParam };
   }
 
-  getColumnDef(columnDefs, column, headerName, fieldName) {
+  getHyperParameterColumnDef(columnDefs, column, headerName, fieldName) {
     const index = findIndex(columnDefs, ['headerName', headerName]);
     const keys = Object.keys(column);
     for (let i = 0; i < keys.length; i++) {
       let obj = {
         headerName: keys[i],
-        field: fieldName + keys[i],
-        valueFormatter: hyperParameterFormater,
+        field: `${fieldName}.${keys[i]}.default`,
         columnGroupShow: i == 0 ? 'closed,open' : 'open',
         resizable: true
       };
@@ -90,13 +88,12 @@ class ExperimentDetail extends Component {
     const keys = Object.keys(column);
     for (let i = 0; i < keys.length; i++) {
       // for inner keys
-      let innerObj = stringToObj(column[keys[i]]);
+      let innerObj = column[keys[i]];
       const innerKeys = Object.keys(innerObj);
       innerKeys.forEach(element => {
         let obj = {
           headerName: `${keys[i]}_${element}`,
-          field: fieldName + keys[i],
-          valueFormatter: metricParameterFormater,
+          field: `${fieldName}.${keys[i]}.${element}`,
           columnGroupShow: i == 0 ? 'closed,open' : 'open',
           resizable: true
         };
@@ -111,8 +108,8 @@ class ExperimentDetail extends Component {
     let columnDefs = cloneDeep(MODEL_DETAIL_COLUMN_DEF);
     if (!isNil(detail) && !isNil(detail.models) && detail.models.length > 0) {
       const sampleModel = detail.models[0];
-      columnDefs = this.getMetricsColumnDef(columnDefs, sampleModel.customMetrics, 'Metrics', 'customMetrics.');
-      columnDefs = this.getColumnDef(columnDefs, sampleModel.hyperparameters, 'Hyper-parameter', 'hyperparameters.', '.default');
+      columnDefs = this.getMetricsColumnDef(columnDefs, sampleModel.customMetrics, 'Metrics', 'customMetrics');
+      columnDefs = this.getHyperParameterColumnDef(columnDefs, sampleModel.hyperparameters, 'Hyper-parameter', 'hyperparameters');
     }
     return columnDefs;
   }
