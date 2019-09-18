@@ -19,6 +19,7 @@ import ExploreDatasetActions from './ExploreDatasetActions';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
 import find from 'lodash/find';
+import { isNilOrEmpty } from 'services/helpers';
 
 
 const defaultAction = {
@@ -92,10 +93,10 @@ const isOperationComplete = (state) => {
   } else {
     for (let property in state.sinkConfigurations) {
       if (property) {
-        const initialSinkConfig = state.sinkConfigurations[property];
-        if (!isEmpty(initialSinkConfig)) {
-          for (let subParams of initialSinkConfig) {
-            if (subParams.isMandatory && isEmpty(state.sinkConfigurations[property][subParams.paramName])) {
+        const initialSinkConfig = find(state.availableSinks, { paramName: property });
+        if (!isNilOrEmpty(initialSinkConfig) && !isNilOrEmpty(initialSinkConfig.subParams)) {
+          for (let subParam of initialSinkConfig.subParams) {
+            if (subParam.isMandatory && isEmpty(state.sinkConfigurations[property][subParam.paramName])) {
               return false;
             }
           }
