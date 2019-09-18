@@ -42,6 +42,7 @@
     "add-namespace": true,
     "feature-engineering": true,
     "mrds": true,
-    "local-hub": true
+    "local-hub": true,
+    "EDA": true
   }
 }
