@@ -107,8 +107,8 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0-beta.53",
-    "ag-grid-community": "^19.1.2",
-    "ag-grid-react": "^19.1.2",
+    "ag-grid-community": "^20.2.0",
+    "ag-grid-react": "^20.2.0",
     "babel-polyfill": "6.26.0",
     "body-parser": "1.14.2",
     "bootstrap": "4.0.0-alpha.5",

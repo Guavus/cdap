@@ -89,7 +89,6 @@ class GridContainer extends Component {
           frameworkComponents={this.state.frameworkComponents}
           columnDefs={this.props.gridColums}
           defaultColDef={this.defaultColDef}
-          enableFilter={true}
           rowSelection="multiple"
           rowData={this.props.rowData}
           onGridReady={this.onGridReady}

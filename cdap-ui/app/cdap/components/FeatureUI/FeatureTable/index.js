@@ -81,7 +81,6 @@ class FeatureTable extends React.Component {
           context={this.state.context}
           frameworkComponents={this.state.frameworkComponents}
           rowData={this.props.data}
-          enableFilter={true}
           onGridReady={this.onGridReady}
         >
         </AgGridReact>
