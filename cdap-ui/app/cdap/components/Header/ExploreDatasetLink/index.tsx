@@ -43,8 +43,7 @@ class ExploreDatasetLink extends React.PureComponent<IExploreDatasetProps> {
   }
 
   protected navigateToFeature = (namespace) => {
-    const feURL = `/ns/${namespace}/exploredataset`;
-    const fePath = `/cdap${feURL}`;
+    const fePath = `/cdap/ns/${namespace}/exploredataset`;
     window.location.href = fePath;
   }
 
