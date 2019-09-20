@@ -216,11 +216,12 @@ angular.module(PKG.name + '.commons')
 
             // Needs a timeout here to avoid showing popups instantly when just moving
             // cursor across a node
-            metricsPopoverTimeout = $timeout(function () {
+            // workarround for fix of https://guavus-jira.atlassian.net/browse/RAFD-991 ,remove timeout make popover available instantly
+            // metricsPopoverTimeout = $timeout(function () {
               if (nodeInfo.popover && typeof nodeInfo.popover.show === 'function') {
                 nodeInfo.popover.show();
               }
-            }, 500);
+            // }, 500);
           });
       }
     };
