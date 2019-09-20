@@ -22,12 +22,12 @@
          ng-disabled="InputValidate.disabled"
          ng-model="InputValidate.model"
          ng-keyup="InputValidate.onValueChange($event)" />
-      <span  style="padding-left: 8px">
+      <!-- <span  style="padding-left: 8px">
           <span class="fa fa-info-circle help"
             uib-tooltip="{{ InputValidate.getInputInfoMessage() }}"
             tooltip-placement="bottom">
           </span>
-      </span>
+      </span> -->
   </div>
 
   <div  style="color: red;" ng-if="InputValidate.showErrorMessage" >

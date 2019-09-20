@@ -52,15 +52,15 @@
           ng-model="HydratorPlusPlusTopPanelCtrl.state.metadata['name']"
           placeholder="Name your pipeline"
           ng-keyup="HydratorPlusPlusTopPanelCtrl.onEnterOnMetadata($event)" />
-          <span>
+          <!-- <span>
               <span class="fa fa-info-circle"
                 uib-tooltip="{{ HydratorPlusPlusTopPanelCtrl.getInputInfoMessage('name') }}"
                 tooltip-placement="bottom"
               >
               </span>
-          </span>
+          </span> -->
       </div>
-      
+
       <div class="error-message" ng-if="HydratorPlusPlusTopPanelCtrl.metadataExpanded">
       {{ HydratorPlusPlusTopPanelCtrl.inputs['name'].error }}
       </div>
@@ -79,13 +79,13 @@
         <textarea ng-model="HydratorPlusPlusTopPanelCtrl.state.metadata['description']"
                   ng-keyup="HydratorPlusPlusTopPanelCtrl.onEnterOnMetadataDescription($event)"
                   placeholder="Enter a description for your pipeline."></textarea>
-        <span>
+        <!-- <span>
             <span class="fa fa-info-circle"
               uib-tooltip="{{ HydratorPlusPlusTopPanelCtrl.getInputInfoMessage('description') }}"
               tooltip-placement="left"
             >
             </span>
-        </span>
+        </span> -->
       </div>
       <div class="error-message" ng-if="HydratorPlusPlusTopPanelCtrl.metadataExpanded">
         {{ HydratorPlusPlusTopPanelCtrl.inputs['description'].error }}
