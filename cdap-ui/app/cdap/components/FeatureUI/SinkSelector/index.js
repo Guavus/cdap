@@ -136,7 +136,7 @@ class SinkSelector extends React.Component {
     }
     const isValid = types['DEFAULT'].validate(this.configMap[parent][child]);
     !isValid && console.error(`${child} Invalid`);
-    return (isValid ? '' : 'Invalid Input');
+    return (isValid ? '' : 'Invalid Input.'+ types['DEFAULT'].getInfo());
   }
 
   render() {
@@ -172,7 +172,7 @@ class SinkSelector extends React.Component {
                             <ValidatedInput
                               className='value' type="text" name="value"
                               label={item.paramName + param.paramName + "_ValidateInput"}
-                              inputInfo={types['DEFAULT'].getInfo() + (param.description ? "\n\n" + param.description : '')}
+                              inputInfo={param.description ?  param.description : ''}
                               validationError={this.state.inputs[item.paramName + param.paramName] || ''}
                               placeholder={'Enter ' + param.displayName + ' value'}
                               defaultValue={isNil(this.configMap[item.paramName][param.paramName]) ? '' : this.configMap[item.paramName][param.paramName]}

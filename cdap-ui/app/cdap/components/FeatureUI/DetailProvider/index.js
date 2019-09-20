@@ -45,7 +45,7 @@ class DetailProvider extends React.Component {
         ...this.state.inputs,
         [key]: {
           ...this.state.inputs[key],
-          'error': isValid ? '' : 'Invalid Input',
+          'error': isValid ? '' : 'Invalid Input. '+types[this.state.inputs[key]['template']].getInfo(),
         }
       }
     });
@@ -69,7 +69,7 @@ class DetailProvider extends React.Component {
             <ValidatedInput
               className='value'
               label={this.state.inputs['name']['label']}
-              inputInfo={types[this.state.inputs['name']['template']].getInfo()}
+              inputInfo='Pipeline will appear in Feature Engineering module’s pipeline list only after successfully completion'
               validationError={this.state.inputs['name']['error']}
               type="text"
               placeholder='name'

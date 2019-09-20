@@ -30,7 +30,7 @@ const NAME = {
       ALLOWED_TAGS: [],
     },
     info: [
-        "cannot contain any xml tags, space required before and after logical operator. like x < y."
+        "Cannot contain any xml tags, space required before and after logical operator. like x < y."
     ],
     validate: function(val) {
         return isValidUsingDOMPurify(val, this.allowed);
@@ -48,7 +48,7 @@ const FILE_PATH = {
         ALLOWED_TAGS: [],
     },
     info: [
-      "cannot contain any xml tags, space required before and after logical operator. like x < y."
+      "Cannot contain any xml tags, space required before and after logical operator. like x < y."
     ],
     validate: function(val) {
         return isValidUsingDOMPurify(val, this.allowed);
@@ -66,7 +66,7 @@ const AWS_ACCESS_KEY_ID = {
         ALLOWED_TAGS: [],
     },
     info: [
-      "cannot contain any xml tags, space required before and after logical operator. like x < y."
+      "Cannot contain any xml tags, space required before and after logical operator. like x < y."
     ],
     validate: function(val) {
         return isValidUsingDOMPurify(val, this.allowed);
@@ -83,7 +83,7 @@ const AWS_SECRET_ACCESS_KEY = {
         ALLOWED_TAGS: [],
     },
     info: [
-      "cannot contain any xml tags, space required before and after logical operator. like x < y."
+      "Cannot contain any xml tags, space required before and after logical operator. like x < y."
     ],
     validate: function(val) {
         return isValidUsingDOMPurify(val, this.allowed);
@@ -101,7 +101,7 @@ const GCS_PROJECT_ID = {
         ALLOWED_TAGS: [],
     },
     info: [
-      "cannot contain any xml tags, space required before and after logical operator. like x < y."
+      "Cannot contain any xml tags, space required before and after logical operator. like x < y."
     ],
     validate: function(val) {
         return isValidUsingDOMPurify(val, this.allowed);
@@ -119,7 +119,7 @@ const GCS_BUCKET_ID = {
         ALLOWED_TAGS: [],
     },
     info: [
-      "cannot contain any xml tags, space required before and after logical operator. like x < y."
+      "Cannot contain any xml tags, space required before and after logical operator. like x < y."
     ],
     validate: function(val) {
         return isValidUsingDOMPurify(val, this.allowed);
@@ -144,7 +144,7 @@ const HOSTNAME_1123 = {
     },
     info: [
         "Check Standard for Hostname in RFC-1123",
-        "cannot contain any xml tags."
+        "Cannot contain any xml tags."
     ],
     validate: function(val, useDOM = true) {
         if (useDOM) {
@@ -166,7 +166,7 @@ const DEFAULT = {
         ALLOWED_TAGS: [],
     },
     info: [
-      "cannot contain any xml tags, space required before and after logical operator. like x < y."
+      "Cannot contain any xml tags, space required before and after logical operator. like x < y."
     ],
     validate: function(val) {
         return isValidUsingDOMPurify(val, this.allowed);

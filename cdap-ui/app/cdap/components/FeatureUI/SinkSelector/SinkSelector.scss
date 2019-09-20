@@ -26,21 +26,22 @@
   .list-row {
     display: flex;
     padding-bottom: 10px;
-    // align-items: center;
-
+    align-items: flex-start !important;
+    .name
     .value {
       height: 32px;
-      width: 100%;
+    }
+    .validateInput {
+      width: 70%;
     }
 
     .name {
+      width: 30%;
       border: 1px solid rgba(0, 0, 0, 0.15);
       border-radius: 0.25rem;
       line-height: 2.5;
       padding-left: 10px;
       font-weight: 500;
-      width: 300px;
-      height: 32px;
     }
 
     .colon {

@@ -50,7 +50,7 @@ class NameValueList extends React.Component {
     this.setState({
       inputs: {
         ...this.state.inputs,
-        [item.name]: isValid ? '' : 'Invalid Input',
+        [item.name]: isValid ? '' : 'Invalid Input.'+types['DEFAULT'].getInfo(),
       }
     });
     this.props.updateNameValue({
@@ -100,7 +100,7 @@ class NameValueList extends React.Component {
                         name="value"
                         label={item.name + "_validate"}
                         validationError={this.state.inputs[item.name]}
-                        inputInfo={types['DEFAULT'].getInfo() + (item.description ? ("\n" + item.description) : "")}
+                        inputInfo={item.description ?  item.description : ""}
                         placeholder='value'
                         defaultValue={item.value}
                         onChange={this.onValueUpdated.bind(this, item)}
@@ -133,7 +133,7 @@ class NameValueList extends React.Component {
                           name="value"
                           label={item.name + "_validate"}
                           validationError={this.state.inputs[item.name]}
-                          inputInfo={types['DEFAULT'].getInfo() + (item.ToolTip ? ("\n" + item.toolTip) : "")}
+                          inputInfo={item.ToolTip ? item.toolTip : ""}
                           placeholder='value'
                           defaultValue={item.value}
                           onChange={this.onValueUpdated.bind(this, item)}
