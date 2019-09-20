@@ -35,7 +35,7 @@ function InputValiadtorController($scope) {
   };
 
   vm.getErrorMessage = () => {
-    return 'Invalid input, see instructions.';
+    return 'Invalid input.cannot contain any xml tags, space required before and after logical operator. like x < y.';
   };
 
   vm.onValueChange = () => {

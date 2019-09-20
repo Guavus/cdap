@@ -272,7 +272,7 @@ class HydratorPlusPlusTopPanelCtrl {
     }
 
     const isValid = this.TEMPLATES[config].validate(dirty);
-    const error = isValid ? '' : 'Invalid input, see instructions.';
+    const error = isValid ? '' : 'Invalid input. Cannot contain any xml tags, space required before and after logical operator. like x < y.';
     return error;
   }
   isSomeInputError() {
