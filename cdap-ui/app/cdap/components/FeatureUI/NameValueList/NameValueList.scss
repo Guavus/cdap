@@ -21,15 +21,23 @@
   .list-row {
     display: flex;
     padding-bottom: 10px;
-    // align-items: center;
+    align-items: flex-start !important;
+
+    .name
+    .value {
+      height: 32px;
+    }
+    .validateInput {
+      width: 70%;
+    }
+
     .name {
-      min-width: 300px;
+      width: 30%;
+      // min-width: 300px;
       border: 1px solid rgba(0, 0, 0, 0.15);
       border-radius: 0.25rem;
       line-height: 2.5;
       padding-left: 10px;
-      height: 32px;
-      display: inline;
       font-weight: 500;
     }
     .colon {
@@ -37,10 +45,7 @@
       padding: 4px 10px;
       color: grey;
     }
-    .value {
-      width: 100%;
-      height: 32px;
-    }
+
     .field-info {
       padding-top: 7px;
       padding-left: 10px;

@@ -27,23 +27,30 @@
   .field-row {
     display: flex;
     padding-bottom: 15px;
+    align-items: flex-start !important;
+
+    .name
+    .value {
+      height: 32px;
+    }
+    .validateInput {
+      width: 70%;
+    }
+
     .name {
-      width: 200px;
+      width: 30%;
       border-radius: 0.25rem;
       line-height: 2;
-      height: 32px;
       font-size: 14px;
       font-weight: 500;
     }
+
     .colon {
       height: 32px;
       padding: 4px 10px;
       color: grey;
     }
-    .value {
-      width: 350px;
-      height: 32px;
-    }
+
     .description {
       width: 350px;
       min-height: 120px;
