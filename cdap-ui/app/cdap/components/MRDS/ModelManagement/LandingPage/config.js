@@ -62,7 +62,7 @@ export const EXP_COLUMN_DEF = [
     headerName: "Dataset Name",
     field: "datasetName",
     width: 150,
-    tooltipField: "experimentName",
+    tooltipField: "datasetName",
   },
   {
     headerName: "Prediction Column",

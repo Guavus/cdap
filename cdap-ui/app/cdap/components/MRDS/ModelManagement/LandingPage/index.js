@@ -83,6 +83,12 @@ class LandingPage extends Component {
   onGridReady = params => {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
+
+    window.addEventListener("resize", function() {
+      setTimeout(function() {
+        params.api.sizeColumnsToFit();
+      });
+    });
     this.gridApi.sizeColumnsToFit();
   }
 

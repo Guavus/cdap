@@ -18,7 +18,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import PropTypes from 'prop-types';
 import { AgGridReact } from 'ag-grid-react';
-import { cloneDeep, find, findIndex, isNil } from 'lodash';
+import { cloneDeep, find, findIndex, isNil, orderBy } from 'lodash';
 import React, { Component } from 'react';
 import FeatureColumnModal from '../FeatureColumnModal/index';
 import { DATASET_SCHEMA_LIST_COLUMN_DEF, MODEL_DETAIL_COLUMN_DEF } from './config';
@@ -56,7 +56,7 @@ class ExperimentDetail extends Component {
       datasetSchemaListColumn: DATASET_SCHEMA_LIST_COLUMN_DEF,
       datasetSchemaListRowData: detail.datasetSchemaList,
       modelDetailColumn: this.getModelDetailColumnDef(detail),
-      modelDetailData: detail && detail.models ? detail.models : [],
+      modelDetailData: detail.models,
       rowHeight: ROW_HEIGHT,
       headerHeight: HEADER_HEIGHT,
     };
@@ -150,6 +150,8 @@ class ExperimentDetail extends Component {
       });
     }
 
+    // sort model based on creation time
+    detail.models = !isNil(detail.models) ? orderBy(detail.models, ['createtime'],['asc']) : [];
     detail.datasetSchemaList = rows;
     return detail;
   }
