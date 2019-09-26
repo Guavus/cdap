@@ -392,7 +392,6 @@ export default class KafkaConnection extends Component {
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs['name']['label']}
-                  inputInfo={types[this.state.inputs['name']['template']].getInfo()}
                   validationError={this.state.inputs['name']['error']}
                   className="form-control"
                   value={this.state.name}

@@ -52,7 +52,7 @@ var inputs = {
 const getErrorMessage = (value, field) => {
   const isValid = types[inputs[field].template].validate(value);
   if (value && !isValid) {
-    return types[inputs[field].template].getErrorMsg();
+    return types[inputs.hive.template].getErrorMsg();
   } else {
     return '';
   }
@@ -67,7 +67,6 @@ const mapStateToHDFSRootDirectoryProps = (state) => {
     placeholder: T.translate('features.Wizard.Add-Namespace.Step2.hdfs-root-directory-placeholder'),
     disabled: state.editableFields.fields.indexOf('hdfsDirectory') === -1,
     label:  inputs.hdfs.label,
-    inputInfo: types[inputs.hdfs.template].getInfo(),
     validationError: inputs.hdfs.error
   };
 };
@@ -92,7 +91,6 @@ const mapStateToHiveDatabaseNameProps = (state) => {
     placeholder: T.translate('features.Wizard.Add-Namespace.Step2.hive-db-name-placeholder'),
     disabled: state.editableFields.fields.indexOf('hiveDatabaseName') === -1,
     label:  inputs.hive.label,
-    inputInfo: types[inputs.hive.template].getInfo(),
     validationError: inputs.hive.error
   };
 };
@@ -117,7 +115,6 @@ const mapStateToHBASENamespaceNameProps = (state) => {
     placeholder: T.translate('features.Wizard.Add-Namespace.Step2.hbase-nm-name-placeholder'),
     disabled: state.editableFields.fields.indexOf('hbaseNamespace') === -1,
     label:  inputs.hbase.label,
-    inputInfo: types[inputs.hbase.template].getInfo(),
     validationError: inputs.hbase.error
   };
 };
@@ -141,7 +138,6 @@ const mapStateToSchedulerQueueNameProps = (state) => {
     placeholder: T.translate('features.Wizard.Add-Namespace.Step2.scheduler-queue-placeholder'),
     disabled: state.editableFields.fields.indexOf('schedulerQueueName') === -1,
     label:  inputs.scheduler.label,
-    inputInfo: types[inputs.scheduler.template].getInfo(),
     validationError: inputs.scheduler.error
   };
 };

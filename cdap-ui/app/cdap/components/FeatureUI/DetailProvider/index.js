@@ -45,7 +45,7 @@ class DetailProvider extends React.Component {
         ...this.state.inputs,
         [key]: {
           ...this.state.inputs[key],
-          'error': isValid ? '' : 'Invalid Input. '+types[this.state.inputs[key]['template']].getInfo(),
+          'error': isValid ? '' : types[this.state.inputs[key]['template']].getErrorMsg(),
         }
       }
     });

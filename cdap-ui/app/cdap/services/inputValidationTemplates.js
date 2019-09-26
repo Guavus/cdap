@@ -39,7 +39,7 @@ const NAME = {
         return this.info[0];
     },
     getErrorMsg: function() {
-      return 'Invalid input, see instructions.';
+      return `Invalid input. ${this.info[0]}`;
     }
 };
 
@@ -57,7 +57,7 @@ const FILE_PATH = {
         return this.info[0];
     },
     getErrorMsg: function() {
-      return 'Invalid input, see instructions.';
+      return `Invalid input. ${this.info[0]}`;
     }
 };
 
@@ -75,7 +75,7 @@ const AWS_ACCESS_KEY_ID = {
         return this.info[0];
     },
     getErrorMsg: function() {
-      return 'Invalid input, see instructions.';
+      return `Invalid input. ${this.info[0]}`;
     }
 };
 const AWS_SECRET_ACCESS_KEY = {
@@ -92,7 +92,7 @@ const AWS_SECRET_ACCESS_KEY = {
         return this.info[0];
     },
     getErrorMsg: function() {
-      return 'Invalid input, see instructions.';
+      return `Invalid input. ${this.info[0]}`;
     }
 };
 
@@ -110,7 +110,7 @@ const GCS_PROJECT_ID = {
         return this.info[0];
     },
     getErrorMsg: function() {
-      return 'Invalid input, see instructions.';
+      return `Invalid input. ${this.info[0]}`;
     }
 };
 
@@ -128,7 +128,7 @@ const GCS_BUCKET_ID = {
         return this.info[0];
     },
     getErrorMsg: function() {
-      return 'Invalid input, see instructions.';
+      return `Invalid input. ${this.info[0]}`;
     }
 };
 
@@ -175,7 +175,7 @@ const DEFAULT = {
         return this.info[0];
     },
     getErrorMsg: function() {
-      return 'Invalid input, see instructions.';
+      return `Invalid input. ${this.info[0]}`;
     }
 };
 

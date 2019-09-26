@@ -41,7 +41,7 @@ var inputs = {
 const getErrorMessage = (value, field) => {
   const isValid = types[inputs[field].template].validate(value);
   if (value && !isValid) {
-    return types[inputs[field].template].getErrorMsg();
+    return types[inputs.principal.template].getErrorMsg();
   } else {
     return '';
   }
@@ -56,7 +56,6 @@ const mapStateToPrincipalProps = (state) => {
     placeholder: T.translate('features.Wizard.Add-Namespace.Step3.principal-placeholder'),
     disabled: state.editableFields.fields.indexOf('principal') === -1,
     label:  inputs.principal.label,
-    inputInfo: types[inputs.principal.template].getInfo(),
     validationError: inputs.principal.error
   };
 };
@@ -81,7 +80,6 @@ const mapStateTokeytabURIProps = (state) => {
     placeholder: T.translate('features.Wizard.Add-Namespace.Step3.keytab-uri-placeholder'),
     disabled: state.editableFields.fields.indexOf('keyTab') === -1,
     label:  inputs.keyTab.label,
-    inputInfo: types[inputs.keyTab.template].getInfo(),
     validationError: inputs.keyTab.error
   };
 };

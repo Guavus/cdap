@@ -150,7 +150,6 @@ export default class AccessTokenModal extends Component {
             type="text"
             label={this.state.inputs.name.label}
             placeholder={T.translate('features.AccessTokenModal.login.usernamePlaceholder')}
-            inputInfo={types[this.state.inputs.name.template].getInfo()}
             validationError={this.state.inputs.name.error}
             value={this.state.usernameInput}
             onChange={this.handleUsernameChange}
@@ -160,7 +159,6 @@ export default class AccessTokenModal extends Component {
             type="password"
             label={this.state.inputs.password.label}
             placeholder={T.translate('features.AccessTokenModal.login.passwordPlaceholder')}
-            inputInfo={types[this.state.inputs.password.template].getInfo()}
             validationError={this.state.inputs.password.error}
             value={this.state.passwordInput}
             onChange={this.handlePasswordChange}

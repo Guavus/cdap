@@ -348,7 +348,6 @@ export default class SpannerConnection extends React.PureComponent<ISpannerConne
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs[nameMap][labelMap]}
-                  inputInfo={types[this.state.inputs[nameMap][templateMap]].getInfo()}
                   validationError={this.state.inputs[nameMap][errorMap]}
                   className="form-control"
                   value={this.state.name}
@@ -372,7 +371,6 @@ export default class SpannerConnection extends React.PureComponent<ISpannerConne
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs[projectIdMap][labelMap]}
-                  inputInfo={types[this.state.inputs[projectIdMap][templateMap]].getInfo()}
                   validationError={this.state.inputs[projectIdMap][errorMap]}
                   className="form-control"
                   value={this.state.projectId}
@@ -395,7 +393,6 @@ export default class SpannerConnection extends React.PureComponent<ISpannerConne
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs[serviceAccountKeyfileMap][labelMap]}
-                  inputInfo={types[this.state.inputs[serviceAccountKeyfileMap][templateMap]].getInfo()}
                   validationError={this.state.inputs[serviceAccountKeyfileMap][errorMap]}
                   className="form-control"
                   value={this.state.serviceAccountKeyfile}

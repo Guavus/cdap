@@ -388,7 +388,6 @@ export default class S3Connection extends Component {
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs['name']['label']}
-                  inputInfo={types[this.state.inputs['name']['template']].getInfo()}
                   validationError={this.state.inputs['name']['error']}
                   className="form-control"
                   value={this.state.name}
@@ -412,7 +411,6 @@ export default class S3Connection extends Component {
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs['accessKeyId']['label']}
-                  inputInfo={types[this.state.inputs['accessKeyId']['template']].getInfo()}
                   validationError={this.state.inputs['accessKeyId']['error']}
                   className="form-control"
                   value={this.state.accessKeyId}
@@ -435,7 +433,6 @@ export default class S3Connection extends Component {
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs['accessSecretKey']['label']}
-                  inputInfo={types[this.state.inputs['accessSecretKey']['template']].getInfo()}
                   validationError={this.state.inputs['accessSecretKey']['error']}
                   className="form-control"
                   value={this.state.accessSecretKey}

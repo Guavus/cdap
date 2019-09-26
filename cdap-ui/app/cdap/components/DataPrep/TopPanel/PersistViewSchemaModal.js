@@ -261,11 +261,10 @@ export default class PersistViewSchemaModal extends Component {
               Dataset Name:
               <span className="text-danger">*</span>
             </Label>
-            <Col xs="7" className="dataset-name-group">
+            <Col xs="8" className="dataset-name-group">
               <ValidatedInput
                 type="text"
                 label="Dataset Name"
-                inputInfo={types[this.state.inputTemplate].getInfo()}
                 validationError={this.state.inputError}
                 value={this.state.datasetName}
                 onChange={this.handleChange}

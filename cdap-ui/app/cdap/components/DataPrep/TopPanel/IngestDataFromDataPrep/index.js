@@ -741,7 +741,7 @@ export default class IngestDataFromDataPrep extends Component {
               <ValidatedInput
                 type="text"
                 label="name"
-                inputInfo={ T.translate(`${PREFIX}.Form.datasetTooltip`)+ ',\n'+types[this.state.inputTemplate].getInfo()}
+                inputInfo={ T.translate(`${PREFIX}.Form.datasetTooltip`)}
                 validationError={this.state.inputError}
                 value={this.state.datasetName}
                 onChange={this.handleDatasetNameChange}

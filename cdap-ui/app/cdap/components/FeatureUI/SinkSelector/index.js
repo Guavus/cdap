@@ -136,7 +136,7 @@ class SinkSelector extends React.Component {
     }
     const isValid = types['DEFAULT'].validate(this.configMap[parent][child]);
     !isValid && console.error(`${child} Invalid`);
-    return (isValid ? '' : 'Invalid Input.'+ types['DEFAULT'].getInfo());
+    return (isValid ? '' :  types['DEFAULT'].getErrorMsg());
   }
 
   render() {

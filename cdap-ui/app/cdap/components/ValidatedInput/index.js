@@ -43,12 +43,16 @@ export default function ValidatedInput(props) {
         <InputGroup>
           <Input {...moreProps} invalid={isInvalid}/>
           <InputGroupAddon addonType="append" className="input-group-info">
-            <InputGroupText id={label.replace(/\s/g,'')}>
-              <span className="fa fa-info-circle help"></span>
-              <UncontrolledTooltip placement="left" target={label.replace(/\s/g,'')}>
-                {inputInfo}
-              </UncontrolledTooltip>
-            </InputGroupText>
+          {
+            inputInfo && inputInfo.trim().length > 0 ?
+              <InputGroupText id={label.replace(/\s/g,'')}>
+                <span className="fa fa-info-circle help"></span>
+                <UncontrolledTooltip placement="left" target={label.replace(/\s/g,'')}>
+                  {inputInfo}
+                </UncontrolledTooltip>
+              </InputGroupText>
+              : null
+          }
           </InputGroupAddon>
         </InputGroup>
         <FormFeedback className="feedback-error">{validationError}</FormFeedback>

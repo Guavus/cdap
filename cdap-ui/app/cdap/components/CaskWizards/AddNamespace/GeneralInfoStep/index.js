@@ -55,7 +55,6 @@ const mapStateToNamespaceNameProps = (state) => {
     placeholder: T.translate('features.Wizard.Add-Namespace.Step1.name-placeholder'),
     disabled: state.editableFields.fields.indexOf('name') === -1,
     label:  inputs.name.label,
-    inputInfo: types[inputs.name.template].getInfo(),
     validationError: inputs.name.error
   };
 };
@@ -82,7 +81,6 @@ const mapStateToNamespaceDescriptionProps = (state) => {
     placeholder: T.translate('features.Wizard.Add-Namespace.Step1.description-placeholder'),
     disabled: state.editableFields.fields.indexOf('description') === -1,
     label:  inputs.description.label,
-    inputInfo: types[inputs.description.template].getInfo(),
     validationError: inputs.description.error
   };
 };

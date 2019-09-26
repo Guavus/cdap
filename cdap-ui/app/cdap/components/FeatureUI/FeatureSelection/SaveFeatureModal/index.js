@@ -118,7 +118,6 @@ class SaveFeatureModal extends React.Component {
                   label="FSPipelineName"
                   value={this.state.name}
                   validationError={this.state.inputError}
-                  inputInfo={types['NAME'].getInfo()}
                   placeholder='Pipeline Name'
                   onChange={this.nameChange}
                 />

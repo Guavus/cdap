@@ -474,7 +474,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <ValidatedInput
                 type="text"
                 label={this.state.inputs[kvURLMap][labelMap]}
-                inputInfo={types[this.state.inputs[kvURLMap][templateMap]].getInfo()}
                 validationError={this.state.inputs[kvURLMap][errorMap]}
                 className="form-control"
                 value={this.state.kvURL || ''}
@@ -495,7 +494,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <ValidatedInput
                 type="text"
                 label={this.state.inputs[clientIDKeyMap][labelMap]}
-                inputInfo={types[this.state.inputs[clientIDKeyMap][templateMap]].getInfo()}
                 validationError={this.state.inputs[clientIDKeyMap][errorMap]}
                 className="form-control"
                 value={this.state.clientIDKey || ''}
@@ -516,7 +514,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <ValidatedInput
                 type="text"
                 label={this.state.inputs[clientSecretKeyMap][labelMap]}
-                inputInfo={types[this.state.inputs[clientSecretKeyMap][templateMap]].getInfo()}
                 validationError={this.state.inputs[clientSecretKeyMap][errorMap]}
                 className="form-control"
                 value={this.state.clientSecretKey || ''}
@@ -537,7 +534,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <ValidatedInput
                 type="text"
                 label={this.state.inputs[endPointURLKeyMap][labelMap]}
-                inputInfo={types[this.state.inputs[endPointURLKeyMap][templateMap]].getInfo()}
                 validationError={this.state.inputs[endPointURLKeyMap][errorMap]}
                 className="form-control"
                 value={this.state.endPointURLKey || ''}
@@ -560,7 +556,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <ValidatedInput
                 type="text"
                 label={this.state.inputs[clientIDMap][labelMap]}
-                inputInfo={types[this.state.inputs[clientIDMap][templateMap]].getInfo()}
                 validationError={this.state.inputs[clientIDMap][errorMap]}
                 className="form-control"
                 value={this.state.clientID || '' }
@@ -581,7 +576,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <ValidatedInput
                 type="text"
                 label={this.state.inputs[clientSecretMap][labelMap]}
-                inputInfo={types[this.state.inputs[clientSecretMap][templateMap]].getInfo()}
                 validationError={this.state.inputs[clientSecretMap][errorMap]}
                 className="form-control"
                 value={this.state.clientSecret || ''}
@@ -602,7 +596,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
               <ValidatedInput
                 type="text"
                 label={this.state.inputs[refreshURLMap][labelMap]}
-                inputInfo={types[this.state.inputs[refreshURLMap][templateMap]].getInfo()}
                 validationError={this.state.inputs[refreshURLMap][errorMap]}
                 className="form-control"
                 value={this.state.refreshURL || ''}
@@ -628,7 +621,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs[nameMap][labelMap]}
-                  inputInfo={types[this.state.inputs[nameMap][templateMap]].getInfo()}
                   validationError={this.state.inputs[nameMap][errorMap]}
                   className="form-control"
                   value={this.state.name}
@@ -650,7 +642,6 @@ export default class ADLSConnection extends React.PureComponent<IADLSConnectionP
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs[accountFQDNMap][labelMap]}
-                  inputInfo={types[this.state.inputs[accountFQDNMap][templateMap]].getInfo()}
                   validationError={this.state.inputs[accountFQDNMap][errorMap]}
                   className="form-control"
                   value={this.state.accountFQDN}

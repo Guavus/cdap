@@ -319,7 +319,6 @@ export default class GCSConnection extends Component {
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs['name']['label']}
-                  inputInfo={types[this.state.inputs['name']['template']].getInfo()}
                   validationError={this.state.inputs['name']['error']}
                   className="form-control"
                   value={this.state.name}
@@ -343,7 +342,6 @@ export default class GCSConnection extends Component {
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs['projectId']['label']}
-                  inputInfo={types[this.state.inputs['projectId']['template']].getInfo()}
                   validationError={this.state.inputs['projectId']['error']}
                   className="form-control"
                   value={this.state.projectId}
@@ -366,7 +364,6 @@ export default class GCSConnection extends Component {
                 <ValidatedInput
                   type="text"
                   label={this.state.inputs['serviceAccountKeyfile']['label']}
-                  inputInfo={types[this.state.inputs['serviceAccountKeyfile']['template']].getInfo()}
                   validationError={this.state.inputs['serviceAccountKeyfile']['error']}
                   className="form-control"
                   value={this.state.serviceAccountKeyfile}

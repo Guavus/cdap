@@ -224,7 +224,6 @@ class Login extends Component {
                     type="text"
                     label={this.state.inputs.name.label}
                     placeholder={T.translate('login.placeholders.username')}
-                    inputInfo={types[this.state.inputs.name.template].getInfo()}
                     validationError={this.state.inputs.name.error}
                     value={this.state.username}
                     onChange={this.onUsernameUpdate.bind(this)}
@@ -235,7 +234,6 @@ class Login extends Component {
                       type="password"
                       label={this.state.inputs.password.label}
                       placeholder={T.translate('login.placeholders.password')}
-                      inputInfo={types[this.state.inputs.password.template].getInfo()}
                       validationError={this.state.inputs.password.error}
                       onChange={this.onPasswordUpdate.bind(this)}
                     />

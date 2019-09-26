@@ -50,7 +50,7 @@ class NameValueList extends React.Component {
     this.setState({
       inputs: {
         ...this.state.inputs,
-        [item.name]: isValid ? '' : 'Invalid Input.'+types['DEFAULT'].getInfo(),
+        [item.name]: isValid ? '' : types['DEFAULT'].getErrorMsg(),
       }
     });
     this.props.updateNameValue({
