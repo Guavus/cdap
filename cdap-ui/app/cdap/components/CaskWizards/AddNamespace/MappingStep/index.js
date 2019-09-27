@@ -52,7 +52,7 @@ var inputs = {
 const getErrorMessage = (value, field) => {
   const isValid = types[inputs[field].template].validate(value);
   if (value && !isValid) {
-    return types[inputs.hive.template].getErrorMsg();
+    return types[inputs[field].template].getErrorMsg();
   } else {
     return '';
   }
