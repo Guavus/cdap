@@ -393,4 +393,12 @@ public class FactCodec {
     }
     return deltas;
   }
+
+@Override
+public String toString() {
+	return "FactCodec [entityTable=" + entityTable + ", resolution=" + resolution + ", rollTimebaseInterval="
+			+ rollTimebaseInterval + ", deltaCache=" + Arrays.toString(deltaCache) + "]";
+}
+  
+  
 }

@@ -20,17 +20,23 @@ import co.cask.cdap.api.metrics.Metrics;
 import co.cask.cdap.api.metrics.MetricsCollectionService;
 import co.cask.cdap.api.metrics.MetricsContext;
 import co.cask.cdap.common.conf.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link Metrics} for user-defined metrics.
  * Metrics will be emitted through {@link MetricsCollectionService}.
  */
 public class ProgramUserMetrics implements Metrics {
-
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ProgramUserMetrics.class);
+	  
   private final MetricsContext metricsContext;
 
   public ProgramUserMetrics(MetricsContext metricsContext) {
     this.metricsContext = metricsContext.childContext(Constants.Metrics.Tag.SCOPE, "user");
+    LOG.info("metricsContext :: " + metricsContext);
+    LOG.info("metricsContext class :: " + metricsContext.getClass());
   }
 
   @Override

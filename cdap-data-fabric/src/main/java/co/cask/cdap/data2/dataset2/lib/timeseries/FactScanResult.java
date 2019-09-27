@@ -48,4 +48,13 @@ public final class FactScanResult implements Iterable<TimeValue> {
   public Iterator<TimeValue> iterator() {
     return timeValues.iterator();
   }
+
+@Override
+public String toString() {
+	return "FactScanResult [measureName=" + measureName + ", dimensionValues=" + dimensionValues + ", timeValues="
+			+ timeValues + "]";
+}
+  
+  
+  
 }

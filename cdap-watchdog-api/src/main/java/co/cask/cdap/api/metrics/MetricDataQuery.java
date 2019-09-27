@@ -27,7 +27,8 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Defines a query to perform on {@link MetricStore} data.
  * </p>
@@ -41,6 +42,8 @@ import javax.annotation.Nullable;
  * </pre>
  */
 public final class MetricDataQuery {
+	
+  private static final Logger LOG = LoggerFactory.getLogger(MetricDataQuery.class);
 
   /**
    * Start timestamp, in seconds.
@@ -102,6 +105,7 @@ public final class MetricDataQuery {
     this.sliceByTagValues = Maps.newHashMap(sliceByTagValues);
     this.groupByTags = ImmutableList.copyOf(groupByTags);
     this.interpolator = interpolator;
+    LOG.info("sbbbbb MetricDataQuery called :: " + toString());
   }
 
   public MetricDataQuery(MetricDataQuery query, String metricName, AggregationFunction func) {

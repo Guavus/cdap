@@ -55,12 +55,27 @@ final class AggregatedMetricsEmitter implements MetricsEmitter {
   public MetricValue emit() {
     // todo CDAP-2195 - potential race condition , reseting value and type has to be done together
     long value = this.value.getAndSet(0);
+
+if(name.contains("File.records.in")){
+	LOG.info("sbbbbb emit called, name:: " + name + " ,value :: " + value);
+}
+
     MetricType type = gaugeUsed.getAndSet(false) ? MetricType.GAUGE : MetricType.COUNTER;
     return new MetricValue(name, type, value);
   }
 
   public void gauge(long value) {
+if(name.contains("File.records.in")){
+	LOG.info("sbbbbb gauge called, name:: " + name + " , new value :: " + value + " , old value:: " + this.value.get());
+}
     this.value.set(value);
     this.gaugeUsed.set(true);
   }
+  
+@Override
+  public String toString() {
+  
+  	return     " name: " + name + " , value: " + value.get();
+  }  
+
 }

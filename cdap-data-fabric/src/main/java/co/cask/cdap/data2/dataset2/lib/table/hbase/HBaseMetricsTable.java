@@ -348,4 +348,13 @@ public class HBaseMetricsTable implements MetricsTable {
   public void close() throws IOException {
     hTable.close();
   }
+
+@Override
+public String toString() {
+	return "HBaseMetricsTable [tableUtil=" + tableUtil + ", tableId=" + tableId + ", hTable=" + hTable
+			+ ", columnFamily=" + Arrays.toString(columnFamily) + ", rowKeyDistributor=" + rowKeyDistributor
+			+ ", scanExecutor=" + scanExecutor + "]";
+}
+  
+  
 }

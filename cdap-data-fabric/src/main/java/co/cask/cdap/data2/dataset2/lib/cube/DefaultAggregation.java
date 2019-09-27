@@ -67,4 +67,12 @@ public class DefaultAggregation implements Aggregation {
   public boolean accept(CubeFact fact) {
     return fact.getDimensionValues().keySet().containsAll(requiredDimensions);
   }
+
+	@Override
+	public String toString() {
+		return "DefaultAggregation [aggregateDimensions=" + aggregateDimensions + ", requiredDimensions="
+				+ requiredDimensions + "]";
+	}
+  
+  
 }

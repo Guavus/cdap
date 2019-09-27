@@ -28,12 +28,16 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.twill.common.Threads;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * A {@link co.cask.cdap.api.metrics.MetricsCollectionService} that writes to MetricsTable directly.
@@ -41,7 +45,9 @@ import java.util.stream.IntStream;
  */
 @Singleton
 public final class LocalMetricsCollectionService extends AggregatedMetricsCollectionService {
-
+  private static final Logger LOG = LoggerFactory.getLogger(LocalMetricsCollectionService.class);
+	
+	
   private static final ImmutableMap<String, String> METRICS_PROCESSOR_CONTEXT =
     ImmutableMap.of(Constants.Metrics.Tag.NAMESPACE, Id.Namespace.SYSTEM.getId(),
                     Constants.Metrics.Tag.COMPONENT, Constants.Service.METRICS_PROCESSOR);
@@ -69,8 +75,24 @@ public final class LocalMetricsCollectionService extends AggregatedMetricsCollec
 
   @Override
   protected void publish(Iterator<MetricValues> metrics) {
+	  LOG.info("sbbbbbb inside publish to metricStore");
     while (metrics.hasNext()) {
-      metricStore.add(metrics.next());
+    	MetricValues metricValues =metrics.next(); 
+    	
+    	Collection<co.cask.cdap.api.metrics.MetricValue> metricValueCollection = metricValues.getMetrics();
+		for (Iterator iterator = metricValueCollection.iterator(); iterator.hasNext();) {
+			co.cask.cdap.api.metrics.MetricValue metricValue2 = (co.cask.cdap.api.metrics.MetricValue) iterator
+					.next();
+			if (metricValue2.getName().contains("File.records.in")) {
+				LOG.info("sbbbbbb inside publish metricValues:: " + metricValues.getTimestamp());
+				LOG.info("sbbbbbb inside publish metricValues:: " + metricValues.getMetrics().toString());
+				LOG.info("sbbbbbb inside publish metricValues:: " + metricValues.getTags().toString());
+				
+				LOG.info("sbbbbbb metricStore:: " + metricStore.toString());
+			}
+		}
+		
+    	metricStore.add(metricValues);
     }
   }
 

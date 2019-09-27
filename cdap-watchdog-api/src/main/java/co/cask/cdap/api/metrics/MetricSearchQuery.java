@@ -20,6 +20,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Defines a query to perform Exploration and Search on {@link MetricStore} data.
@@ -27,6 +29,9 @@ import java.util.List;
  * to find next set of tags available or the measureNames belonging to this tag list.
  */
 public class MetricSearchQuery {
+
+  private static final Logger LOG = LoggerFactory.getLogger(MetricSearchQuery.class);
+	
   private final long startTs;
   private final long endTs;
   private final int resolution;
@@ -40,6 +45,7 @@ public class MetricSearchQuery {
     this.resolution = resolution;
     this.limit = limit;
     this.tagValues = tagValues;
+    LOG.info("sbbbbb MetricSearchQuery called:: " + this.toString());
   }
 
   public MetricSearchQuery(long startTs, long endTs, int limit, List<TagValue> tagValues) {

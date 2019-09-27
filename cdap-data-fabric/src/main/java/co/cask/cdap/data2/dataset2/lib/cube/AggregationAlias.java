@@ -38,4 +38,11 @@ public class AggregationAlias {
   public String getAlias(String dimensionName) {
     return dimensionAliasMap.containsKey(dimensionName) ? dimensionAliasMap.get(dimensionName) : dimensionName;
   }
+
+@Override
+public String toString() {
+	return "AggregationAlias [dimensionAliasMap=" + dimensionAliasMap + "]";
+}
+  
+  
 }

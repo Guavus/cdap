@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -86,10 +87,37 @@ public class MessagingMetricsCollectionService extends AggregatedMetricsCollecti
 
   @Override
   protected void publish(Iterator<MetricValues> metrics) throws Exception {
+//	  LOG.info("sbbbbbb inside publish");
+
     int size = topicPayloads.size();
     while (metrics.hasNext()) {
       encoderOutputStream.reset();
       MetricValues metricValues = metrics.next();
+      
+      Collection<co.cask.cdap.api.metrics.MetricValue> metricValueCollection = metricValues.getMetrics();
+      for (Iterator iterator = metricValueCollection.iterator(); iterator.hasNext();) {
+		co.cask.cdap.api.metrics.MetricValue metricValue2 = (co.cask.cdap.api.metrics.MetricValue) iterator.next();
+		if(metricValue2.getName().contains("File.records.in")) {
+
+	  		LOG.info("sbbbbbb inside publish metricValues:: " + metricValues.getTimestamp());
+	  		LOG.info("sbbbbbb inside publish metricValues:: " + metricValues.getMetrics().toString());
+	  		LOG.info("sbbbbbb inside publish metricValues:: " + metricValues.getTags().toString());
+
+	  		LOG.info("recordWriter:: " + recordWriter);
+            LOG.info("recordWriter class:: " + recordWriter.getClass());
+
+	  		LOG.info("encoder:: " + encoder);
+	  		LOG.info("messagingService:: " + messagingService);
+            LOG.info("messagingService class:: " + messagingService.getClass());
+
+            LOG.info("topicPayloads:: " + topicPayloads);
+
+            TopicPayload topicPayload = topicPayloads.get(Math.abs(metricValues.getTags().hashCode() % size));
+            LOG.info("topicPayloads:: " + topicPayload);
+            LOG.info("topicPayloads topicId:: " + topicPayload.topicId);
+		}
+      }
+      
       // Encode MetricValues into bytes
       recordWriter.encode(metricValues, encoder);
       TopicPayload topicPayload = topicPayloads.get(Math.abs(metricValues.getTags().hashCode() % size));

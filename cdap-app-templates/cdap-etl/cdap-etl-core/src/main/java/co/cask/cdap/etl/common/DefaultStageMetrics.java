@@ -27,11 +27,16 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.concurrent.Callable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Wrapper around the {@link Metrics} instance from CDAP that prefixes metric names with the ETL context the metric
  * was emitted from.
  */
 public class DefaultStageMetrics implements StageMetrics, Externalizable {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultStageMetrics.class);
 
   private Metrics metrics;
   private String prefix;
@@ -94,6 +99,7 @@ public class DefaultStageMetrics implements StageMetrics, Externalizable {
 
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
+    LOG.info("sbbbbb writeExternal ::: " + metrics);
     out.writeObject(metrics);
     out.writeObject(prefix);
   }

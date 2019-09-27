@@ -59,6 +59,8 @@ import scala.Tuple2;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link SparkCollection} that is backed by a JavaRDD.
@@ -66,6 +68,9 @@ import javax.annotation.Nullable;
  * @param <T> type of object in the collection
  */
 public class RDDCollection<T> implements SparkCollection<T> {
+
+  private static final Logger LOG = LoggerFactory.getLogger(RDDCollection.class);
+  
   private static final Gson GSON = new Gson();
   private final JavaSparkExecutionContext sec;
   private final JavaSparkContext jsc;

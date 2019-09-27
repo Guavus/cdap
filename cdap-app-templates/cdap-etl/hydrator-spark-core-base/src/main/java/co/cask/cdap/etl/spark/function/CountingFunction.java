@@ -24,12 +24,18 @@ import org.apache.spark.api.java.function.Function;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Function that doesn't transform anything, but just emits counts for the number of records from that stage.
  *
  * @param <T> the type of input object
  */
 public class CountingFunction<T> implements Function<T, T> {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CountingFunction.class);
+
   private final String stageName;
   private final Metrics metrics;
   private final String metricName;
@@ -38,6 +44,8 @@ public class CountingFunction<T> implements Function<T, T> {
 
   // DataTracer is null for records.in
   public CountingFunction(String stageName, Metrics metrics, String metricName, @Nullable DataTracer dataTracer) {
+    LOG.info("inside CountingFunction, args::: stageName: " + stageName + " ,metrics: " + metrics + " ,metricName: "  + metricName);
+    LOG.info("inside CountingFunction, metric class : "  + metrics.getClass());
     this.stageName = stageName;
     this.metrics = metrics;
     this.metricName = metricName;
@@ -48,6 +56,7 @@ public class CountingFunction<T> implements Function<T, T> {
   public T call(T in) throws Exception {
     if (stageMetrics == null) {
       stageMetrics = new DefaultStageMetrics(metrics, stageName);
+      LOG.info("stageMetrics is null, initializing DefaultStageMetrics");
     }
     // we only want to trace the data for records.out
     if (dataTracer != null && dataTracer.isEnabled()) {

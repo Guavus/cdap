@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,6 +63,11 @@ public class PayloadTableRegionObserver implements RegionCoprocessor, RegionObse
 
   private TopicMetadataCacheSupplier topicMetadataCacheSupplier;
   private TopicMetadataCache topicMetadataCache;
+
+  @Override
+  public Optional<RegionObserver> getRegionObserver() {
+    return Optional.of(this);
+  }
 
   @Override
   public void start(CoprocessorEnvironment e) throws IOException {

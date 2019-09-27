@@ -65,4 +65,13 @@ public final class FactScan {
   public long getEndTs() {
     return endTs;
   }
+
+@Override
+public String toString() {
+	return "FactScan [dimensionValues=" + dimensionValues + ", measureNames=" + measureNames + ", startTs=" + startTs
+			+ ", endTs=" + endTs + "]";
+}
+  
+  
+  
 }

@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A {@link Externalizable} implementation of {@link Metrics} used in Spark program execution.
  * It has no-op for serialize/deserialize operation, with all operations delegated to the {@link SparkRuntimeContext}
@@ -30,6 +33,8 @@ import java.io.ObjectOutput;
  */
 public final class SparkUserMetrics implements Metrics, Externalizable {
 
+  private static final Logger LOG = LoggerFactory.getLogger(SparkUserMetrics.class);
+  
   private final Metrics delegate;
 
   /**
@@ -37,6 +42,7 @@ public final class SparkUserMetrics implements Metrics, Externalizable {
    */
   public SparkUserMetrics() {
     this(SparkRuntimeContextProvider.get());
+    LOG.info("sbbbbb SparkUserMetrics public Constructor , no args");
   }
 
   /**
@@ -44,6 +50,7 @@ public final class SparkUserMetrics implements Metrics, Externalizable {
    */
   SparkUserMetrics(Metrics delegate) {
     this.delegate = delegate;
+    LOG.info("sbbbbb SparkUserMetrics Constructor , delegate:: " + delegate.toString());
   }
 
   @Override

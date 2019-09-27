@@ -126,7 +126,11 @@ public abstract class AggregatedMetricsCollectionService extends AbstractExecuti
   private void publishMetrics(long currentTimeMillis) throws InterruptedException {
     long timestamp = TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis);
 
-    LOG.trace("Start log collection for timestamp {}", timestamp);
+//    LOG.info("Start log collection for timestamp {}", timestamp);
+    
+//    for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+//    	LOG.info(ste.toString());
+//    }
 
     Iterator<MetricValues> metrics = getMetrics(timestamp);
     try {
@@ -194,6 +198,10 @@ public abstract class AggregatedMetricsCollectionService extends AbstractExecuti
             if (metricValue.getType() == MetricType.COUNTER && metricValue.getValue() == 0) {
               continue;
             }
+            
+            if(metricValue.getName().contains("File.records.in")){
+            	LOG.info("sbbbbb emitting metric ::  name:: " + metricValue.getName() + " , value:: " + metricValue.getValue() + " , timestamp:: " + timestamp);
+            }
             metricValues.add(metricValue);
           }
 
@@ -232,7 +240,19 @@ public abstract class AggregatedMetricsCollectionService extends AbstractExecuti
 
     @Override
     public void increment(String metricName, long value) {
+ 
       emitters.getUnchecked(tags).getUnchecked(metricName).increment(value);
+
+//if(metricName.contains("File.records.in")){
+//        LOG.info("incrementing metric: " + metricName + " , by : " + value);
+//
+//		LOG.info("Thread:: " + Thread.currentThread().getName()
+//		+ " ,thread id:: " +Thread.currentThread().getId()
+//		+   " ,value after increment:: "
+//			+ emitters.getUnchecked(tags).getUnchecked(metricName).toString());
+//
+//}
+      
     }
 
     @Override

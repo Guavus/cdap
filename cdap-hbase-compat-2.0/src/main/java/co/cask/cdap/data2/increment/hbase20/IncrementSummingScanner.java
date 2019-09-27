@@ -80,6 +80,7 @@ class IncrementSummingScanner implements RegionScanner {
 
   IncrementSummingScanner(Region region, int batchSize, InternalScanner internalScanner, ScanType scanType,
                           long compationUpperBound, long oldestTsByTTL) {
+    LOG.error("inside IncrementSummingScanner");
     this.region = region;
     this.batchSize = batchSize;
     this.baseScanner = new WrappedScanner(internalScanner);
@@ -163,9 +164,9 @@ class IncrementSummingScanner implements RegionScanner {
   }
 
   private boolean nextInternal(List<Cell> cells, ScannerContext scannerContext) throws IOException {
-    if (LOG.isTraceEnabled()) {
-      LOG.trace("nextInternal called with limit=" + scannerContext);
-    }
+    //if (LOG.isTraceEnabled()) {
+      LOG.info("IncrementSummingScanner nextInternal called with limit=" + scannerContext);
+    //}
     Cell previousIncrement = null;
     long runningSum = 0;
     int addedCnt = 0;
@@ -176,17 +177,19 @@ class IncrementSummingScanner implements RegionScanner {
     while ((cell = baseScanner.peekNextCell(scannerContext)) != null && (limit <= 0 || addedCnt < limit)) {
       // we use the "peek" semantics so that only once cell is ever emitted per iteration
       // this makes is clearer and easier to enforce that the returned results are <= limit
-      if (LOG.isTraceEnabled()) {
-        LOG.trace("Checking cell " + cell);
-      }
+//      if (LOG.isTraceEnabled()) {
+        LOG.info("Checking cell " + cell
+                + " ,cell.getTimestamp():: " + cell.getTimestamp()
+                + " ,compactionUpperBound:: " + compactionUpperBound);
+//      }
       // any cells visible to in-progress transactions must be kept unchanged
       if (cell.getTimestamp() > compactionUpperBound) {
         if (previousIncrement != null) {
           // if previous increment is present, only emit the previous increment, reset it, and continue.
           // the current cell will be consumed on the next iteration, if we have not yet reached the limit
-          if (LOG.isTraceEnabled()) {
-            LOG.trace("Including increment: sum=" + runningSum + ", cell=" + previousIncrement);
-          }
+          //if (LOG.isTraceEnabled()) {
+            LOG.info("Including increment: sum=" + runningSum + ", cell=" + previousIncrement);
+          //}
           cells.add(newCell(previousIncrement, runningSum));
           addedCnt++;
           previousIncrement = null;

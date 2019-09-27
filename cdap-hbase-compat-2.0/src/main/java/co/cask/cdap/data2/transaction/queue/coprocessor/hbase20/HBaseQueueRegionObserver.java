@@ -18,6 +18,7 @@ package co.cask.cdap.data2.transaction.queue.coprocessor.hbase20;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -104,6 +105,12 @@ public final class HBaseQueueRegionObserver implements RegionCoprocessor, Region
   private String namespaceId;
   private String appName;
   private String flowName;
+
+
+  @Override
+  public Optional<RegionObserver> getRegionObserver() {
+    return Optional.of(this);
+  }
 
   @Override
   public void start(CoprocessorEnvironment env) {

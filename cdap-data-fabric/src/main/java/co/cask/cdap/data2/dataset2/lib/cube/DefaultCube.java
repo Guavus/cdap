@@ -126,6 +126,7 @@ public class DefaultCube implements Cube, MeteredDataset {
 
   @Override
   public Collection<TimeSeries> query(CubeQuery query) {
+	  LOG.info("inside query:: " + query.toString());
     /*
       CubeQuery example: "dataset read ops for app per dataset". Or:
 
@@ -174,6 +175,7 @@ public class DefaultCube implements Cube, MeteredDataset {
     Aggregation agg;
     String aggName;
     if (query.getAggregation() != null) {
+    	LOG.info("inside query.getAggregation() != null :: " + query.getAggregation());
       aggName = query.getAggregation();
       agg = aggregations.get(query.getAggregation());
       if (agg == null) {
@@ -183,7 +185,12 @@ public class DefaultCube implements Cube, MeteredDataset {
                         query.getAggregation(), aggregations.keySet().toString()));
       }
     } else {
+    	LOG.info("inside query.getAggregation() == null:: " + query.getAggregation());
+    	
       ImmutablePair<String, Aggregation> aggregation = findAggregation(query);
+      
+      LOG.info("inside aggregation:: " + aggregation);
+      
       if (aggregation == null) {
         incrementMetric("cube.query.request.failure.count", 1);
         throw new IllegalArgumentException("There's no data aggregated for specified dimensions " +
@@ -191,6 +198,9 @@ public class DefaultCube implements Cube, MeteredDataset {
       }
       agg = aggregation.getSecond();
       aggName = aggregation.getFirst();
+      
+      LOG.info("inside agg:: " + agg);
+      LOG.info("inside aggName:: " + aggName);
     }
 
     // tell how many queries end up querying specific pre-aggregated views and resolutions
@@ -204,13 +214,26 @@ public class DefaultCube implements Cube, MeteredDataset {
       dimensionValues.add(new DimensionValue(dimensionName, query.getDimensionValues().get(dimensionName)));
     }
 
+
+    
     FactScan scan = new FactScan(query.getStartTs(), query.getEndTs(),
                                  query.getMeasurements().keySet(), dimensionValues);
+    
+    LOG.info("inside dimensionValues:: " + dimensionValues);
+    LOG.info("before FactScan:: " + query.getMeasurements().keySet());
+    LOG.info("before query.getStartTs():: " + query.getStartTs());
+    LOG.info("before query.getEndTs():: " + query.getEndTs());
+    LOG.info("scan:: " + scan);
 
     // 3) execute scan query
     FactTable table = resolutionToFactTable.get(query.getResolution());
+    
+    //LOG.info("FactTable:: " + table);
+    
     FactScanner scanner = table.scan(scan);
     Table<Map<String, String>, String, Map<Long, Long>> resultMap = getTimeSeries(query, scanner);
+    
+    LOG.info("resultMap:: " + resultMap);
 
     incrementMetric("cube.query.request.success.count", 1);
     incrementMetric("cube.query.result.size", resultMap.size());
@@ -336,6 +359,9 @@ public class DefaultCube implements Cube, MeteredDataset {
     int count = 0;
     while (scanner.hasNext()) {
       FactScanResult next = scanner.next();
+      
+      LOG.info("FactScanResult:: " + next);
+      
       incrementMetric("cube.query.scan.records.count", 1);
 
       boolean skip = false;
@@ -361,22 +387,34 @@ public class DefaultCube implements Cube, MeteredDataset {
         }
       }
 
+      LOG.info("seriesDimensions:: " + seriesDimensions);
+      
       if (skip) {
         incrementMetric("cube.query.scan.skipped.count", 1);
         continue;
       }
 
       for (TimeValue timeValue : next) {
+    	  LOG.info("interating over timeValue:: " + timeValue);
+    	  
+    	  
         Map<Long, Long> timeValues = result.get(seriesDimensions, next.getMeasureName());
         if (timeValues == null) {
           result.put(seriesDimensions, next.getMeasureName(), Maps.<Long, Long>newHashMap());
         }
 
         AggregationFunction function = query.getMeasurements().get(next.getMeasureName());
+        
+        LOG.info("AggregationFunction function:: " + function);
+        
         if (AggregationFunction.SUM == function) {
           Long value =  result.get(seriesDimensions, next.getMeasureName()).get(timeValue.getTimestamp());
+          
+          LOG.info("SUM value:: " + value + " , timeValue.getValue():: " + timeValue.getValue());
+          
           value = value == null ? 0 : value;
           value += timeValue.getValue();
+          
           result.get(seriesDimensions, next.getMeasureName()).put(timeValue.getTimestamp(), value);
         } else if (AggregationFunction.MAX == function) {
           Long value = result.get(seriesDimensions, next.getMeasureName()).get(timeValue.getTimestamp());
@@ -465,4 +503,15 @@ public class DefaultCube implements Cube, MeteredDataset {
     }
 
   }
+
+@Override
+public String toString() {
+	return "DefaultCube [resolutionToFactTable=" + resolutionToFactTable 
+			+ ", aggregations=" + aggregations
+			+ ", aggregationAliasMap=" + aggregationAliasMap 
+			+ ", metrics=" + metrics + "]";
+}
+  
+  
+  
 }

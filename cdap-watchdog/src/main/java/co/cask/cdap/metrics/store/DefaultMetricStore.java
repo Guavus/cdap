@@ -70,11 +70,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of {@link MetricStore}.
  */
 public class DefaultMetricStore implements MetricStore {
+	
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultMetricStore.class);
+	
   static final Map<String, Aggregation> AGGREGATIONS;
 
   private static final int TOTALS_RESOLUTION = Integer.MAX_VALUE;
@@ -282,6 +287,13 @@ public class DefaultMetricStore implements MetricStore {
       List<Measurement> metrics = Lists.newArrayList();
       // todo improve this logic?
       for (MetricValue metric : metricValue.getMetrics()) {
+        if(metric.getName().contains("File.records.in")){
+          LOG.info("adding metric ::" + metric.getName()
+                  + " , value:: " + metric.getValue()
+                  + " , type:: " + metric.getType()
+                  + " , Tags:: " + metricValue.getTags()
+                  + " , Timestamp:: " + metricValue.getTimestamp());
+        }
         String measureName = (scope == null ? "system." : scope + ".") + metric.getName();
         MeasureType type = metric.getType() == MetricType.COUNTER ? MeasureType.COUNTER : MeasureType.GAUGE;
         metrics.add(new Measurement(measureName, type, metric.getValue()));
@@ -297,25 +309,38 @@ public class DefaultMetricStore implements MetricStore {
 
   @Override
   public Collection<MetricTimeSeries> query(MetricDataQuery query) {
+	  
+	//LOG.info("executing query againt cube :: " + cube.get().toString());
+	  
     Collection<TimeSeries> cubeResult = cube.get().query(buildCubeQuery(query));
+    
+    LOG.info("sbbbbbb query result:: " + cubeResult.toString());
+    
     List<MetricTimeSeries> result = Lists.newArrayList();
     for (TimeSeries timeSeries : cubeResult) {
       result.add(new MetricTimeSeries(timeSeries.getMeasureName(),
                                       timeSeries.getDimensionValues(),
                                       timeSeries.getTimeValues()));
     }
+    
+    LOG.info("sbbbbbb query result:: " + result.toString());
+    
     return result;
   }
 
   private CubeQuery buildCubeQuery(MetricDataQuery query) {
     String aggregation = getAggregation(query);
-    return new CubeQuery(aggregation, query.getStartTs(), query.getEndTs(),
+    CubeQuery cubeQuery =  new CubeQuery(aggregation, query.getStartTs(), query.getEndTs(),
                          query.getResolution(), query.getLimit(), query.getMetrics(),
                          query.getSliceByTags(), query.getGroupByTags(), query.getInterpolator());
+    
+    LOG.info("sbbbbbb cubeQuery:: " + cubeQuery.toString());
+    return cubeQuery;
   }
 
   @Nullable
   private String getAggregation(MetricDataQuery query) {
+	  LOG.info("sbbbbbbbbbb  inside getAggregation :: " + query.toString());
     // We mostly rely on auto-selection of aggregation during query (in which case null is returned from
     // this method). In some specific cases we need to help resolve the aggregation though.
     Set<String> tagNames = ImmutableSet.<String>builder()
@@ -395,6 +420,7 @@ public class DefaultMetricStore implements MetricStore {
    */
   @Override
   public Map<String, MetricsProcessorStatus> getMetricsProcessorStats() throws Exception {
+	  LOG.info("sbbbbbbbbbb  inside getMetricsProcessorStats ");
     MetricsConsumerMetaTable metaTable = metaTableSupplier.get();
     Map<String, MetricsProcessorStatus> processMap = new HashMap<>();
     for (TopicId topicId : metricsTopics) {
@@ -413,6 +439,7 @@ public class DefaultMetricStore implements MetricStore {
                                                          topicProcessMeta.getLastProcessedTimestamp()));
       }
     }
+    LOG.info("sbbbbbbbbbb  inside getMetricsProcessorStats, processMap:" + processMap);
     return processMap;
   }
 

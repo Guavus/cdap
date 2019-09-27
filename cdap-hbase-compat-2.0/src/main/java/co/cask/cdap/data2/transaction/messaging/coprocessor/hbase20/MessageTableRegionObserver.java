@@ -18,11 +18,7 @@ package co.cask.cdap.data2.transaction.messaging.coprocessor.hbase20;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -82,6 +78,11 @@ public class MessageTableRegionObserver implements RegionCoprocessor,RegionObser
   private TopicMetadataCacheSupplier topicMetadataCacheSupplier;
   private CompactionState compactionState;
   private Boolean pruneEnable;
+
+  @Override
+  public Optional<RegionObserver> getRegionObserver() {
+    return Optional.of(this);
+  }
 
   @Override
   public void start(CoprocessorEnvironment e) throws IOException {

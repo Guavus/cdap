@@ -27,6 +27,9 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.streaming.Time;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Function used to implement a SparkCompute stage in a DStream.
  *
@@ -34,12 +37,16 @@ import org.apache.spark.streaming.Time;
  * @param <U> type of object in the output rdd
  */
 public class ComputeTransformFunction<T, U> implements Function2<JavaRDD<T>, Time, JavaRDD<U>> {
+private static final Logger LOG = LoggerFactory.getLogger(ComputeTransformFunction.class);
   private final JavaSparkExecutionContext sec;
   private final StageSpec stageSpec;
   private final SparkCompute<T, U> compute;
 
   public ComputeTransformFunction(JavaSparkExecutionContext sec, StageSpec stageSpec,
                                   SparkCompute<T, U> compute) {
+	
+	LOG.info("inside ComputeTransformFunction, args::: stageSpec: " + stageSpec.toString());
+    
     this.sec = sec;
     this.stageSpec = stageSpec;
     this.compute = compute;
@@ -47,6 +54,7 @@ public class ComputeTransformFunction<T, U> implements Function2<JavaRDD<T>, Tim
 
   @Override
   public JavaRDD<U> call(JavaRDD<T> data, Time batchTime) throws Exception {
+  LOG.info("inside ComputeTransformFunction . call, args::: ");
     SparkExecutionPluginContext sparkPluginContext =
       new SparkStreamingExecutionContext(sec, JavaSparkContext.fromSparkContext(data.context()),
                                          batchTime.milliseconds(), stageSpec);

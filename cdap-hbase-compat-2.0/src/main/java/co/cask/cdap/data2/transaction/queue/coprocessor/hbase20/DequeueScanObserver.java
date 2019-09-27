@@ -16,6 +16,8 @@
 
 package co.cask.cdap.data2.transaction.queue.coprocessor.hbase20;
 
+import java.util.Optional;
+
 import co.cask.cdap.data2.queue.ConsumerConfig;
 import co.cask.cdap.data2.transaction.queue.hbase.DequeueScanAttributes;
 import org.apache.hadoop.hbase.client.Scan;
@@ -55,4 +57,10 @@ public class DequeueScanObserver implements RegionCoprocessor,RegionObserver {
 //
 //	    return s;
 //	  }
-	}
+
+  @Override
+  public Optional<RegionObserver> getRegionObserver() {
+    return Optional.of(this);
+  }
+
+}

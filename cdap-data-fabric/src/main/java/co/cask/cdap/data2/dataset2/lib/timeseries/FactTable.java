@@ -117,11 +117,24 @@ public final class FactTable implements Closeable {
     NavigableMap<byte[], NavigableMap<byte[], byte[]>> incrementsTable = Maps.newTreeMap(Bytes.BYTES_COMPARATOR);
     for (Fact fact : facts) {
       for (Measurement measurement : fact.getMeasurements()) {
+
+        boolean track = false;
+        if(measurement.getName().contains("File.records.in")){
+          LOG.info("adding measurement :: " + measurement.getName()
+          + " , type:: " + measurement.getType()
+          + " , value:: " + measurement.getValue()
+                          + " , fact.getTimestamp():: " + fact.getTimestamp()
+                          + " , fact.getDimensionValues():: " + fact.getDimensionValues()
+          );
+          LOG.info("timeSeriesTable:: " + timeSeriesTable.getClass()
+          + " , timeSeriesTable:: " + timeSeriesTable);
+          track = true;
+        }
         byte[] rowKey = codec.createRowKey(fact.getDimensionValues(), measurement.getName(), fact.getTimestamp());
         byte[] column = codec.createColumn(fact.getTimestamp());
 
         if (MeasureType.COUNTER == measurement.getType()) {
-          inc(incrementsTable, rowKey, column, measurement.getValue());
+          inc(incrementsTable, rowKey, column, measurement.getValue(), track);
         } else {
           set(gaugesTable, rowKey, column, Bytes.toBytes(measurement.getValue()));
         }
@@ -442,9 +455,32 @@ public final class FactTable implements Closeable {
 
   // todo: shouldn't we aggregate "before" writing to FactTable? We could do it really efficient outside
   //       also: the underlying datasets will do aggregation in memory anyways
+
   private static void inc(NavigableMap<byte[], NavigableMap<byte[], byte[]>> incrementsTable,
-                   byte[] rowKey, byte[] column, long value) {
+                          byte[] rowKey, byte[] column, long value) {
+    inc(incrementsTable, rowKey, column, value,false);
+  }
+
+  private static void inc(NavigableMap<byte[], NavigableMap<byte[], byte[]>> incrementsTable,
+                   byte[] rowKey, byte[] column, long value , boolean track) {
     byte[] oldValue = get(incrementsTable, rowKey, column);
+
+
+    if(track){
+      if(oldValue!=null){
+        if (Bytes.SIZEOF_LONG == oldValue.length) {
+          LOG.info("inc:: Old value , Bytes.toLong(oldValue):: " + Bytes.toLong(oldValue)
+                  + " , new value:: " + value);
+        } else if (Bytes.SIZEOF_INT == oldValue.length) {
+          // In 2.4 and older versions we stored it as int
+          LOG.info("inc:: Old value , Bytes.toInt(oldValue):: " + Bytes.toInt(oldValue)
+                  + " , new value:: " + value);
+        }
+      }else{
+        LOG.info("old value is null");
+      }
+    }
+
     long newValue = value;
     if (oldValue != null) {
       if (Bytes.SIZEOF_LONG == oldValue.length) {
@@ -461,6 +497,25 @@ public final class FactTable implements Closeable {
 
     }
     set(incrementsTable, rowKey, column, Bytes.toBytes(newValue));
+
+    if(track){
+      LOG.info("checking again ");
+      byte[] updatedValue = get(incrementsTable, rowKey, column);
+      if(updatedValue != null){
+        if (Bytes.SIZEOF_LONG == updatedValue.length) {
+          LOG.info("inc:: Updated value , Bytes.toLong(oldValue):: " + Bytes.toLong(updatedValue)
+                  + " , new value:: " + value);
+        } else if (Bytes.SIZEOF_INT == updatedValue.length) {
+          // In 2.4 and older versions we stored it as int
+          LOG.info("inc:: Updated value , Bytes.toInt(oldValue):: " + Bytes.toInt(updatedValue)
+                  + " , new value:: " + value);
+        }
+      }else{
+        LOG.info("Updated value is null");
+      }
+
+      LOG.info("**** track end ****");
+    }
   }
 
   private static byte[] get(NavigableMap<byte[], NavigableMap<byte[], byte[]>> table, byte[] row, byte[] column) {
@@ -473,4 +528,14 @@ public final class FactTable implements Closeable {
     NavigableMap<byte[], byte[]> rowMap = table.computeIfAbsent(row, k -> Maps.newTreeMap(Bytes.BYTES_COMPARATOR));
     rowMap.put(column, value);
   }
+
+@Override
+public String toString() {
+	return "FactTable [timeSeriesTable=" + timeSeriesTable + ", entityTable=" + entityTable + ", codec=" + codec
+			+ ", resolution=" + resolution + ", rollTime=" + rollTime + ", putCountMetric=" + putCountMetric
+			+ ", incrementCountMetric=" + incrementCountMetric + ", metrics=" + metrics + "]";
+}
+  
+  
+  
 }

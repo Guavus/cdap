@@ -47,7 +47,13 @@ import javax.annotation.Nullable;
  */
 public final class EntityTable implements Closeable {
 
-  private static final Logger LOG = LoggerFactory.getLogger(EntityTable.class);
+  @Override
+	public String toString() {
+		return "EntityTable [table=" + table + ", entityCache=" + entityCache + ", idCache=" + idCache + ", maxId="
+				+ maxId + ", size=" + size + "]";
+	}
+
+private static final Logger LOG = LoggerFactory.getLogger(EntityTable.class);
 
   private static final byte[] ID = Bytes.toBytes("id");
   private static final byte[] MAX_ID = Bytes.toBytes("maxId");

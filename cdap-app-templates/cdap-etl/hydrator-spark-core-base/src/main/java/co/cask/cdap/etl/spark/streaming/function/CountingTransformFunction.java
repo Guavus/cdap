@@ -23,6 +23,8 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Function used to emit a metric for every item in an RDD.
@@ -30,6 +32,9 @@ import javax.annotation.Nullable;
  * @param <T> type of object in the rdd.
  */
 public class CountingTransformFunction<T> implements Function<JavaRDD<T>, JavaRDD<T>> {
+  
+  private static final Logger LOG = LoggerFactory.getLogger(CountingTransformFunction.class);
+
   private final Metrics metrics;
   private final String stageName;
   private final String metricName;
@@ -38,6 +43,7 @@ public class CountingTransformFunction<T> implements Function<JavaRDD<T>, JavaRD
   // DataTracer is null for records.in
   public CountingTransformFunction(String stageName, Metrics metrics, String metricName,
                                    @Nullable DataTracer dataTracer) {
+    LOG.info("sbbbbbb new CountingTransformFunction , stageName: " + stageName + " , metricName: " + metricName);
     this.metrics = metrics;
     this.stageName = stageName;
     this.metricName = metricName;
