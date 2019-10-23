@@ -35,6 +35,7 @@
     "reports": true,
     "data-prep": true,
     "feature-engineering": true,
+    "mrds": true,
     "pipelines": true,
     "analytics": true,
     "rules-engine": true,

@@ -25,6 +25,7 @@ import find from 'lodash/find';
 import remove from 'lodash/remove';
 import { removeSchemaFromPropertyMap } from '../util';
 import PropTypes from 'prop-types';
+import { OK } from '../config';
 
 
 require('./SchemaSelector.scss');
@@ -125,7 +126,7 @@ class SchemaSelector extends React.Component {
   }
 
   onAlertClose(action) {
-    if (action === 'OK' && this.state.schemaSelected) {
+    if (action === OK && this.state.schemaSelected) {
       this.props.deleteSelectedSchema(this.state.schemaSelected);
       let propertyMap = cloneDeep(this.props.propertyMap);
       removeSchemaFromPropertyMap(propertyMap, this.state.schemaSelected.schemaName);
