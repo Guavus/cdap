@@ -626,6 +626,12 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       // That is the reason we are temporarily stripping out referer from the headers.
       var headers = req.headers;
       delete headers.referer;
+
+      if (req.cookies && req.cookies['CDAP_Auth_Token']) {
+        headers["authorization"] = 'Bearer ' + req.cookies['CDAP_Auth_Token'];
+      }
+
+
       res.header({
         'Connection': 'close'
       });
