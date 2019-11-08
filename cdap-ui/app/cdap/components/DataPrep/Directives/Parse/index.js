@@ -29,6 +29,7 @@ import DataPrepStore from 'components/DataPrep/store';
 import DataPrepActions from 'components/DataPrep/store/DataPrepActions';
 import debounce from 'lodash/debounce';
 import {setPopoverOffset} from 'components/DataPrep/helper';
+import { Theme } from 'services/ThemeHelper';
 
 const SUFFIX = 'features.DataPrep.Directives.Parse';
 
@@ -38,8 +39,13 @@ const DIRECTIVE_MAP = {
   'CSV': 'parse-as-csv',
   'XML': 'parse-as-xml',
   'JSON': 'parse-as-json',
+  'XMLTOJSON': 'parse-xml-to-json',
+  'LOG': 'parse-as-log',
   'SIMPLEDATE': 'parse-as-simple-date',
   'NATURALDATE': 'parse-as-date',
+  'FIXEDLENGTH': 'parse-as-fixed-length',
+  'HL7': 'parse-as-hl7',
+  'AVRO': 'parse-as-avro-file',
   'EXCEL': 'parse-as-excel'
 };
 
@@ -55,13 +61,18 @@ export default class ParseDirective extends Component {
 
     this.PARSE_OPTIONS = [
       'CSV',
+      'AVRO',
       'EXCEL',
       'XML',
       'JSON',
+      'XMLTOJSON',
+      'LOG',
       'SIMPLEDATE',
-      'NATURALDATE'
+      'NATURALDATE',
+      'FIXEDLENGTH',
+      'HL7'
     ];
-
+    this.PARSE_OPTIONS = Theme.isCustomerJIO ? ['CSV', 'EXCEL', 'XML', 'JSON', 'SIMPLEDATE', 'NATURALDATE'] : this.PARSE_OPTIONS;
     window.addEventListener('resize', this.offsetCalcDebounce);
   }
 
