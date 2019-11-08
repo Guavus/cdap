@@ -38,13 +38,8 @@ const DIRECTIVE_MAP = {
   'CSV': 'parse-as-csv',
   'XML': 'parse-as-xml',
   'JSON': 'parse-as-json',
-  'XMLTOJSON': 'parse-xml-to-json',
-  'LOG': 'parse-as-log',
   'SIMPLEDATE': 'parse-as-simple-date',
   'NATURALDATE': 'parse-as-date',
-  'FIXEDLENGTH': 'parse-as-fixed-length',
-  'HL7': 'parse-as-hl7',
-  'AVRO': 'parse-as-avro-file',
   'EXCEL': 'parse-as-excel'
 };
 
@@ -60,16 +55,11 @@ export default class ParseDirective extends Component {
 
     this.PARSE_OPTIONS = [
       'CSV',
-      'AVRO',
       'EXCEL',
       'XML',
       'JSON',
-      'XMLTOJSON',
-      'LOG',
       'SIMPLEDATE',
-      'NATURALDATE',
-      'FIXEDLENGTH',
-      'HL7'
+      'NATURALDATE'
     ];
 
     window.addEventListener('resize', this.offsetCalcDebounce);
