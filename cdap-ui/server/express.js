@@ -287,7 +287,6 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
   });
 
   app.get('/downloadLogs', function(req, res) {
-    console.log("download logs :: ")
     var url = decodeURIComponent(req.query.backendUrl);
     var method = (req.query.method || 'GET');
     res.header({
@@ -628,7 +627,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       delete headers.referer;
 
       if (req.cookies && req.cookies['CDAP_Auth_Token']) {
-        headers["authorization"] = 'Bearer ' + req.cookies['CDAP_Auth_Token'];
+        headers['authorization'] = 'Bearer ' + req.cookies['CDAP_Auth_Token'];
       }
 
 
@@ -826,7 +825,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         });
     }
   ]);
-  
+
   function isAuthenticated(req) {
     return new Promise(function(resolve) {
       if (!authAddress.enabled) {
