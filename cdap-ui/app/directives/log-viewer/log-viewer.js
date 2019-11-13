@@ -226,11 +226,12 @@ function LogViewerController($scope, $window, LogViewerStore, myLogsApi, LOGVIEW
 
     vm.displayData = vm.displayData.filter((data, index) => {
       var checkInStackTrace = (data.log.stackTrace !== '' && data.log.stackTrace.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1);
-      if ((data.log && data.log.message && (data.log.message.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1)) || checkInStackTrace) {
+      if (data.log && data.log.message && (data.log.message.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1)) {
         searchResults.push(data.log.timestamp);
-        if (checkInStackTrace) {
-          this.toggleStackTrace(index, checkInStackTrace);
-        }
+        return true;
+      } else if (checkInStackTrace) {
+        searchResults.push(data.log.timestamp);
+        this.toggleStackTrace(index, checkInStackTrace);
         return true;
       }
       return false;
