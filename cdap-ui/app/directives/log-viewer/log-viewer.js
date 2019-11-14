@@ -662,7 +662,7 @@ function LogViewerController($scope, $window, LogViewerStore, myLogsApi, LOGVIEW
       displayData to the data list we get from backend
     */
     // Clean slate
-    vm.displayData = vm.data;
+    vm.displayData = _.cloneDeep(vm.data);
     checkForScrollbar();
   };
 
