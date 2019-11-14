@@ -223,8 +223,19 @@ function LogViewerController($scope, $window, LogViewerStore, myLogsApi, LOGVIEW
     }
 
     let searchResults = [];
-
-    vm.displayData = vm.displayData.filter((data, index) => {
+    let arr = [];
+    for (let index = 0; index < vm.displayData.length; index++){
+      let data = vm.displayData[index];
+      let checkInStackTrace = (data.log.stackTrace !== '' && data.log.stackTrace.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1);
+      if ((data.log && data.log.message && (data.log.message.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1)) || checkInStackTrace) {
+        searchResults.push(data.log.timestamp);
+        if (checkInStackTrace) {
+          this.toggleStackTrace(index, checkInStackTrace);
+        }
+        arr.push(data);
+      }
+    }
+    /* vm.displayData = vm.displayData.filter((data, index) => {
       var checkInStackTrace = (data.log.stackTrace !== '' && data.log.stackTrace.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1);
       if (data.log && data.log.message && (data.log.message.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1)) {
         searchResults.push(data.log.timestamp);
@@ -235,7 +246,8 @@ function LogViewerController($scope, $window, LogViewerStore, myLogsApi, LOGVIEW
         return true;
       }
       return false;
-    });
+    }); */
+    vm.displayData = arr;
 
     vm.updateSearchResultsInStore(searchResults);
   };
