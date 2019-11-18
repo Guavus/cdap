@@ -235,14 +235,6 @@ function LogViewerController($scope, $window, LogViewerStore, myLogsApi, LOGVIEW
       }
     }
     vm.displayData = arr;
-    /* vm.displayData = vm.displayData.filter( data => {
-      if (data.log.message.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1) {
-        searchResults.push(data.log.timestamp);
-        return true;
-      }
-      return false;
-    }); */
-
     vm.updateSearchResultsInStore(searchResults);
   };
 
