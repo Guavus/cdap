@@ -222,19 +222,19 @@ function LogViewerController($scope, $window, LogViewerStore, myLogsApi, LOGVIEW
       return;
     }
 
-    let searchResults = [], arr = [];
-    for (let index = 0; index < vm.displayData.length; index++){
-      let data = vm.displayData[index];
+    let searchResults = [];
+    vm.displayData =  vm.displayData.reduce((displayData, data, index)  => {
       let checkInStackTrace = (data.log.stackTrace !== '' && data.log.stackTrace.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1);
       if ((data.log && data.log.message && (data.log.message.toLowerCase().indexOf(vm.searchText.toLowerCase()) !== -1)) || checkInStackTrace) {
         searchResults.push(data.log.timestamp);
         if (checkInStackTrace) {
           this.toggleStackTrace(index, checkInStackTrace);
         }
-        arr.push(data);
+        displayData.push(data);
       }
-    }
-    vm.displayData = arr;
+      return displayData;
+    },[]);
+
     vm.updateSearchResultsInStore(searchResults);
   };
 
