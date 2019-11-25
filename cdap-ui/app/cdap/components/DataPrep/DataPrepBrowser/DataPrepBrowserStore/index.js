@@ -79,6 +79,11 @@ const Actions = {
   SET_ADLS_FILE_SYSTEM_LOADING: 'SET_ADLS_FILE_SYSTEM_LOADING',
   SET_ADLS_FILE_SYSTEM_SEARCH: 'SET_ADLS_FILE_SYSTEM_SEARCH',
 
+  // HIVE
+  SET_HIVE_PROPERTIES: 'SET_DATABASE_PROPERTIES',
+  SET_HIVE_CONNECTION_ID: 'SET_DATABASE_CONNECTION_ID',
+  SET_HIVE_LOADING: 'SET_DATABASE_LOADING',
+
   SET_ERROR: 'SET_ERROR',
   RESET: 'RESET'
 };
@@ -153,6 +158,12 @@ const defaultADLSValue = {
   path: '',
   search: '',
   loading: false
+};
+
+const defaultHIVEValue = {
+  info: {},
+  loading: false,
+  connectionId: ''
 };
 
 const defaultActiveBrowser = {
@@ -233,6 +244,44 @@ const database = (state = defaultDatabaseValue, action = defaultAction) => {
       return defaultDatabaseValue;
     case Actions.RESET:
       return defaultDatabaseValue;
+    default:
+      return state;
+  }
+};
+
+const hive = (state = defaultHIVEValue, action = defaultAction) => {
+  switch (action.type) {
+    case Actions.SET_HIVE_CONNECTION_ID: {
+      if (action.payload.connectionId === state.connectionId) {
+        return state;
+      }
+      // This means the user is starting afresh. Reset everything to default and set the connectionID
+      return {
+        ...defaultHIVEValue,
+        connectionId: action.payload.connectionId
+      };
+    }
+    case Actions.SET_HIVE_PROPERTIES:
+      return Object.assign({}, state, {
+        info: objectQuery(action, 'payload', 'info') || state.info,
+        connectionId: objectQuery(action, 'payload', 'connectionId'),
+        error: null,
+        loading: false
+      });
+    case Actions.SET_HIVE_LOADING:
+      return Object.assign({}, state, {
+        loading: action.payload.loading,
+        error: null
+      });
+    case Actions.SET_ERROR:
+      return {
+        ...state,
+        loading: false
+      };
+    case Actions.SET_ACTIVEBROWSER:
+      return defaultHIVEValue;
+    case Actions.RESET:
+      return defaultHIVEValue;
     default:
       return state;
   }
@@ -591,6 +640,7 @@ const DataPrepBrowserStore = createStore(
     spanner,
     error,
     adls,
+    hive,
   }),
   {
     file: defaultFileSystemValue,
@@ -603,6 +653,7 @@ const DataPrepBrowserStore = createStore(
     spanner: defaultSpannerValue,
     error: defaultError,
     adls: defaultADLSValue,
+    hive: defaultHIVEValue
   },
   composeEnhancers('DataPrepBrowserStore')()
 );

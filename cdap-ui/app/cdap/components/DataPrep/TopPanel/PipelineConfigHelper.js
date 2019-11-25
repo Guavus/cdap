@@ -373,6 +373,41 @@ function constructAdlsSource(artifactsList, adlsInfo) {
   };
 }
 
+function constructHiveSource(artifactsList, hiveInfo) {
+  if (!hiveInfo) { return null; }
+
+  let batchArtifact = find(artifactsList, { 'name': 'hive-plugins' });
+
+  if (!batchArtifact) {
+    return T.translate(`${PREFIX}.hive`);
+  }
+  batchArtifact.version = '[1.7.0, 3.0.0)';
+
+  let plugin = objectQuery(hiveInfo, 'values', 0);
+  let pluginName = Object.keys(plugin)[0];
+  plugin = plugin[pluginName];
+
+  let batchPluginInfo = {
+    name: plugin.name,
+    label: plugin.name,
+    type: 'batchsource',
+    artifact: batchArtifact,
+    properties: plugin.properties
+  };
+
+  let batchStage = {
+    name: pluginName,
+    plugin: batchPluginInfo
+  };
+
+  return {
+    batchSource: batchStage,
+    connections: [{
+      from: pluginName,
+      to: 'Wrangler'
+    }]
+  };
+}
 
 function constructSpannerSource(artifactsList, spannerInfo) {
   if (!spannerInfo) { return null; }
@@ -495,6 +530,14 @@ function constructProperties(workspaceInfo, pluginVersion) {
       connectionId: state.workspaceInfo.properties.connectionid,
     };
     rxArray.push(MyDataPrepApi.getAdlsSpecification(specParams));
+  } else if (state.workspaceInfo.properties.connection === 'hive') {
+    let specParams = {
+      namespace,
+      workspaceId,
+      path: state.workspaceUri,
+      connectionId: state.workspaceInfo.properties.connectionid,
+    };
+    rxArray.push(MyDataPrepApi.getHiveSpecification(specParams));
   }
 
   try {
@@ -589,6 +632,8 @@ function constructProperties(workspaceInfo, pluginVersion) {
         sourceConfigs = constructSpannerSource(res[0], res[2]);
       } else if (connectionType === 'adls') {
         sourceConfigs = constructAdlsSource(res[0], res[2]);
+      } else if (connectionType === 'hive') {
+        sourceConfigs = constructHiveSource(res[0], res[2]);
       }
 
       if (typeof sourceConfigs === 'string') {

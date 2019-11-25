@@ -534,6 +534,21 @@ features:
             truncatedContentsTooltip: The bucket you are viewing contains more directories and files we can currently display.
             truncatedLabel: "{dirsCount} directories and {fileCount} files of many"
           selectData: Select data
+      HIVEBrowser:
+        EmptyMessage:
+          emptyDatasetList: 'No Data'
+          emptyTableList: 'No Data'
+        name: Name
+        pageTitle: '{productName} | Connections | HIVE | {connectionId}'
+        title: 'HIVE'
+        Search:
+          placeholder: Search this directory
+        TopPanel:
+          ListingInfo:
+            label: "{dirsCount} directories and {filesCount} files"
+            truncatedContentsTooltip: The bucket you are viewing contains more directories and files we can currently display.
+            truncatedLabel: "{dirsCount} directories and {fileCount} files of many"
+          selectData: Select data
 
     Directives:
       apply: Apply
@@ -1043,6 +1058,7 @@ features:
       file: File System
       gcs: Google Cloud Storage
       adls: ADLS File System
+      hive: HIVE Server2
       invalidFieldNameMessage: Invalid column name "{fieldName}"
       invalidFieldNameRemedies1: "Spaces and special characters other than - or _ are not allowed in column names."
       invalidFieldNameRemedies2: "You can try to "
