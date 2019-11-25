@@ -20,41 +20,27 @@ import React, { Component } from 'react';
 import IconSVG from 'components/IconSVG';
 import MyDataPrepApi from 'api/dataprep';
 import NamespaceStore from 'services/NamespaceStore';
-import classnames from 'classnames';
 import T from 'i18n-react';
-import replace from 'lodash/replace';
 import ee from 'event-emitter';
-import {objectQuery} from 'services/helpers';
 import CardActionFeedback from 'components/CardActionFeedback';
 import uuidV4 from 'uuid/v4';
 import LoadingSVG from 'components/LoadingSVG';
-import {ConnectionType} from 'components/DataPrepConnections/ConnectionType';
-
-const CONN_TYPE = {
-  basic: 'BASIC',
-  advanced: 'ADVANCED'
-};
+import { objectQuery } from 'services/helpers';
+import { ConnectionType } from 'components/DataPrepConnections/ConnectionType';
 
 const LABEL_COL_CLASS = 'col-xs-4 col-form-label text-xs-right';
 const INPUT_COL_CLASS = 'col-xs-8';
 
-const PREFIX = 'features.DataPrepConnections.AddConnections.HIVE.DatabaseDetail';
+const PREFIX = 'features.DataPrepConnections.AddConnections.HIVEServer2';
 
-export default class DatabaseDetail extends Component {
+export default class HIVEServer2Detail extends Component {
   constructor(props) {
     super(props);
-
-    let defaultPort = this.props.db['default.port'] || '';
 
     let customId = uuidV4();
 
     this.state = {
-      connType: this.props.db.name === 'oraclethin' ? CONN_TYPE.advanced : CONN_TYPE.basic,
       name: '',
-      hostname: 'localhost',
-      port: this.props.mode === 'ADD' ? defaultPort : '',
-      username: '',
-      password: '',
       database: '',
       connectionString: '',
       connectionResult: null,
@@ -78,11 +64,11 @@ export default class DatabaseDetail extends Component {
     let namespace = NamespaceStore.getState().selectedNamespace;
     let requestBody = {
       name: this.state.name,
-      type: ConnectionType.DATABASE,
+      type: ConnectionType.HIVESERVER2,
       properties: this.constructProperties()
     };
 
-    MyDataPrepApi.getDatabaseList({namespace}, requestBody)
+    MyDataPrepApi.getDatabaseList({ namespace }, requestBody)
       .subscribe((databaseList) => {
         let list = databaseList.values.sort();
         let customId = this.state.customId;
@@ -110,23 +96,14 @@ export default class DatabaseDetail extends Component {
 
       let {
         connectionString = '',
-        password = '',
-        username = '',
-        hostname = '',
-        port = '',
         database = ''
       } = this.props.connInfo.properties;
 
       this.setState({
         name,
         connectionString,
-        password,
-        username,
-        hostname,
-        port,
         database,
         selectedDatabase: this.state.customId,
-        connType: connectionString ? CONN_TYPE.advanced : CONN_TYPE.basic
       });
 
       if (this.props.mode === 'EDIT') {
@@ -158,60 +135,19 @@ export default class DatabaseDetail extends Component {
     });
   }
 
-  handleConnTypeChange(type) {
-    this.setState({connType: type});
-  }
-
   constructProperties() {
     let properties;
     let db = this.props.db;
-
-    if (this.state.connType === CONN_TYPE.basic) {
-      let selectedDatabase = this.state.selectedDatabase === this.state.customId ? this.state.database : this.state.selectedDatabase;
-
-      properties = {
-        hostname: this.state.hostname,
-        port: this.state.port,
-        username: this.state.username,
-        password: this.state.password,
-        database: selectedDatabase
-      };
-    } else {
-      properties = {
-        connectionString: this.state.connectionString,
-        username: this.state.username,
-        password: this.state.password
-      };
-    }
+    properties = {
+      connectionString: this.state.connectionString
+    };
 
     properties.name = db.name;
     properties.type = db.pluginInfo.properties.type;
-    properties.class =  db.pluginInfo.properties.class;
-    properties.url = this.interpolateConnectionString(db.pluginInfo.url);
+    properties.class = db.pluginInfo.properties.class;
+    properties.url = this.state.connectionString;
 
     return properties;
-  }
-
-  interpolateConnectionString(url) {
-    let state = this.state;
-    let required = this.props.db.pluginInfo.fields;
-
-    let interpolatedUrl = url;
-
-    if (this.state.connType === CONN_TYPE.basic) {
-      required.forEach((field) => {
-        let fieldValue = state[field];
-        if (field === 'database') {
-          fieldValue = state.selectedDatabase === state.customId ? state.database : state.selectedDatabase;
-        }
-
-        interpolatedUrl = replace(interpolatedUrl, '${' + field + '}', fieldValue);
-      });
-    } else {
-      interpolatedUrl = this.state.connectionString;
-    }
-
-    return interpolatedUrl;
   }
 
   addConnection() {
@@ -219,13 +155,13 @@ export default class DatabaseDetail extends Component {
 
     let requestBody = {
       name: this.state.name,
-      type: ConnectionType.DATABASE,
+      type: ConnectionType.HIVESERVER2,
       properties: this.constructProperties()
     };
 
-    MyDataPrepApi.createConnection({namespace}, requestBody)
+    MyDataPrepApi.createConnection({ namespace }, requestBody)
       .subscribe(() => {
-        this.setState({error: null});
+        this.setState({ error: null });
         this.props.onAdd();
       }, (err) => {
         console.log('err', err);
@@ -246,13 +182,13 @@ export default class DatabaseDetail extends Component {
     let requestBody = {
       name: this.state.name,
       id: this.props.connectionId,
-      type: ConnectionType.DATABASE,
+      type: ConnectionType.HIVESERVER2,
       properties: this.constructProperties()
     };
 
     MyDataPrepApi.updateConnection(params, requestBody)
       .subscribe(() => {
-        this.setState({error: null});
+        this.setState({ error: null });
         this.eventEmitter.emit('DATAPREP_CONNECTION_EDIT_DATABASE', this.props.connectionId);
         this.props.onAdd();
       }, (err) => {
@@ -264,17 +200,17 @@ export default class DatabaseDetail extends Component {
   }
 
   testConnection() {
-    this.setState({testConnectionLoading: true});
+    this.setState({ testConnectionLoading: true });
 
     let namespace = NamespaceStore.getState().selectedNamespace;
 
     let requestBody = {
       name: this.state.name,
-      type: ConnectionType.DATABASE,
+      type: ConnectionType.HIVESERVER2,
       properties: this.constructProperties()
     };
 
-    MyDataPrepApi.jdbcTestConnection({namespace}, requestBody)
+    MyDataPrepApi.jdbcTestConnection({ namespace }, requestBody)
       .subscribe((res) => {
         this.setState({
           connectionResult: {
@@ -300,42 +236,6 @@ export default class DatabaseDetail extends Component {
       });
   }
 
-  renderUsername() {
-    return (
-      <div className="form-group row">
-        <label className={LABEL_COL_CLASS}>
-          {T.translate(`${PREFIX}.username`)}
-        </label>
-        <div className={INPUT_COL_CLASS}>
-          <input
-            type="text"
-            className="form-control"
-            value={this.state.username}
-            onChange={this.handleChange.bind(this, 'username')}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  renderPassword() {
-    return (
-      <div className="form-group row">
-        <label className={LABEL_COL_CLASS}>
-          {T.translate(`${PREFIX}.password`)}
-        </label>
-        <div className={INPUT_COL_CLASS}>
-          <input
-            type="password"
-            className="form-control"
-            value={this.state.password}
-            onChange={this.handleChange.bind(this, 'password')}
-          />
-        </div>
-      </div>
-    );
-  }
-
   renderTestButton() {
     let disabled = this.state.testConnectionLoading;
 
@@ -357,7 +257,7 @@ export default class DatabaseDetail extends Component {
                   <LoadingSVG />
                 </span>
               )
-            :
+              :
               null
           }
 
@@ -370,7 +270,7 @@ export default class DatabaseDetail extends Component {
                   {this.state.connectionResult.message}
                 </span>
               )
-            :
+              :
               null
           }
         </div>
@@ -416,56 +316,11 @@ export default class DatabaseDetail extends Component {
                   />
                 </div>
               )
-            :
+              :
               null
           }
         </div>
       </div>
-    );
-  }
-
-  renderBasic() {
-    return (
-      <div>
-        <div className="form-group row">
-          <label className={LABEL_COL_CLASS}>
-            {T.translate(`${PREFIX}.hostname`)}
-            <span className="asterisk">*</span>
-          </label>
-          <div className={INPUT_COL_CLASS}>
-            <input
-              type="text"
-              className="form-control"
-              value={this.state.hostname}
-              onChange={this.handleChange.bind(this, 'hostname')}
-            />
-          </div>
-        </div>
-
-        <div className="form-group row">
-          <label className={LABEL_COL_CLASS}>
-            {T.translate(`${PREFIX}.port`)}
-            <span className="asterisk">*</span>
-          </label>
-          <div className={INPUT_COL_CLASS}>
-            <input
-              type="text"
-              className="form-control"
-              value={this.state.port}
-              onChange={this.handleChange.bind(this, 'port')}
-            />
-          </div>
-        </div>
-
-        {this.renderUsername()}
-
-        {this.renderPassword()}
-
-        {this.renderTestButton()}
-
-        {this.renderDatabase()}
-      </div>
-
     );
   }
 
@@ -491,63 +346,18 @@ export default class DatabaseDetail extends Component {
           </div>
         </div>
 
-        {this.renderUsername()}
-
-        {this.renderPassword()}
-
         {this.renderTestButton()}
       </div>
     );
   }
 
-  renderDriverInfo() {
-    let db = this.props.db;
-
-    return (
-      <div className="row driver-info">
-        <div className="col-xs-4 text-xs-right">
-          <div className="image-container">
-            <div className={`db-image db-${db.tag}`}></div>
-          </div>
-          <div className="db-label">
-            <span>{db.label}</span>
-          </div>
-        </div>
-
-        <div className="col-xs-8 driver-detail">
-          <span>
-            {db.pluginInfo.version}
-          </span>
-
-          <span>
-            <span className="fa fa-fw">
-              <IconSVG name="icon-check-circle" />
-            </span>
-
-            <span>{T.translate(`${PREFIX}.driverInstalled`)}</span>
-          </span>
-        </div>
-      </div>
-    );
-  }
-
   renderConnectionInfo() {
-    if (this.state.connType === CONN_TYPE.basic) {
-      return this.renderBasic();
-    }
-
     return this.renderAdvanced();
   }
 
   renderAddConnectionButton() {
     let disabled = !this.state.name;
-
-    if (this.state.connType === CONN_TYPE.basic) {
-      disabled = disabled || !this.state.hostname || !this.state.port;
-    } else {
-      disabled = disabled || !this.state.connectionString;
-    }
-
+    disabled = disabled || !this.state.connectionString;
     let onClickFn = this.addConnection;
 
     if (this.props.mode === 'EDIT') {
@@ -564,33 +374,6 @@ export default class DatabaseDetail extends Component {
           >
             {T.translate(`${PREFIX}.Buttons.${this.props.mode}`)}
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  renderConnectionType () {
-    if (this.props.db.name === 'oraclethin') { return null; }
-
-    return (
-      <div className="form-group row">
-        <label className={LABEL_COL_CLASS}>
-          {T.translate(`${PREFIX}.connType`)}
-        </label>
-        <div className={`${INPUT_COL_CLASS} connection-type`}>
-          <span
-            onClick={this.handleConnTypeChange.bind(this, CONN_TYPE.basic)}
-            className={classnames({'active': this.state.connType === CONN_TYPE.basic})}
-          >
-            {T.translate(`${PREFIX}.basic`)}
-          </span>
-          <span className="divider">|</span>
-          <span
-            onClick={this.handleConnTypeChange.bind(this, CONN_TYPE.advanced)}
-            className={classnames({'active': this.state.connType === CONN_TYPE.advanced})}
-          >
-            {T.translate(`${PREFIX}.advanced`)}
-          </span>
         </div>
       </div>
     );
@@ -632,7 +415,6 @@ export default class DatabaseDetail extends Component {
     return (
       <div className="database-detail">
         <div className="database-detail-content">
-          {this.renderDriverInfo()}
 
           <form onSubmit={this.preventDefault}>
             <div className="form-group row">
@@ -652,8 +434,6 @@ export default class DatabaseDetail extends Component {
               </div>
             </div>
 
-            {this.renderConnectionType()}
-
             {this.renderConnectionInfo()}
 
           </form>
@@ -661,15 +441,13 @@ export default class DatabaseDetail extends Component {
           {this.renderAddConnectionButton()}
         </div>
 
-        {backlink}
-
         {this.renderError()}
       </div>
     );
   }
 }
 
-DatabaseDetail.propTypes = {
+HIVEServer2Detail.propTypes = {
   back: PropTypes.func,
   db: PropTypes.object,
   onAdd: PropTypes.func,

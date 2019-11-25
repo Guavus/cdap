@@ -32,11 +32,11 @@ import DataprepBrowserTopPanel from 'components/DataPrep/DataPrepBrowser/DataPre
 import {ConnectionType} from 'components/DataPrepConnections/ConnectionType';
 import isNil from 'lodash/isNil';
 
-require('./HIVEBrowser.scss');
+require('./HIVEServer2Browser.scss');
 
-const PREFIX = `features.DataPrep.DataPrepBrowser.HIVEBrowser`;
+const PREFIX = `features.DataPrep.DataPrepBrowser.HIVEServer2Browser`;
 
-export default class HIVEBrowser extends Component {
+export default class HIVEServer2Browser extends Component {
   static propTypes = {
     toggle: PropTypes.func,
     onWorkspaceCreate: PropTypes.func
@@ -219,7 +219,7 @@ export default class HIVEBrowser extends Component {
       <div className="database-browser">
         <Provider store={DataPrepBrowserStore}>
           <DataPrepBrowserPageTitle
-            browserI18NName="HIVEBrowser"
+            browserI18NName="HIVEServer2Browser"
             browserStateName="database"
           />
         </Provider>

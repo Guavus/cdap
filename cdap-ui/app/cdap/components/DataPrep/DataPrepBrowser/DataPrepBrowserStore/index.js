@@ -79,10 +79,10 @@ const Actions = {
   SET_ADLS_FILE_SYSTEM_LOADING: 'SET_ADLS_FILE_SYSTEM_LOADING',
   SET_ADLS_FILE_SYSTEM_SEARCH: 'SET_ADLS_FILE_SYSTEM_SEARCH',
 
-  // HIVE
-  SET_HIVE_PROPERTIES: 'SET_DATABASE_PROPERTIES',
-  SET_HIVE_CONNECTION_ID: 'SET_DATABASE_CONNECTION_ID',
-  SET_HIVE_LOADING: 'SET_DATABASE_LOADING',
+  // HIVE SERVER2
+  SET_HIVESERVER2_PROPERTIES: 'SET_DATABASE_PROPERTIES',
+  SET_HIVESERVER2_CONNECTION_ID: 'SET_DATABASE_CONNECTION_ID',
+  SET_HIVESERVER2_LOADING: 'SET_DATABASE_LOADING',
 
   SET_ERROR: 'SET_ERROR',
   RESET: 'RESET'
@@ -160,7 +160,7 @@ const defaultADLSValue = {
   loading: false
 };
 
-const defaultHIVEValue = {
+const defaultHiveServer2Value = {
   info: {},
   loading: false,
   connectionId: ''
@@ -249,26 +249,26 @@ const database = (state = defaultDatabaseValue, action = defaultAction) => {
   }
 };
 
-const hive = (state = defaultHIVEValue, action = defaultAction) => {
+const hiveServer2 = (state = defaultHiveServer2Value, action = defaultAction) => {
   switch (action.type) {
-    case Actions.SET_HIVE_CONNECTION_ID: {
+    case Actions.SET_HIVESERVER2_CONNECTION_ID: {
       if (action.payload.connectionId === state.connectionId) {
         return state;
       }
       // This means the user is starting afresh. Reset everything to default and set the connectionID
       return {
-        ...defaultHIVEValue,
+        ...defaultHiveServer2Value,
         connectionId: action.payload.connectionId
       };
     }
-    case Actions.SET_HIVE_PROPERTIES:
+    case Actions.SET_HIVESERVER2_PROPERTIES:
       return Object.assign({}, state, {
         info: objectQuery(action, 'payload', 'info') || state.info,
         connectionId: objectQuery(action, 'payload', 'connectionId'),
         error: null,
         loading: false
       });
-    case Actions.SET_HIVE_LOADING:
+    case Actions.SET_HIVESERVER2_LOADING:
       return Object.assign({}, state, {
         loading: action.payload.loading,
         error: null
@@ -279,9 +279,9 @@ const hive = (state = defaultHIVEValue, action = defaultAction) => {
         loading: false
       };
     case Actions.SET_ACTIVEBROWSER:
-      return defaultHIVEValue;
+      return defaultHiveServer2Value;
     case Actions.RESET:
-      return defaultHIVEValue;
+      return defaultHiveServer2Value;
     default:
       return state;
   }
@@ -640,7 +640,7 @@ const DataPrepBrowserStore = createStore(
     spanner,
     error,
     adls,
-    hive,
+    hiveServer2,
   }),
   {
     file: defaultFileSystemValue,
@@ -653,7 +653,7 @@ const DataPrepBrowserStore = createStore(
     spanner: defaultSpannerValue,
     error: defaultError,
     adls: defaultADLSValue,
-    hive: defaultHIVEValue
+    hiveServer2: defaultHiveServer2Value
   },
   composeEnhancers('DataPrepBrowserStore')()
 );

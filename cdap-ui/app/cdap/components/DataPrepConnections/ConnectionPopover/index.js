@@ -29,7 +29,7 @@ import GCSConnection from 'components/DataPrepConnections/GCSConnection';
 import BigQueryConnection from 'components/DataPrepConnections/BigQueryConnection';
 import SpannerConnection from 'components/DataPrepConnections/SpannerConnection';
 import ADLSConnection from 'components/DataPrepConnections/ADLSConnection';
-import HIVEConnection from 'components/DataPrepConnections/HIVEConnection';
+import HIVEServer2Connection from 'components/DataPrepConnections/HIVEServer2Connection';
 
 import T from 'i18n-react';
 import {objectQuery} from 'services/helpers';
@@ -48,7 +48,7 @@ const COMPONENT_MAP = {
   [ConnectionType.BIGQUERY]: BigQueryConnection,
   [ConnectionType.SPANNER]: SpannerConnection,
   [ConnectionType.ADLS]: ADLSConnection,
-  [ConnectionType.HIVE]: HIVEConnection,
+  [ConnectionType.HIVESERVER2]: HIVEServer2Connection,
 };
 
 export default class ConnectionPopover extends Component {

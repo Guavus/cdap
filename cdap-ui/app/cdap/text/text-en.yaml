@@ -534,13 +534,13 @@ features:
             truncatedContentsTooltip: The bucket you are viewing contains more directories and files we can currently display.
             truncatedLabel: "{dirsCount} directories and {fileCount} files of many"
           selectData: Select data
-      HIVEBrowser:
+      HIVEServer2Browser:
         EmptyMessage:
           emptyDatasetList: 'No Data'
           emptyTableList: 'No Data'
         name: Name
-        pageTitle: '{productName} | Connections | HIVE | {connectionId}'
-        title: 'HIVE'
+        pageTitle: '{productName} | Connections | HIVESERVER2 | {connectionId}'
+        title: 'HIVESERVER2'
         Search:
           placeholder: Search this directory
         TopPanel:
@@ -1058,7 +1058,7 @@ features:
       file: File System
       gcs: Google Cloud Storage
       adls: ADLS File System
-      hive: HIVE Server2
+      hiveServer2: HIVE Server2
       invalidFieldNameMessage: Invalid column name "{fieldName}"
       invalidFieldNameRemedies1: "Spaces and special characters other than - or _ are not allowed in column names."
       invalidFieldNameRemedies2: "You can try to "
@@ -1159,6 +1159,29 @@ features:
           market: Hub
           optionsTitle: Select the type of database you want to connect to
           upload: Upload
+        ModalHeader:
+          ADD: "Add connection: Database"
+          DUPLICATE: "Duplicate connection: {connection}"
+          EDIT: "Edit connection: {connection}"
+      HIVEServer2:
+        Buttons:
+          ADD: Add Connection
+          DUPLICATE: Duplicate Connection
+          EDIT: Save Changes
+        connectionString: Connection string
+        database: Database
+        defaultTestErrorMessage: Error connecting to database
+        ErrorMessages:
+          ADD: Failed to add connection
+          DUPLICATE: Failed to duplicate connection
+          EDIT: Failed to edit connection
+        name: Connection name
+        Placeholders:
+          connectionString: "E.g. {connectionString}"
+          connectionStringDefault: Specify database connection string
+          name: Specify a name to identify this connection
+        required: Required
+        testConnection: Test Connection
         ModalHeader:
           ADD: "Add connection: Database"
           DUPLICATE: "Duplicate connection: {connection}"
@@ -1327,6 +1350,7 @@ features:
     database: Database ({count})
     gcs: Google Cloud Storage ({count})
     hdfs: File System
+    hiveServer2: Hive Server2 ({count})
     kafka: Kafka ({count})
     NoDefaultConnection:
       title: No default connection available

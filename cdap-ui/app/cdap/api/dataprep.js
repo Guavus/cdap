@@ -103,9 +103,8 @@ const MyDataPrepApi = {
   getAdlsSpecification: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/adls/specification`),
 
   // HIVE
-  hiveTestConnection: apiCreator(dataSrc, 'POST', 'REQUEST', `${connectionsPath}/hive/test`),
-  getHiveSpecification: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hive/specification`),
-
+  hiveServer2TestConnection: apiCreator(dataSrc, 'POST', 'REQUEST', `${connectionsPath}/hiveServer2/test`),
+  getHiveServer2Specification: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/HiveServer2/specification`),
 
   // Connections
   listConnections: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}`),

@@ -185,43 +185,6 @@ $db-sprite-url: url('/cdap_assets/img/db-sprite.png');
   display: inline-block;
 }
 
-.db-db2 {
-  @include db-image(0);
-}
-
-.db-oracle {
-  @include db-image(1);
-}
-
-.db-mssql {
-  @include db-image(2);
-}
-
-.db-netezza {
-  @include db-image(3);
-}
-
-.db-mysql {
-  @include db-image(4);
-}
-
-.db-teradata {
-  @include db-image(5);
-}
-
-.db-postgresql,
-.db-postgresql65 {
-  @include db-image(6);
-}
-
-.db-other {
-  @include db-image(7);
-}
-
-.db-sqlserver42 {
-  @include db-image(8);
-}
-
 .db-hive2binary,
 .db-hive2http {
   @include db-image(9);

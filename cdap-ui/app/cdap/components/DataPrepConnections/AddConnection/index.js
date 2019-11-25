@@ -26,7 +26,7 @@ import GCSConnection from 'components/DataPrepConnections/GCSConnection';
 import BigQueryConnection from 'components/DataPrepConnections/BigQueryConnection';
 import SpannerConnection from 'components/DataPrepConnections/SpannerConnection';
 import ADLSConnection from 'components/DataPrepConnections/ADLSConnection';
-import HIVEConnection from 'components/DataPrepConnections/HIVEConnection';
+import HIVEServer2Connection from 'components/DataPrepConnections/HIVEServer2Connection';
 
 import T from 'i18n-react';
 import find from 'lodash/find';
@@ -88,10 +88,10 @@ export default class AddConnection extends Component {
         component: ADLSConnection
       },
       {
-        type: ConnectionType.HIVE,
+        type: ConnectionType.HIVESERVER2,
         label: 'HIVE Server2',
         icon: 'icon-hive',
-        component: HIVEConnection
+        component: HIVEServer2Connection
       },
     ];
   }

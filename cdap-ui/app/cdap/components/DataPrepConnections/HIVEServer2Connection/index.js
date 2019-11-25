@@ -18,8 +18,7 @@ import PropTypes from 'prop-types';
 
 import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import DatabaseOptions from 'components/DataPrepConnections/HIVEConnection/DatabaseOptions';
-import DatabaseDetail from 'components/DataPrepConnections/HIVEConnection/DatabaseDetail';
+import HIVEServer2Detail from 'components/DataPrepConnections/HIVEServer2Connection/HIVEServer2Detail';
 import NamespaceStore from 'services/NamespaceStore';
 import {objectQuery} from 'services/helpers';
 import MyDataPrepApi from 'api/dataprep';
@@ -27,11 +26,11 @@ import find from 'lodash/find';
 import LoadingSVG from 'components/LoadingSVG';
 import T from 'i18n-react';
 
-require('./HIVEConnection.scss');
+require('./HIVEServer2Connection.scss');
 
-const PREFIX = 'features.DataPrepConnections.AddConnections.Database';
+const PREFIX = 'features.DataPrepConnections.AddConnections.HIVEServer2';
 
-export default class HIVEConnection extends Component {
+export default class HIVEServer2Connection extends Component {
   constructor(props) {
     super(props);
 
@@ -105,17 +104,9 @@ export default class HIVEConnection extends Component {
     this.setState({activeDB: db});
   }
 
-  renderDatabaseSelection() {
+  renderHIVEServer2Detail() {
     return (
-      <DatabaseOptions
-        onDBSelect={this.setActiveDB.bind(this)}
-      />
-    );
-  }
-
-  renderDatabaseDetail() {
-    return (
-      <DatabaseDetail
+      <HIVEServer2Detail
         back={this.setActiveDB.bind(this, null)}
         db={this.state.activeDB}
         onAdd={this.add}
@@ -132,7 +123,7 @@ export default class HIVEConnection extends Component {
   }
 
   render() {
-    let content = this.state.activeDB ? this.renderDatabaseDetail() : this.renderDatabaseSelection();
+    let content = this.renderHIVEServer2Detail();
 
     if (this.state.loading) {
       content = (
@@ -165,7 +156,7 @@ export default class HIVEConnection extends Component {
   }
 }
 
-HIVEConnection.propTypes = {
+HIVEServer2Connection.propTypes = {
   close: PropTypes.func,
   onAdd: PropTypes.func,
   mode: PropTypes.oneOf(['ADD', 'EDIT', 'DUPLICATE']).isRequired,

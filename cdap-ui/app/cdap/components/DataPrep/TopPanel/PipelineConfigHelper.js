@@ -373,17 +373,17 @@ function constructAdlsSource(artifactsList, adlsInfo) {
   };
 }
 
-function constructHiveSource(artifactsList, hiveInfo) {
-  if (!hiveInfo) { return null; }
+function constructHiveServer2Source(artifactsList, hiveServer2Info) {
+  if (!hiveServer2Info) { return null; }
 
-  let batchArtifact = find(artifactsList, { 'name': 'hive-plugins' });
+  let batchArtifact = find(artifactsList, { 'name': 'hive-server2-plugins' });
 
   if (!batchArtifact) {
-    return T.translate(`${PREFIX}.hive`);
+    return T.translate(`${PREFIX}.hiveServer2`);
   }
   batchArtifact.version = '[1.7.0, 3.0.0)';
 
-  let plugin = objectQuery(hiveInfo, 'values', 0);
+  let plugin = objectQuery(hiveServer2Info, 'values', 0);
   let pluginName = Object.keys(plugin)[0];
   plugin = plugin[pluginName];
 
@@ -530,14 +530,14 @@ function constructProperties(workspaceInfo, pluginVersion) {
       connectionId: state.workspaceInfo.properties.connectionid,
     };
     rxArray.push(MyDataPrepApi.getAdlsSpecification(specParams));
-  } else if (state.workspaceInfo.properties.connection === 'hive') {
+  } else if (state.workspaceInfo.properties.connection === 'hiveServer2') {
     let specParams = {
       namespace,
       workspaceId,
       path: state.workspaceUri,
       connectionId: state.workspaceInfo.properties.connectionid,
     };
-    rxArray.push(MyDataPrepApi.getHiveSpecification(specParams));
+    rxArray.push(MyDataPrepApi.getHiveServer2Specification(specParams));
   }
 
   try {
@@ -632,8 +632,8 @@ function constructProperties(workspaceInfo, pluginVersion) {
         sourceConfigs = constructSpannerSource(res[0], res[2]);
       } else if (connectionType === 'adls') {
         sourceConfigs = constructAdlsSource(res[0], res[2]);
-      } else if (connectionType === 'hive') {
-        sourceConfigs = constructHiveSource(res[0], res[2]);
+      } else if (connectionType === 'hiveServer2') {
+        sourceConfigs = constructHiveServer2Source(res[0], res[2]);
       }
 
       if (typeof sourceConfigs === 'string') {
