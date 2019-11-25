@@ -202,6 +202,7 @@ export default class IngestDataFromDataPrep extends Component {
     let bigqueryStage = pipelineConfig.config.stages.find(stage => stage.name === 'BigQueryTable');
     let spannerStage = pipelineConfig.config.stages.find(stage => stage.name === 'Spanner');
     let adlsStage = pipelineConfig.config.stages.find(stage => stage.name === 'ADLS');
+    let hiveStage = pipelineConfig.config.stages.find(stage => stage.name === 'HIVE');
 
     let macroMap = {};
     if (databaseConfig) {
