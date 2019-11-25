@@ -90,24 +90,18 @@ export default class HIVEServer2Detail extends Component {
   }
 
   componentWillMount() {
-    if (this.props.mode !== 'ADD') {
-      let name = this.props.mode === 'EDIT' ? this.props.connInfo.name : '';
-
-      let {
-        url = '',
-        database = ''
-      } = this.props.connInfo.properties;
-
-      this.setState({
-        name,
-        url,
-        database,
-        selectedDatabase: this.state.customId,
-      });
-
-      if (this.props.mode === 'EDIT') {
-        this.fetchDatabases();
-      }
+    if (this.props.mode === 'ADD') {
+      return;
+    }
+    let name = this.props.mode === 'EDIT' ? this.props.db.name : '';
+    let url = this.props.db ? this.props.db.url : '';
+    this.setState({
+      name,
+      url,
+      selectedDatabase: this.state.customId,
+    });
+    if (this.props.mode === 'EDIT') {
+      this.fetchDatabases();
     }
   }
 
@@ -230,43 +224,41 @@ export default class HIVEServer2Detail extends Component {
   }
 
   renderTestButton() {
-    let disabled = this.state.testConnectionLoading;
+    let disabled  = !this.state.name || !this.state.url;
 
     return (
-      <div className="form-group row">
-        <div className="col-xs-8 offset-xs-4 col-xs-offset-4">
-          <button
-            className="btn btn-secondary"
-            onClick={this.testConnection}
-            disabled={disabled}
-          >
-            {T.translate(`${PREFIX}.testConnection`)}
-          </button>
+      <div>
+        <button
+          className="btn btn-secondary"
+          onClick={this.testConnection}
+          disabled={disabled}
+        >
+          {T.translate(`${PREFIX}.testConnection`)}
+        </button>
 
-          {
-            this.state.testConnectionLoading ?
-              (
-                <span className="fa loading-indicator">
-                  <LoadingSVG />
-                </span>
-              )
-              :
-              null
-          }
+        {
+          this.state.testConnectionLoading ?
+            (
+              <span className="fa loading-indicator">
+                <LoadingSVG />
+              </span>
+            )
+            :
+            null
+        }
 
-          {
-            this.state.connectionResult ?
-              (
-                <span
-                  className={`connection-check text-${this.state.connectionResult.type}`}
-                >
-                  {this.state.connectionResult.message}
-                </span>
-              )
-              :
-              null
-          }
-        </div>
+        {
+          this.state.connectionResult ?
+            (
+              <span
+                className={`connection-check text-${this.state.connectionResult.type}`}
+              >
+                {this.state.connectionResult.message}
+              </span>
+            )
+            :
+            null
+        }
       </div>
     );
   }
@@ -294,8 +286,7 @@ export default class HIVEServer2Detail extends Component {
   }
 
   renderAddConnectionButton() {
-    let disabled = !this.state.name;
-    disabled = disabled || !this.state.url;
+    let disabled  = !this.state.name || !this.state.url;
     let onClickFn = this.addConnection;
 
     if (this.props.mode === 'EDIT') {
@@ -303,16 +294,14 @@ export default class HIVEServer2Detail extends Component {
     }
 
     return (
-      <div className="row">
-        <div className="col-xs-8 offset-xs-4 col-xs-offset-4">
-          <button
-            className="btn btn-primary"
-            onClick={onClickFn}
-            disabled={disabled}
-          >
-            {T.translate(`${PREFIX}.Buttons.${this.props.mode}`)}
-          </button>
-        </div>
+      <div className="col-xs-2 offset-xs-4 col-xs-offset-4">
+        <button
+          className="btn btn-primary"
+          onClick={onClickFn}
+          disabled={disabled}
+        >
+          {T.translate(`${PREFIX}.Buttons.${this.props.mode}`)}
+        </button>
       </div>
     );
   }
@@ -357,8 +346,12 @@ export default class HIVEServer2Detail extends Component {
             {this.renderConnectionInfo()}
 
           </form>
-          {this.renderTestButton()}
-          {this.renderAddConnectionButton()}
+          <div className="row">
+            {this.renderAddConnectionButton()}
+            {this.renderTestButton()}
+          </div>
+
+
         </div>
 
         {this.renderError()}
@@ -371,7 +364,6 @@ HIVEServer2Detail.propTypes = {
   db: PropTypes.object,
   onAdd: PropTypes.func,
   mode: PropTypes.oneOf(['ADD', 'EDIT', 'DUPLICATE']).isRequired,
-  connectionId: PropTypes.string,
-  connInfo: PropTypes.object
+  connectionId: PropTypes.string
 };
 

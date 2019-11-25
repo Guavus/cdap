@@ -22,7 +22,6 @@ import HIVEServer2Detail from 'components/DataPrepConnections/HIVEServer2Connect
 import {getCurrentNamespace} from 'services/NamespaceStore';
 import {objectQuery} from 'services/helpers';
 import MyDataPrepApi from 'api/dataprep';
-import find from 'lodash/find';
 import LoadingSVG from 'components/LoadingSVG';
 import T from 'i18n-react';
 
@@ -35,7 +34,8 @@ export default class HIVEServer2Connection extends Component {
     super(props);
 
     this.state = {
-      activeDB: null,
+      name: null,
+      url:'',
       error: null,
       loading: false
     };
@@ -55,35 +55,13 @@ export default class HIVEServer2Connection extends Component {
     };
     MyDataPrepApi.getConnection(params)
     .subscribe((res) => {
-      let connInfo = objectQuery(res, 0, 'values', 0);
-      let driverName = connInfo.properties.name;
-
-      let pluginsList = objectQuery(res, 1, 'values');
-
-      let matchedPlugin = find(pluginsList, (o) => {
-        return o.properties.name === driverName;
-      });
-
-      if (!matchedPlugin) {
-        this.setState({
-          error: `Cannot find driver ${driverName}`,
-          loading: false
-        });
-
-        return;
-      }
-
-      let pluginAllowed = objectQuery(res, 2, 'values');
-      let matchedPluginAllowed = find(pluginAllowed, (o) => {
-        return o.label === matchedPlugin.label;
-      });
-
-      let dbInfo = matchedPluginAllowed;
-      dbInfo.pluginInfo = matchedPlugin;
+      let connInfo = objectQuery(res, 'values', 0);
+      let name = objectQuery(connInfo, 'properties', 'name');
+      const url = objectQuery(connInfo, 'properties', 'url');
 
       this.setState({
-        connInfo,
-        activeDB: dbInfo,
+        name,
+        url,
         loading: false
       });
 
@@ -92,19 +70,17 @@ export default class HIVEServer2Connection extends Component {
     });
   }
 
-  setActiveDB(db) {
-    this.setState({activeDB: db});
-  }
-
   renderHIVEServer2Detail() {
+    const obj = {
+      name: this.state.name,
+      url: this.state.url
+    };
     return (
       <HIVEServer2Detail
-        back={this.setActiveDB.bind(this, null)}
-        db={this.state.activeDB}
+        db={obj}
         onAdd={this.add}
         mode={this.props.mode}
         connectionId={this.props.connectionId}
-        connInfo={this.state.connInfo}
       />
     );
   }
