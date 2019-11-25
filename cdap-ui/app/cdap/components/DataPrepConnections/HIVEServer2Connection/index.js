@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import HIVEServer2Detail from 'components/DataPrepConnections/HIVEServer2Connection/HIVEServer2Detail';
-import NamespaceStore from 'services/NamespaceStore';
+import {getCurrentNamespace} from 'services/NamespaceStore';
 import {objectQuery} from 'services/helpers';
 import MyDataPrepApi from 'api/dataprep';
 import find from 'lodash/find';
@@ -36,7 +36,6 @@ export default class HIVEServer2Connection extends Component {
 
     this.state = {
       activeDB: null,
-      connInfo: null,
       error: null,
       loading: false
     };
@@ -45,59 +44,52 @@ export default class HIVEServer2Connection extends Component {
   }
 
   componentWillMount() {
-    if (this.props.mode !== 'ADD') {
-      this.setState({loading: true});
-
-      let namespace = NamespaceStore.getState().selectedNamespace;
-
-      let params = {
-        namespace,
-        connectionId: this.props.connectionId
-      };
-
-      MyDataPrepApi.getConnection(params)
-        .combineLatest(
-          MyDataPrepApi.jdbcDrivers({ namespace }),
-          MyDataPrepApi.jdbcAllowed(params)
-        )
-        .subscribe((res) => {
-          let connInfo = objectQuery(res, 0, 'values', 0);
-          let driverName = connInfo.properties.name;
-
-          let pluginsList = objectQuery(res, 1, 'values');
-
-          let matchedPlugin = find(pluginsList, (o) => {
-            return o.properties.name === driverName;
-          });
-
-          if (!matchedPlugin) {
-            this.setState({
-              error: `Cannot find driver ${driverName}`,
-              loading: false
-            });
-
-            return;
-          }
-
-          let pluginAllowed = objectQuery(res, 2, 'values');
-          let matchedPluginAllowed = find(pluginAllowed, (o) => {
-            return o.label === matchedPlugin.label;
-          });
-
-          let dbInfo = matchedPluginAllowed;
-          dbInfo.pluginInfo = matchedPlugin;
-
-          this.setState({
-            connInfo,
-            activeDB: dbInfo,
-            loading: false
-          });
-
-        }, (err) => {
-          console.log('err', err);
-        });
+    if (this.props.mode === 'ADD') {
+      return;
     }
+    this.setState({loading: true});
+    const namespace = getCurrentNamespace();
+    let params = {
+      namespace,
+      connectionId: this.props.connectionId
+    };
+    MyDataPrepApi.getConnection(params)
+    .subscribe((res) => {
+      let connInfo = objectQuery(res, 0, 'values', 0);
+      let driverName = connInfo.properties.name;
 
+      let pluginsList = objectQuery(res, 1, 'values');
+
+      let matchedPlugin = find(pluginsList, (o) => {
+        return o.properties.name === driverName;
+      });
+
+      if (!matchedPlugin) {
+        this.setState({
+          error: `Cannot find driver ${driverName}`,
+          loading: false
+        });
+
+        return;
+      }
+
+      let pluginAllowed = objectQuery(res, 2, 'values');
+      let matchedPluginAllowed = find(pluginAllowed, (o) => {
+        return o.label === matchedPlugin.label;
+      });
+
+      let dbInfo = matchedPluginAllowed;
+      dbInfo.pluginInfo = matchedPlugin;
+
+      this.setState({
+        connInfo,
+        activeDB: dbInfo,
+        loading: false
+      });
+
+    }, (err) => {
+      console.log('err', err);
+    });
   }
 
   setActiveDB(db) {

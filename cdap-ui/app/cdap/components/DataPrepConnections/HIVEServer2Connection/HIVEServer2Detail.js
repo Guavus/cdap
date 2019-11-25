@@ -17,7 +17,6 @@
 import PropTypes from 'prop-types';
 
 import React, { Component } from 'react';
-import IconSVG from 'components/IconSVG';
 import MyDataPrepApi from 'api/dataprep';
 import NamespaceStore from 'services/NamespaceStore';
 import T from 'i18n-react';
@@ -42,7 +41,7 @@ export default class HIVEServer2Detail extends Component {
     this.state = {
       name: '',
       database: '',
-      connectionString: '',
+      url: '',
       connectionResult: null,
       error: null,
       databaseList: ['', customId],
@@ -95,13 +94,13 @@ export default class HIVEServer2Detail extends Component {
       let name = this.props.mode === 'EDIT' ? this.props.connInfo.name : '';
 
       let {
-        connectionString = '',
+        url = '',
         database = ''
       } = this.props.connInfo.properties;
 
       this.setState({
         name,
-        connectionString,
+        url,
         database,
         selectedDatabase: this.state.customId,
       });
@@ -136,17 +135,13 @@ export default class HIVEServer2Detail extends Component {
   }
 
   constructProperties() {
-    let properties;
-    let db = this.props.db;
-    properties = {
-      connectionString: this.state.connectionString
-    };
-
-    properties.name = db.name;
-    properties.type = db.pluginInfo.properties.type;
-    properties.class = db.pluginInfo.properties.class;
-    properties.url = this.state.connectionString;
-
+    let properties = {};
+    if (this.state.name) {
+      properties.name = this.state.name;
+    }
+    if (this.state.url) {
+      properties.url = this.state.url;
+    }
     return properties;
   }
 
@@ -210,7 +205,7 @@ export default class HIVEServer2Detail extends Component {
       properties: this.constructProperties()
     };
 
-    MyDataPrepApi.jdbcTestConnection({ namespace }, requestBody)
+    MyDataPrepApi.hiveServer2TestConnection({ namespace }, requestBody)
       .subscribe((res) => {
         this.setState({
           connectionResult: {
@@ -219,8 +214,6 @@ export default class HIVEServer2Detail extends Component {
           },
           testConnectionLoading: false
         });
-
-        this.fetchDatabases();
       }, (err) => {
         console.log('Error testing database connection', err);
 
@@ -278,86 +271,31 @@ export default class HIVEServer2Detail extends Component {
     );
   }
 
-  renderDatabase() {
-    return (
-      <div className="form-group row">
-        <label className={LABEL_COL_CLASS}>
-          {T.translate(`${PREFIX}.database`)}
-        </label>
-        <div className={INPUT_COL_CLASS}>
-          <select
-            className="form-control"
-            value={this.state.selectedDatabase}
-            onChange={this.handleDatabaseSelect}
-          >
-            {
-              this.state.databaseList.map((dbOption) => {
-                return (
-                  <option
-                    key={dbOption}
-                    value={dbOption}
-                  >
-                    {dbOption === this.state.customId ? T.translate(`${PREFIX}.customLabel`) : dbOption}
-                  </option>
-                );
-              })
-            }
-          </select>
-
-          {
-            this.state.selectedDatabase === this.state.customId ?
-              (
-                <div className="custom-input">
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={this.state.database}
-                    onChange={this.handleDatabaseChange}
-                  />
-                </div>
-              )
-              :
-              null
-          }
-        </div>
-      </div>
-    );
-  }
-
-  renderAdvanced() {
-    const connStringUrl = objectQuery(this.props, 'db', 'pluginInfo', 'url');
-    const placeholder = connStringUrl ? T.translate(`${PREFIX}.Placeholders.connectionString`, { connectionString: connStringUrl }) : T.translate(`${PREFIX}.Placeholders.connectionStringDefault`);
-
+  renderConnectionInfo() {
     return (
       <div>
         <div className="form-group row">
           <label className={LABEL_COL_CLASS}>
-            {T.translate(`${PREFIX}.connectionString`)}
+            {T.translate(`${PREFIX}.url`)}
             <span className="asterisk">*</span>
           </label>
           <div className={INPUT_COL_CLASS}>
             <input
               type="text"
               className="form-control"
-              value={this.state.connectionString}
-              onChange={this.handleChange.bind(this, 'connectionString')}
-              placeholder={placeholder}
+              value={this.state.url}
+              onChange={this.handleChange.bind(this, 'url')}
+              placeholder={T.translate(`${PREFIX}.Placeholders.urlDefault`)}
             />
           </div>
         </div>
-
-        {this.renderTestButton()}
       </div>
     );
   }
 
-  renderConnectionInfo() {
-    return this.renderAdvanced();
-  }
-
   renderAddConnectionButton() {
     let disabled = !this.state.name;
-    disabled = disabled || !this.state.connectionString;
+    disabled = disabled || !this.state.url;
     let onClickFn = this.addConnection;
 
     if (this.props.mode === 'EDIT') {
@@ -394,24 +332,6 @@ export default class HIVEServer2Detail extends Component {
   }
 
   render() {
-    let backlink = (
-      <div className="back-link-container">
-        <span
-          className="back-link"
-          onClick={this.props.back}
-        >
-          <span className="fa fa-fw">
-            <IconSVG name="icon-angle-double-left" />
-          </span>
-          <span>{T.translate(`${PREFIX}.backButton`)}</span>
-        </span>
-      </div>
-    );
-
-    if (this.props.mode !== 'ADD') {
-      backlink = null;
-    }
-
     return (
       <div className="database-detail">
         <div className="database-detail-content">
@@ -437,7 +357,7 @@ export default class HIVEServer2Detail extends Component {
             {this.renderConnectionInfo()}
 
           </form>
-
+          {this.renderTestButton()}
           {this.renderAddConnectionButton()}
         </div>
 
@@ -448,7 +368,6 @@ export default class HIVEServer2Detail extends Component {
 }
 
 HIVEServer2Detail.propTypes = {
-  back: PropTypes.func,
   db: PropTypes.object,
   onAdd: PropTypes.func,
   mode: PropTypes.oneOf(['ADD', 'EDIT', 'DUPLICATE']).isRequired,

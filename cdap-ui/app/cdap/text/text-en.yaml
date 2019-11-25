@@ -1168,7 +1168,7 @@ features:
           ADD: Add Connection
           DUPLICATE: Duplicate Connection
           EDIT: Save Changes
-        connectionString: Connection string
+        url: JDBC URL
         database: Database
         defaultTestErrorMessage: Error connecting to database
         ErrorMessages:
@@ -1177,13 +1177,13 @@ features:
           EDIT: Failed to edit connection
         name: Connection name
         Placeholders:
-          connectionString: "E.g. {connectionString}"
-          connectionStringDefault: Specify database connection string
+          url: "E.g. {url}"
+          urlDefault: Specify HIVE JDBC url
           name: Specify a name to identify this connection
         required: Required
         testConnection: Test Connection
         ModalHeader:
-          ADD: "Add connection: Database"
+          ADD: "Add connection: HIVE Server2"
           DUPLICATE: "Duplicate connection: {connection}"
           EDIT: "Edit connection: {connection}"
       GCS:
