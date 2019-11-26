@@ -59,7 +59,7 @@ const setHiveServer2AsActiveBrowser = (payload) => {
     .subscribe((res) => {
       let info = objectQuery(res, 'values', 0);
 
-      MyDataPrepApi.listTables(params)
+      MyDataPrepApi.hiveServer2ListTables(params)
         .subscribe((tables) => {
           setHiveServer2Properties({
             info,
