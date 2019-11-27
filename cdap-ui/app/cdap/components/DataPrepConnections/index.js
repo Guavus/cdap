@@ -104,7 +104,7 @@ export default class DataPrepConnections extends Component {
       bigQueryList: [],
       spannerList: [],
       adlsList: [],
-      hiveServer2List: [],
+      hiveserver2List: [],
       activeConnectionid,
       activeConnectionType,
       showAddConnectionPopover: false,
@@ -335,7 +335,7 @@ export default class DataPrepConnections extends Component {
           bigQueryList = [],
           spannerList = [],
           adlsList = [],
-          hiveServer2List = [];
+          hiveserver2List = [];
 
       if (!state.activeConnectionId && !state.activeConnectionType && state.defaultConnection) {
         let defaultConnectionObj = find(res.values, {id: state.defaultConnection});
@@ -361,7 +361,7 @@ export default class DataPrepConnections extends Component {
         } else if (connection.type === ConnectionType.ADLS) {
           adlsList.push(connection);
         } else if (connection.type === ConnectionType.HIVESERVER2) {
-          hiveServer2List.push(connection);
+          hiveserver2List.push(connection);
         }
       });
 
@@ -375,7 +375,7 @@ export default class DataPrepConnections extends Component {
         bigQueryList,
         spannerList,
         adlsList,
-        hiveServer2List,
+        hiveserver2List,
         loading: false
       };
 
@@ -591,7 +591,7 @@ export default class DataPrepConnections extends Component {
 
     return (
       <div>
-        {this.state.hiveServer2List.map((hive) => {
+        {this.state.hiveserver2List.map((hive) => {
           return (
             <div
               key={hive.id}
@@ -599,7 +599,7 @@ export default class DataPrepConnections extends Component {
               className="clearfix"
             >
               <NavLinkWrapper
-                to={`${baseLinkPath}/hiveServer2/${hive.id}`}
+                to={`${baseLinkPath}/hiveserver2/${hive.id}`}
                 activeClassName="active"
                 className="menu-item-expanded-list"
                 onClick={this.handlePropagation.bind(this, {...hive, name: ConnectionType.HIVESERVER2})}
@@ -854,7 +854,7 @@ export default class DataPrepConnections extends Component {
                   <IconSVG name="icon-hive" />
                 </span>
                 <span>
-                {T.translate(`${PREFIX}.hiveServer2`, {count: this.state.hiveServer2List.length})}
+                {T.translate(`${PREFIX}.hiveserver2`, {count: this.state.hiveserver2List.length})}
                 </span>
               </div>
               {this.renderHIVEServer2Detail()}
@@ -1015,7 +1015,7 @@ export default class DataPrepConnections extends Component {
         />
 
         <Route
-          path={`${BASEPATH}/hiveServer2/:hiveId`}
+          path={`${BASEPATH}/hiveserver2/:hiveId`}
           render={({match}) => {
             const id  = match.params.hiveId;
             const setActiveConnection = setHiveServer2AsActiveBrowser.bind(null, {name: ConnectionType.HIVESERVER2, id});

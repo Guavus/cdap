@@ -373,17 +373,17 @@ function constructAdlsSource(artifactsList, adlsInfo) {
   };
 }
 
-function constructHiveServer2Source(artifactsList, hiveServer2Info) {
-  if (!hiveServer2Info) { return null; }
+function constructHiveServer2Source(artifactsList, hiveserver2Info) {
+  if (!hiveserver2Info) { return null; }
 
   let batchArtifact = find(artifactsList, { 'name': 'hive-server2-plugins' });
 
   if (!batchArtifact) {
-    return T.translate(`${PREFIX}.hiveServer2`);
+    return T.translate(`${PREFIX}.hiveserver2`);
   }
   batchArtifact.version = '[1.7.0, 3.0.0)';
 
-  let plugin = objectQuery(hiveServer2Info, 'values', 0);
+  let plugin = objectQuery(hiveserver2Info, 'values', 0);
   let pluginName = Object.keys(plugin)[0];
   plugin = plugin[pluginName];
 
@@ -530,13 +530,13 @@ function constructProperties(workspaceInfo, pluginVersion) {
       connectionId: state.workspaceInfo.properties.connectionid,
     };
     rxArray.push(MyDataPrepApi.getAdlsSpecification(specParams));
-  } else if (state.workspaceInfo.properties.connection === 'hiveServer2') {
+  } else if (state.workspaceInfo.properties.connection === 'hiveserver2') {
     let specParams = {
       namespace,
       connectionId,
       tableId: state.workspaceInfo.properties.id
     };
-    rxArray.push(MyDataPrepApi.getHiveServer2Specification(specParams));
+    rxArray.push(MyDataPrepApi.getHiveserver2Specification(specParams));
     let requestBody = directiveRequestBodyCreator([]);
     rxArray.push(MyDataPrepApi.getSchema(requestObj, requestBody));
   }
@@ -633,7 +633,7 @@ function constructProperties(workspaceInfo, pluginVersion) {
         sourceConfigs = constructSpannerSource(res[0], res[2]);
       } else if (connectionType === 'adls') {
         sourceConfigs = constructAdlsSource(res[0], res[2]);
-      } else if (connectionType === 'hiveServer2') {
+      } else if (connectionType === 'hiveserver2') {
         sourceConfigs = constructHiveServer2Source(res[0], res[2]);
       }
 

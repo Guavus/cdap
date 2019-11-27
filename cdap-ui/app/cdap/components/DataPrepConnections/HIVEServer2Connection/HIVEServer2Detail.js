@@ -75,7 +75,7 @@ export default class HIVEServer2Detail extends Component {
       properties: this.constructProperties()
     };
 
-    MyDataPrepApi.hiveServer2getDatabaseList({ namespace }, requestBody)
+    MyDataPrepApi.hiveserver2getDatabaseList({ namespace }, requestBody)
       .subscribe((databaseList) => {
         let list = databaseList.values.sort();
         let customId = this.state.customId;
@@ -189,7 +189,7 @@ export default class HIVEServer2Detail extends Component {
     MyDataPrepApi.updateConnection(params, requestBody)
       .subscribe(() => {
         this.setState({ error: null });
-        this.eventEmitter.emit('DATAPREP_CONNECTION_EDIT_DATABASE', this.props.connectionId);
+        this.eventEmitter.emit('DATAPREP_CONNECTION_EDIT_HIVESERVER2', this.props.connectionId);
         this.props.onAdd();
       }, (err) => {
         console.log('err', err);
@@ -210,7 +210,7 @@ export default class HIVEServer2Detail extends Component {
       properties: this.constructProperties()
     };
 
-    MyDataPrepApi.hiveServer2TestConnection({ namespace }, requestBody)
+    MyDataPrepApi.hiveserver2TestConnection({ namespace }, requestBody)
       .subscribe((res) => {
         this.setState({
           connectionResult: {
@@ -219,11 +219,11 @@ export default class HIVEServer2Detail extends Component {
           },
           testConnectionLoading: false
         });
+        this.fetchDatabases();
       }, (err) => {
         console.log('Error testing database connection', err);
 
         let errorMessage = objectQuery(err, 'response', 'message') || objectQuery(err, 'response') || T.translate(`${PREFIX}.defaultTestErrorMessage`);
-
         this.setState({
           connectionResult: {
             type: CARD_ACTION_TYPES.DANGER,
@@ -249,8 +249,6 @@ export default class HIVEServer2Detail extends Component {
       </span>
     );
   }
-
-
 
   renderMessage() {
     const connectionResult = this.state.connectionResult;

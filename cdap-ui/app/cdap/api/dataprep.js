@@ -103,11 +103,11 @@ const MyDataPrepApi = {
   getAdlsSpecification: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/adls/specification`),
 
   // HIVE
-  hiveServer2TestConnection: apiCreator(dataSrc, 'POST', 'REQUEST', `${connectionsPath}/hiveserver2/test`),
-  hiveServer2ListTables: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables`),
-  hiveServer2getDatabaseList: apiCreator(dataSrc, 'POST', 'REQUEST', `${connectionsPath}/hiveserver2/databases`),
-  getHiveServer2Specification: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables/:tableId/specification`),
-  hiveServer2readTable: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables/:tableId/read`),
+  hiveserver2TestConnection: apiCreator(dataSrc, 'POST', 'REQUEST', `${connectionsPath}/hiveserver2/test`),
+  hiveserver2ListTables: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables`),
+  hiveserver2getDatabaseList: apiCreator(dataSrc, 'POST', 'REQUEST', `${connectionsPath}/hiveserver2/databases`),
+  gethiveserver2Specification: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables/:tableId/specification`),
+  hiveserver2readTable: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables/:tableId/read`),
 
   // Connections
   listConnections: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}`),

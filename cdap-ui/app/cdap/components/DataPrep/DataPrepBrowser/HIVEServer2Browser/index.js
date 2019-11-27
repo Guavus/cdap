@@ -25,7 +25,7 @@ import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import {Input} from 'reactstrap';
 import ee from 'event-emitter';
 import {objectQuery} from 'services/helpers';
-import {setDatabaseAsActiveBrowser, setError} from 'components/DataPrep/DataPrepBrowser/DataPrepBrowserStore/ActionCreator';
+import {setHiveServer2AsActiveBrowser, setError} from 'components/DataPrep/DataPrepBrowser/DataPrepBrowserStore/ActionCreator';
 import DataPrepBrowserPageTitle from 'components/DataPrep/DataPrepBrowser/PageTitle';
 import {Provider} from 'react-redux';
 import DataprepBrowserTopPanel from 'components/DataPrep/DataPrepBrowser/DataPrepBrowserTopPanel';
@@ -43,8 +43,8 @@ export default class HIVEServer2Browser extends Component {
   };
 
   state = {
-    info: DataPrepBrowserStore.getState().database.info,
-    connectionId: DataPrepBrowserStore.getState().database.connectionId,
+    info: DataPrepBrowserStore.getState().hiveserver2.info,
+    connectionId: DataPrepBrowserStore.getState().hiveserver2.connectionId,
     connectionName: '',
     tables: [],
     loading: true,
@@ -55,24 +55,24 @@ export default class HIVEServer2Browser extends Component {
   eventEmitter = ee(ee);
 
   componentDidMount() {
-    this.eventEmitter.on('DATAPREP_CONNECTION_EDIT_DATABASE', this.eventBasedFetchTable);
+    this.eventEmitter.on('DATAPREP_CONNECTION_EDIT_HIVESERVER2', this.eventBasedFetchTable);
     this.storeSubscription = DataPrepBrowserStore.subscribe(() => {
-      let {database, activeBrowser} = DataPrepBrowserStore.getState();
-      if (activeBrowser.name !== ConnectionType.DATABASE) {
+      let {hiveserver2, activeBrowser} = DataPrepBrowserStore.getState();
+      if (activeBrowser.name !== ConnectionType.HIVESERVER2) {
         return;
       }
 
       this.setState({
-        info: database.info,
-        connectionId: database.connectionId,
-        loading: database.loading,
-        tables: database.tables
+        info: hiveserver2.info,
+        connectionId: hiveserver2.connectionId,
+        loading: hiveserver2.loading,
+        tables: hiveserver2.tables
       });
     });
   }
 
   componentWillUnmount() {
-    this.eventEmitter.off('DATAPREP_CONNECTION_EDIT_DATABASE', this.eventBasedFetchTable);
+    this.eventEmitter.off('DATAPREP_CONNECTION_EDIT_HIVESERVER2', this.eventBasedFetchTable);
 
     if (typeof this.storeSubscription === 'function') {
       this.storeSubscription();
@@ -81,7 +81,7 @@ export default class HIVEServer2Browser extends Component {
 
   eventBasedFetchTable = (connectionId) => {
     if (this.state.connectionId === connectionId) {
-      setDatabaseAsActiveBrowser({name: ConnectionType.DATABASE, id: connectionId});
+      setHiveServer2AsActiveBrowser({name: ConnectionType.HIVESERVER2, id: connectionId});
     }
   }
 
@@ -100,7 +100,7 @@ export default class HIVEServer2Browser extends Component {
       lines: 100
     };
 
-    DataPrepApi.hiveServer2readTable(params)
+    DataPrepApi.hiveserver2readTable(params)
       .subscribe(
         (res) => {
           let workspaceId = res.values[0].id;

@@ -160,10 +160,11 @@ const defaultADLSValue = {
   loading: false
 };
 
-const defaultHiveServer2Value = {
+const defaultHiveserver2Value = {
   info: {},
   loading: false,
-  connectionId: ''
+  connectionId: '',
+  tables: []
 };
 
 const defaultActiveBrowser = {
@@ -249,7 +250,7 @@ const database = (state = defaultDatabaseValue, action = defaultAction) => {
   }
 };
 
-const hiveServer2 = (state = defaultHiveServer2Value, action = defaultAction) => {
+const hiveserver2 = (state = defaultHiveserver2Value, action = defaultAction) => {
   switch (action.type) {
     case Actions.SET_HIVESERVER2_CONNECTION_ID: {
       if (action.payload.connectionId === state.connectionId) {
@@ -257,7 +258,7 @@ const hiveServer2 = (state = defaultHiveServer2Value, action = defaultAction) =>
       }
       // This means the user is starting afresh. Reset everything to default and set the connectionID
       return {
-        ...defaultHiveServer2Value,
+        ...defaultHiveserver2Value,
         connectionId: action.payload.connectionId
       };
     }
@@ -279,9 +280,9 @@ const hiveServer2 = (state = defaultHiveServer2Value, action = defaultAction) =>
         loading: false
       };
     case Actions.SET_ACTIVEBROWSER:
-      return defaultHiveServer2Value;
+      return defaultHiveserver2Value;
     case Actions.RESET:
-      return defaultHiveServer2Value;
+      return defaultHiveserver2Value;
     default:
       return state;
   }
@@ -640,7 +641,7 @@ const DataPrepBrowserStore = createStore(
     spanner,
     error,
     adls,
-    hiveServer2,
+    hiveserver2,
   }),
   {
     file: defaultFileSystemValue,
@@ -653,7 +654,7 @@ const DataPrepBrowserStore = createStore(
     spanner: defaultSpannerValue,
     error: defaultError,
     adls: defaultADLSValue,
-    hiveServer2: defaultHiveServer2Value
+    hiveserver2: defaultHiveserver2Value
   },
   composeEnhancers('DataPrepBrowserStore')()
 );

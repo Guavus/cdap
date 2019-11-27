@@ -30,7 +30,7 @@ const setHiveServer2InfoLoading = () => {
 };
 
 const setHiveServer2AsActiveBrowser = (payload) => {
-  let {hiveServer2, activeBrowser} = DataPrepBrowserStore.getState();
+  let {hiveserver2, activeBrowser} = DataPrepBrowserStore.getState();
 
   if (activeBrowser.name !== payload.name) {
     setActiveBrowser(payload);
@@ -38,7 +38,7 @@ const setHiveServer2AsActiveBrowser = (payload) => {
 
   let {id: connectionId} = payload;
 
-  if (hiveServer2.connectionId === connectionId) { return; }
+  if (hiveserver2.connectionId === connectionId) { return; }
 
   DataPrepBrowserStore.dispatch({
     type: BrowserStoreActions.SET_HIVESERVER2_CONNECTION_ID,
@@ -59,7 +59,7 @@ const setHiveServer2AsActiveBrowser = (payload) => {
     .subscribe((res) => {
       let info = objectQuery(res, 'values', 0);
 
-      MyDataPrepApi.hiveServer2ListTables(params)
+      MyDataPrepApi.hiveserver2ListTables(params)
         .subscribe((tables) => {
           setHiveServer2Properties({
             info,

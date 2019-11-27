@@ -536,11 +536,16 @@ features:
           selectData: Select data
       HIVEServer2Browser:
         EmptyMessage:
+          clearLabel: Clear
+          emptyDatabase: 'No tables in connection _{connectionName}_'
           emptyDatasetList: 'No Data'
           emptyTableList: 'No Data'
+          suggestionTitle: "You can try to:"
+          suggestion1: your search
+          title: 'No match found for "{searchText}"'
         name: Name
-        pageTitle: '{productName} | Connections | HIVESERVER2 | {connectionId}'
-        title: 'HIVESERVER2'
+        pageTitle: '{productName} | Connections | HIVE Server2 | {connectionId}'
+        title: 'Select table'
         Search:
           placeholder: Search this directory
         TopPanel:
@@ -549,6 +554,14 @@ features:
             truncatedContentsTooltip: The bucket you are viewing contains more directories and files we can currently display.
             truncatedLabel: "{dirsCount} directories and {fileCount} files of many"
           selectData: Select data
+        defaultErrorMessage: Reading {tableId} failed. Please try again.
+        searchPlaceholder: Search table name
+        table:
+          namecollabel: NAME
+        tableCount:
+          0: No tables
+          1: '{context} table'
+          _: "{context} tables"
 
     Directives:
       apply: Apply
@@ -1058,7 +1071,7 @@ features:
       file: File System
       gcs: Google Cloud Storage
       adls: ADLS File System
-      hiveServer2: HIVE Server2
+      hiveserver2: HIVE Server2
       invalidFieldNameMessage: Invalid column name "{fieldName}"
       invalidFieldNameRemedies1: "Spaces and special characters other than - or _ are not allowed in column names."
       invalidFieldNameRemedies2: "You can try to "
@@ -1351,7 +1364,7 @@ features:
     database: Database ({count})
     gcs: Google Cloud Storage ({count})
     hdfs: File System
-    hiveServer2: Hive Server2 ({count})
+    hiveserver2: Hive Server2 ({count})
     kafka: Kafka ({count})
     NoDefaultConnection:
       title: No default connection available
