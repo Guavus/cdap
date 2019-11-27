@@ -248,7 +248,7 @@ export default class DataPrepConnections extends Component {
       activeConnectionid = browserName.id;
       activeConnectionType = ConnectionType.ADLS;
     } else if (typeof browserName === 'object' && browserName.type === ConnectionType.HIVESERVER2) {
-      setHiveServer2AsActiveBrowser({name: ConnectionType.HIVESERVER2, id: browserName.id, path: '/'});
+      setHiveServer2AsActiveBrowser({name: ConnectionType.HIVESERVER2, id: browserName.id});
       activeConnectionid = browserName.id;
       activeConnectionType = ConnectionType.HIVESERVER2;
     }
@@ -1015,9 +1015,9 @@ export default class DataPrepConnections extends Component {
         />
 
         <Route
-          path={`${BASEPATH}/hiveserver2/:hiveId`}
+          path={`${BASEPATH}/hiveserver2/:hiveserver2Id`}
           render={({match}) => {
-            const id  = match.params.hiveId;
+            const id  = match.params.hiveserver2Id;
             const setActiveConnection = setHiveServer2AsActiveBrowser.bind(null, {name: ConnectionType.HIVESERVER2, id});
             return (
               <DataPrepBrowser

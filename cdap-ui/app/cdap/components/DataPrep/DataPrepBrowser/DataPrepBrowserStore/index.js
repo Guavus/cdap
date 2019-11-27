@@ -80,9 +80,9 @@ const Actions = {
   SET_ADLS_FILE_SYSTEM_SEARCH: 'SET_ADLS_FILE_SYSTEM_SEARCH',
 
   // HIVE SERVER2
-  SET_HIVESERVER2_PROPERTIES: 'SET_DATABASE_PROPERTIES',
-  SET_HIVESERVER2_CONNECTION_ID: 'SET_DATABASE_CONNECTION_ID',
-  SET_HIVESERVER2_LOADING: 'SET_DATABASE_LOADING',
+  SET_HIVESERVER2_PROPERTIES: 'SET_HIVESERVER2_PROPERTIES',
+  SET_HIVESERVER2_CONNECTION_ID: 'SET_HIVESERVER2_CONNECTION_ID',
+  SET_HIVESERVER2_LOADING: 'SET_HIVESERVER2_LOADING',
 
   SET_ERROR: 'SET_ERROR',
   RESET: 'RESET'
@@ -267,7 +267,8 @@ const hiveserver2 = (state = defaultHiveserver2Value, action = defaultAction) =>
         info: objectQuery(action, 'payload', 'info') || state.info,
         connectionId: objectQuery(action, 'payload', 'connectionId'),
         error: null,
-        loading: false
+        loading: false,
+        tables: objectQuery(action, 'payload', 'tables'),
       });
     case Actions.SET_HIVESERVER2_LOADING:
       return Object.assign({}, state, {
