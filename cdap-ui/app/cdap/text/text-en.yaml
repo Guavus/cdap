@@ -1186,6 +1186,7 @@ features:
           ADD: "Add connection: HIVE Server2"
           DUPLICATE: "Duplicate connection: {connection}"
           EDIT: "Edit connection: {connection}"
+        customLabel: "Other..."
       GCS:
         Buttons:
           ADD: Add Connection

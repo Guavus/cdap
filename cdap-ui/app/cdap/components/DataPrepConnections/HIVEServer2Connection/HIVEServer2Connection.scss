@@ -25,18 +25,37 @@ $db-sprite-url: url('/cdap_assets/img/db-sprite.png');
   background-position: 0 $index*-100px;
 }
 
-.db-image {
-  width: 100px;
-  height: 100px;
-  margin-right: 10px;
-  display: inline-block;
+.modal-dialog.hive-server2-connection-modal {
+  .asterisk { color: $asterisk-color; }
+  .connection-check { margin-left: 5px; }
+
+  .hive-server2-detail-content {
+    form {
+      padding: 10px;
+    }
+  }
+  .modal-body {
+    padding: 0px;
+  }
+  .custom-input {
+    margin-top: 5px;
+  }
+
+  .action-buttons-container {
+    .btn.btn-link {
+      padding: 7px 5px;
+    }
+
+    .add-row-btn i { vertical-align: middle; }
+  }
+
+  .test-connection-button {
+    margin-left: 5px;
+  }
+
+  .loading-indicator {
+    vertical-align: middle;
+    margin-left: 5px;
+  }
 }
 
-.db-hive2binary,
-.db-hive2http {
-  @include db-image(9);
-}
-
-.db-redshift {
-  @include db-image(10);
-}

@@ -100,7 +100,7 @@ export default class HIVEServer2Browser extends Component {
       lines: 100
     };
 
-    DataPrepApi.readTable(params)
+    DataPrepApi.hiveServer2readTable(params)
       .subscribe(
         (res) => {
           let workspaceId = res.values[0].id;

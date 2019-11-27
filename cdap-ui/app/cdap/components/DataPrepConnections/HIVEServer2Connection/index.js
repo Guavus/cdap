@@ -79,6 +79,7 @@ export default class HIVEServer2Connection extends Component {
       <HIVEServer2Detail
         db={obj}
         onAdd={this.add}
+        onClose={this.close}
         mode={this.props.mode}
         connectionId={this.props.connectionId}
       />
@@ -107,7 +108,7 @@ export default class HIVEServer2Connection extends Component {
           isOpen={true}
           toggle={this.props.close}
           size="lg"
-          className="database-connection-modal cdap-modal"
+          className="hive-server2-connection-modal cdap-modal"
           backdrop="static"
           zIndex="1061"
         >

@@ -533,11 +533,12 @@ function constructProperties(workspaceInfo, pluginVersion) {
   } else if (state.workspaceInfo.properties.connection === 'hiveServer2') {
     let specParams = {
       namespace,
-      workspaceId,
-      path: state.workspaceUri,
-      connectionId: state.workspaceInfo.properties.connectionid,
+      connectionId,
+      tableId: state.workspaceInfo.properties.id
     };
     rxArray.push(MyDataPrepApi.getHiveServer2Specification(specParams));
+    let requestBody = directiveRequestBodyCreator([]);
+    rxArray.push(MyDataPrepApi.getSchema(requestObj, requestBody));
   }
 
   try {

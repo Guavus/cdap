@@ -15,22 +15,27 @@
  */
 
 import PropTypes from 'prop-types';
-
+import { ModalFooter } from 'reactstrap';
 import React, { Component } from 'react';
-import MyDataPrepApi from 'api/dataprep';
 import NamespaceStore from 'services/NamespaceStore';
 import T from 'i18n-react';
 import ee from 'event-emitter';
-import CardActionFeedback from 'components/CardActionFeedback';
+import CardActionFeedback, {CARD_ACTION_TYPES} from 'components/CardActionFeedback';
 import uuidV4 from 'uuid/v4';
-import LoadingSVG from 'components/LoadingSVG';
+import BtnWithLoading from 'components/BtnWithLoading';
+import MyDataPrepApi from 'api/dataprep';
 import { objectQuery } from 'services/helpers';
 import { ConnectionType } from 'components/DataPrepConnections/ConnectionType';
 
 const LABEL_COL_CLASS = 'col-xs-4 col-form-label text-xs-right';
-const INPUT_COL_CLASS = 'col-xs-8';
-
+const INPUT_COL_CLASS = 'col-xs-7';
+const ConnectionMode = {
+  Add: 'ADD',
+  Edit: 'EDIT',
+  Duplicate: 'DUPLICATE',
+};
 const PREFIX = 'features.DataPrepConnections.AddConnections.HIVEServer2';
+const ADDCONN_PREFIX = 'features.DataPrepConnections.AddConnections';
 
 export default class HIVEServer2Detail extends Component {
   constructor(props) {
@@ -42,12 +47,15 @@ export default class HIVEServer2Detail extends Component {
       name: '',
       database: '',
       url: '',
-      connectionResult: null,
       error: null,
       databaseList: ['', customId],
       customId: customId,
       selectedDatabase: '',
-      testConnectionLoading: false
+      testConnectionLoading: false,
+      connectionResult: {
+        message: '',
+        type: '',
+      },
     };
 
     this.eventEmitter = ee(ee);
@@ -67,7 +75,7 @@ export default class HIVEServer2Detail extends Component {
       properties: this.constructProperties()
     };
 
-    MyDataPrepApi.getDatabaseList({ namespace }, requestBody)
+    MyDataPrepApi.hiveServer2getDatabaseList({ namespace }, requestBody)
       .subscribe((databaseList) => {
         let list = databaseList.values.sort();
         let customId = this.state.customId;
@@ -81,7 +89,7 @@ export default class HIVEServer2Detail extends Component {
 
         this.setState({
           databaseList: list,
-          selectedDatabase: this.props.mode === 'EDIT' ? this.state.database : '',
+          selectedDatabase: this.props.mode === ConnectionMode.Edit ? this.state.database : '',
           customId
         });
       }, (err) => {
@@ -90,17 +98,17 @@ export default class HIVEServer2Detail extends Component {
   }
 
   componentWillMount() {
-    if (this.props.mode === 'ADD') {
+    if (this.props.mode === ConnectionMode.Add) {
       return;
     }
-    let name = this.props.mode === 'EDIT' ? this.props.db.name : '';
+    let name = this.props.mode === ConnectionMode.Edit ? this.props.db.name : '';
     let url = this.props.db ? this.props.db.url : '';
     this.setState({
       name,
       url,
       selectedDatabase: this.state.customId,
     });
-    if (this.props.mode === 'EDIT') {
+    if (this.props.mode === ConnectionMode.Edit) {
       this.fetchDatabases();
     }
   }
@@ -112,7 +120,10 @@ export default class HIVEServer2Detail extends Component {
   handleChange(key, e) {
     this.setState({
       [key]: e.target.value,
-      connectionResult: null
+      connectionResult: {
+        message: '',
+        type: '',
+      }
     });
   }
 
@@ -203,7 +214,7 @@ export default class HIVEServer2Detail extends Component {
       .subscribe((res) => {
         this.setState({
           connectionResult: {
-            type: 'success',
+            type: CARD_ACTION_TYPES.SUCCESS,
             message: res.message
           },
           testConnectionLoading: false
@@ -215,7 +226,7 @@ export default class HIVEServer2Detail extends Component {
 
         this.setState({
           connectionResult: {
-            type: 'danger',
+            type: CARD_ACTION_TYPES.DANGER,
             message: errorMessage
           },
           testConnectionLoading: false
@@ -225,76 +236,105 @@ export default class HIVEServer2Detail extends Component {
 
   renderTestButton() {
     let disabled  = !this.state.name || !this.state.url;
-
     return (
-      <div>
-        <button
+      <span className='test-connection-button'>
+        <BtnWithLoading
           className="btn btn-secondary"
           onClick={this.testConnection}
           disabled={disabled}
-        >
-          {T.translate(`${PREFIX}.testConnection`)}
-        </button>
-
-        {
-          this.state.testConnectionLoading ?
-            (
-              <span className="fa loading-indicator">
-                <LoadingSVG />
-              </span>
-            )
-            :
-            null
-        }
-
-        {
-          this.state.connectionResult ?
-            (
-              <span
-                className={`connection-check text-${this.state.connectionResult.type}`}
-              >
-                {this.state.connectionResult.message}
-              </span>
-            )
-            :
-            null
-        }
-      </div>
+          label={T.translate(`${PREFIX}.testConnection`)}
+          loading={this.state.testConnectionLoading}
+          darker={true}
+        />
+      </span>
     );
   }
 
-  renderConnectionInfo() {
+
+
+  renderMessage() {
+    const connectionResult = this.state.connectionResult;
+
+    if (!this.state.error && !connectionResult.message) { return null; }
+
+    if (this.state.error) {
+      return (
+        <CardActionFeedback
+          type={connectionResult.type}
+          message={T.translate(`${PREFIX}.ErrorMessages.${this.props.mode}`)}
+          extendedMessage={this.state.error}
+        />
+      );
+    }
+
+    const connectionResultType = connectionResult.type;
+    const extendedMessage = connectionResultType === CARD_ACTION_TYPES.SUCCESS ? null : connectionResult.message;
+
     return (
-      <div>
-        <div className="form-group row">
-          <label className={LABEL_COL_CLASS}>
-            {T.translate(`${PREFIX}.url`)}
-            <span className="asterisk">*</span>
-          </label>
-          <div className={INPUT_COL_CLASS}>
-            <input
-              type="text"
-              className="form-control"
-              value={this.state.url}
-              onChange={this.handleChange.bind(this, 'url')}
-              placeholder={T.translate(`${PREFIX}.Placeholders.urlDefault`)}
-            />
-          </div>
+      <CardActionFeedback
+        message={T.translate(`${ADDCONN_PREFIX}.TestConnectionLabels.${connectionResultType.toLowerCase()}`)}
+        extendedMessage={extendedMessage}
+        type={connectionResultType}
+      />
+    );
+  }
+
+  renderDatabase() {
+    return (
+      <div className="form-group row">
+        <label className={LABEL_COL_CLASS}>
+          {T.translate(`${PREFIX}.database`)}
+        </label>
+        <div className={INPUT_COL_CLASS}>
+          <select
+            className="form-control"
+            value={this.state.selectedDatabase}
+            onChange={this.handleDatabaseSelect}
+          >
+            {
+              this.state.databaseList.map((dbOption) => {
+                return (
+                  <option
+                    key={dbOption}
+                    value={dbOption}
+                  >
+                    {dbOption === this.state.customId ? T.translate(`${PREFIX}.customLabel`) : dbOption}
+                  </option>
+                );
+              })
+            }
+          </select>
+
+          {
+            this.state.selectedDatabase === this.state.customId ?
+              (
+                <div className="custom-input">
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={this.state.database}
+                    onChange={this.handleDatabaseChange}
+                  />
+                </div>
+              )
+            :
+              null
+          }
         </div>
       </div>
     );
   }
 
-  renderAddConnectionButton() {
-    let disabled  = !this.state.name || !this.state.url;
+  renderAddConnectionButton = () => {
+    const disabled = !this.state.name || !this.state.url;
     let onClickFn = this.addConnection;
 
-    if (this.props.mode === 'EDIT') {
+    if (this.props.mode === ConnectionMode.Edit) {
       onClickFn = this.editConnection;
     }
 
     return (
-      <div className="col-xs-2 offset-xs-4 col-xs-offset-4">
+      <ModalFooter>
         <button
           className="btn btn-primary"
           onClick={onClickFn}
@@ -302,28 +342,16 @@ export default class HIVEServer2Detail extends Component {
         >
           {T.translate(`${PREFIX}.Buttons.${this.props.mode}`)}
         </button>
-      </div>
-    );
-  }
 
-  renderError() {
-    if (!this.state.error) { return null; }
-
-    return (
-      <div className="error-container">
-        <CardActionFeedback
-          type="DANGER"
-          message={T.translate(`${PREFIX}.ErrorMessages.${this.props.mode}`)}
-          extendedMessage={this.state.error}
-        />
-      </div>
+        {this.renderTestButton()}
+      </ModalFooter>
     );
   }
 
   render() {
     return (
-      <div className="database-detail">
-        <div className="database-detail-content">
+      <div className="hive-server2-detail">
+        <div className="hive-server2-detail-content">
 
           <form onSubmit={this.preventDefault}>
             <div className="form-group row">
@@ -337,24 +365,33 @@ export default class HIVEServer2Detail extends Component {
                   className="form-control"
                   value={this.state.name}
                   onChange={this.handleChange.bind(this, 'name')}
-                  disabled={this.props.mode === 'EDIT'}
+                  disabled={this.props.mode === ConnectionMode.Edit}
                   placeholder={T.translate(`${PREFIX}.Placeholders.name`)}
                 />
               </div>
             </div>
 
-            {this.renderConnectionInfo()}
-
+            <div className="form-group row">
+              <label className={LABEL_COL_CLASS}>
+                {T.translate(`${PREFIX}.url`)}
+                <span className="asterisk">*</span>
+              </label>
+              <div className={INPUT_COL_CLASS}>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={this.state.url}
+                  onChange={this.handleChange.bind(this, 'url')}
+                  placeholder={T.translate(`${PREFIX}.Placeholders.urlDefault`)}
+                />
+              </div>
+            </div>
+            {this.renderDatabase()}
           </form>
-          <div className="row">
-            {this.renderAddConnectionButton()}
-            {this.renderTestButton()}
-          </div>
-
-
+          {this.renderAddConnectionButton()}
         </div>
 
-        {this.renderError()}
+        {this.renderMessage()}
       </div>
     );
   }
@@ -363,7 +400,7 @@ export default class HIVEServer2Detail extends Component {
 HIVEServer2Detail.propTypes = {
   db: PropTypes.object,
   onAdd: PropTypes.func,
-  mode: PropTypes.oneOf(['ADD', 'EDIT', 'DUPLICATE']).isRequired,
+  mode: PropTypes.oneOf([ConnectionMode.Add, ConnectionMode.Edit, ConnectionMode.Duplicate]).isRequired,
   connectionId: PropTypes.string
 };
 
