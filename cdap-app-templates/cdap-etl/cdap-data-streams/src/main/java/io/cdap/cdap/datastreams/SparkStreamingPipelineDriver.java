@@ -37,6 +37,7 @@ import io.cdap.cdap.etl.api.batch.BatchAggregator;
 import io.cdap.cdap.etl.api.batch.BatchJoiner;
 import io.cdap.cdap.etl.api.batch.BatchSink;
 import io.cdap.cdap.etl.api.batch.SparkCompute;
+import io.cdap.cdap.etl.api.batch.SparkJoiner;
 import io.cdap.cdap.etl.api.batch.SparkSink;
 import io.cdap.cdap.etl.api.streaming.StreamingSource;
 import io.cdap.cdap.etl.api.streaming.Windower;
@@ -77,8 +78,8 @@ public class SparkStreamingPipelineDriver implements JavaSparkMain {
     .create();
   private static final Set<String> SUPPORTED_PLUGIN_TYPES = ImmutableSet.of(
     StreamingSource.PLUGIN_TYPE, BatchSink.PLUGIN_TYPE, SparkSink.PLUGIN_TYPE, Transform.PLUGIN_TYPE,
-    BatchAggregator.PLUGIN_TYPE, BatchJoiner.PLUGIN_TYPE, SparkCompute.PLUGIN_TYPE, Windower.PLUGIN_TYPE,
-    ErrorTransform.PLUGIN_TYPE, SplitterTransform.PLUGIN_TYPE, AlertPublisher.PLUGIN_TYPE);
+    BatchAggregator.PLUGIN_TYPE, BatchJoiner.PLUGIN_TYPE, SparkCompute.PLUGIN_TYPE, SparkJoiner.PLUGIN_TYPE,
+    Windower.PLUGIN_TYPE,ErrorTransform.PLUGIN_TYPE, SplitterTransform.PLUGIN_TYPE, AlertPublisher.PLUGIN_TYPE);
 
   @Override
   public void run(final JavaSparkExecutionContext sec) throws Exception {

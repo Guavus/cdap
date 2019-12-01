@@ -26,6 +26,7 @@ import io.cdap.cdap.api.macro.MacroEvaluator;
 import io.cdap.cdap.api.metrics.Metrics;
 import io.cdap.cdap.api.spark.SparkClientContext;
 import io.cdap.cdap.api.workflow.WorkflowToken;
+import io.cdap.cdap.etl.api.SubmitterLifecycle;
 import io.cdap.cdap.etl.api.Transform;
 import io.cdap.cdap.etl.api.batch.BatchAggregator;
 import io.cdap.cdap.etl.api.batch.BatchConfigurable;
@@ -181,7 +182,7 @@ public class SparkPreparer extends PipelinePhasePreparer {
   }
 
   @Override
-  protected SubmitterPlugin createJoiner(BatchJoiner<?, ?, ?> batchJoiner, StageSpec stageSpec) {
+  protected SubmitterPlugin createJoiner(SubmitterLifecycle batchJoiner, StageSpec stageSpec) {
     String stageName = stageSpec.getName();
     ContextProvider<DefaultJoinerContext> contextProvider =
       new JoinerContextProvider(pipelineRuntime, stageSpec, context.getAdmin());

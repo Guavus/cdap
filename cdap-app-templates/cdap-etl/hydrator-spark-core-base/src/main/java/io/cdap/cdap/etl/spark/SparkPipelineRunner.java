@@ -33,6 +33,7 @@ import io.cdap.cdap.etl.api.batch.BatchJoiner;
 import io.cdap.cdap.etl.api.batch.BatchJoinerRuntimeContext;
 import io.cdap.cdap.etl.api.batch.BatchSink;
 import io.cdap.cdap.etl.api.batch.SparkCompute;
+import io.cdap.cdap.etl.api.batch.SparkJoiner;
 import io.cdap.cdap.etl.api.batch.SparkSink;
 import io.cdap.cdap.etl.api.streaming.Windower;
 import io.cdap.cdap.etl.common.BasicArguments;
@@ -86,6 +87,13 @@ public abstract class SparkPipelineRunner {
     StageSpec stageSpec,
     SparkPairCollection<Object, List<JoinElement<Object>>> joinedInputs,
     StageStatisticsCollector collector) throws Exception;
+
+
+  protected abstract SparkCollection<Object> computeJoin(
+          StageSpec stageSpec,
+          Map<String, SparkCollection<Object>> inputs,
+          StageStatisticsCollector collector
+  ) throws Exception;
 
   public void runPipeline(PipelinePhase pipelinePhase, String sourcePluginType,
                           JavaSparkExecutionContext sec,
@@ -160,8 +168,10 @@ public abstract class SparkPipelineRunner {
         Iterator<SparkCollection<Object>> inputCollectionIter = inputDataCollections.values().iterator();
         stageData = inputCollectionIter.next();
         // don't union inputs records if we're joining or if we're processing errors
-        while (!BatchJoiner.PLUGIN_TYPE.equals(pluginType) && !ErrorTransform.PLUGIN_TYPE.equals(pluginType)
-          && inputCollectionIter.hasNext()) {
+        while (!BatchJoiner.PLUGIN_TYPE.equals(pluginType)
+                && !ErrorTransform.PLUGIN_TYPE.equals(pluginType)
+                && !SparkJoiner.PLUGIN_TYPE.equals(pluginType)
+                && inputCollectionIter.hasNext()) {
           stageData = stageData.union(inputCollectionIter.next());
         }
       }
@@ -245,7 +255,13 @@ public abstract class SparkPipelineRunner {
         emittedBuilder = addEmitted(emittedBuilder, pipelinePhase, stageSpec,
                                     combinedData, hasErrorOutput, hasAlertOutput);
 
-      } else if (BatchJoiner.PLUGIN_TYPE.equals(pluginType)) {
+      } else if (SparkJoiner.PLUGIN_TYPE.equals(pluginType)) {
+        SparkJoiner<Object> sparkJoiner = pluginContext.newPluginInstance(stageName, macroEvaluator);
+
+        emittedBuilder = emittedBuilder.setOutput(computeJoin(stageSpec, inputDataCollections, collector));
+
+      }
+      else if (BatchJoiner.PLUGIN_TYPE.equals(pluginType)) {
 
         BatchJoiner<Object, Object, Object> joiner = pluginContext.newPluginInstance(stageName, macroEvaluator);
         BatchJoinerRuntimeContext joinerRuntimeContext = pluginFunctionContext.createBatchRuntimeContext();

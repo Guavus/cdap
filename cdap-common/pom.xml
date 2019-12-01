@@ -149,6 +149,10 @@
       <artifactId>twill-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.twill</groupId>
       <artifactId>twill-api</artifactId>
     </dependency>

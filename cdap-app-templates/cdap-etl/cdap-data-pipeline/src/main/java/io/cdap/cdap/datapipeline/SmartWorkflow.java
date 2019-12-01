@@ -51,6 +51,7 @@ import io.cdap.cdap.etl.api.batch.BatchSink;
 import io.cdap.cdap.etl.api.batch.BatchSource;
 import io.cdap.cdap.etl.api.batch.PostAction;
 import io.cdap.cdap.etl.api.batch.SparkCompute;
+import io.cdap.cdap.etl.api.batch.SparkJoiner;
 import io.cdap.cdap.etl.api.batch.SparkSink;
 import io.cdap.cdap.etl.api.condition.Condition;
 import io.cdap.cdap.etl.api.lineage.field.FieldOperation;
@@ -184,7 +185,7 @@ public class SmartWorkflow extends AbstractWorkflow {
     for (StageSpec stageSpec : spec.getStages()) {
       stageSpecs.put(stageSpec.getName(), stageSpec);
       String pluginType = stageSpec.getPlugin().getType();
-      if (SparkCompute.PLUGIN_TYPE.equals(pluginType) || SparkSink.PLUGIN_TYPE.equals(pluginType)) {
+      if (SparkCompute.PLUGIN_TYPE.equals(pluginType) || SparkSink.PLUGIN_TYPE.equals(pluginType) || SparkJoiner.PLUGIN_TYPE.equals(pluginType)) {
         useSpark = true;
       }
     }
@@ -365,7 +366,7 @@ public class SmartWorkflow extends AbstractWorkflow {
     } else {
       planner = new PipelinePlanner(supportedPluginTypes,
                                     ImmutableSet.of(BatchAggregator.PLUGIN_TYPE, BatchJoiner.PLUGIN_TYPE),
-                                    ImmutableSet.of(SparkCompute.PLUGIN_TYPE, SparkSink.PLUGIN_TYPE),
+                                    ImmutableSet.of(SparkCompute.PLUGIN_TYPE, SparkSink.PLUGIN_TYPE, SparkJoiner.PLUGIN_TYPE),
                                     actionTypes, multiPortTypes);
     }
     return planner.plan(spec);

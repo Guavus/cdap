@@ -20,6 +20,7 @@ import io.cdap.cdap.api.macro.MacroEvaluator;
 import io.cdap.cdap.api.metrics.Metrics;
 import io.cdap.cdap.api.plugin.PluginContext;
 import io.cdap.cdap.etl.api.AlertPublisher;
+import io.cdap.cdap.etl.api.SubmitterLifecycle;
 import io.cdap.cdap.etl.api.Transform;
 import io.cdap.cdap.etl.api.batch.BatchAggregator;
 import io.cdap.cdap.etl.api.batch.BatchConfigurable;
@@ -28,6 +29,7 @@ import io.cdap.cdap.etl.api.batch.BatchSink;
 import io.cdap.cdap.etl.api.batch.BatchSinkContext;
 import io.cdap.cdap.etl.api.batch.BatchSource;
 import io.cdap.cdap.etl.api.batch.BatchSourceContext;
+import io.cdap.cdap.etl.api.batch.SparkJoiner;
 import io.cdap.cdap.etl.batch.connector.MultiConnectorFactory;
 import io.cdap.cdap.etl.common.Constants;
 import io.cdap.cdap.etl.common.PipelinePhase;
@@ -100,8 +102,9 @@ public abstract class PipelinePhasePreparer {
       } else if (BatchAggregator.PLUGIN_TYPE.equals(pluginType)) {
         BatchAggregator<?, ?, ?> aggregator = pluginInstantiator.newPluginInstance(stageName, macroEvaluator);
         submitterPlugin = createAggregator(aggregator, stageSpec);
-      } else if (BatchJoiner.PLUGIN_TYPE.equals(pluginType)) {
-        BatchJoiner<?, ?, ?> batchJoiner = pluginInstantiator.newPluginInstance(stageName, macroEvaluator);
+      } else if (BatchJoiner.PLUGIN_TYPE.equals(pluginType) || SparkJoiner.PLUGIN_TYPE.equals(pluginType)) {
+        // both BatchJoiner and SparkJoiner plugin can be abstracted out as SubmitterLifecycle for the purpose of instantiating
+        SubmitterLifecycle batchJoiner = pluginInstantiator.newPluginInstance(stageName, macroEvaluator);
         submitterPlugin = createJoiner(batchJoiner, stageSpec);
       } else {
         submitterPlugin = create(pluginInstantiator, stageSpec);
@@ -129,6 +132,7 @@ public abstract class PipelinePhasePreparer {
 
   protected abstract SubmitterPlugin createAggregator(BatchAggregator<?, ?, ?> aggregator, StageSpec stageSpec);
 
-  protected abstract SubmitterPlugin createJoiner(BatchJoiner<?, ?, ?> batchJoiner, StageSpec stageSpec);
+  // can be used to create both a BatchJoiner and a SparkJoiner plugin
+  protected abstract SubmitterPlugin createJoiner(SubmitterLifecycle batchJoiner, StageSpec stageSpec);
 
 }

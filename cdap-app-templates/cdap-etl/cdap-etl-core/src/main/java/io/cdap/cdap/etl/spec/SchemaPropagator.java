@@ -22,6 +22,7 @@ import io.cdap.cdap.etl.api.ErrorTransform;
 import io.cdap.cdap.etl.api.SplitterTransform;
 import io.cdap.cdap.etl.api.action.Action;
 import io.cdap.cdap.etl.api.batch.BatchJoiner;
+import io.cdap.cdap.etl.api.batch.SparkJoiner;
 import io.cdap.cdap.etl.api.condition.Condition;
 import io.cdap.cdap.etl.common.DefaultPipelineConfigurer;
 import io.cdap.cdap.etl.common.DefaultStageConfigurer;
@@ -71,6 +72,7 @@ public class SchemaPropagator {
 
       // Do not allow more than one input schema for stages other than Joiner and Action
       if (!BatchJoiner.PLUGIN_TYPE.equals(nextStageType)
+        && !SparkJoiner.PLUGIN_TYPE.equals(nextStageType)
         && !Action.PLUGIN_TYPE.equals(nextStageType)
         && !Condition.PLUGIN_TYPE.equals(nextStageType)
         && !hasSameSchema(outputStageConfigurer.getInputSchemas(), nextStageInputSchema)) {

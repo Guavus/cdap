@@ -40,6 +40,7 @@ import io.cdap.cdap.etl.api.action.Action;
 import io.cdap.cdap.etl.api.batch.BatchAggregator;
 import io.cdap.cdap.etl.api.batch.BatchJoiner;
 import io.cdap.cdap.etl.api.batch.BatchSource;
+import io.cdap.cdap.etl.api.batch.SparkJoiner;
 import io.cdap.cdap.etl.api.condition.Condition;
 import io.cdap.cdap.etl.api.validation.InvalidConfigPropertyException;
 import io.cdap.cdap.etl.api.validation.InvalidStageException;
@@ -275,7 +276,7 @@ public abstract class PipelineSpecGenerator<C extends ETLConfig, P extends Pipel
     FailureCollector collector = stageConfigurer.getFailureCollector();
     Object plugin = getPlugin(stageName, etlPlugin, pluginSelector, type, pluginName, collector);
     try {
-      if (type.equals(BatchJoiner.PLUGIN_TYPE)) {
+      if (type.equals(BatchJoiner.PLUGIN_TYPE) || type.equals(SparkJoiner.PLUGIN_TYPE)) {
         MultiInputPipelineConfigurable multiPlugin = (MultiInputPipelineConfigurable) plugin;
         multiPlugin.configurePipeline(pipelineConfigurer);
       } else if (type.equals(SplitterTransform.PLUGIN_TYPE)) {

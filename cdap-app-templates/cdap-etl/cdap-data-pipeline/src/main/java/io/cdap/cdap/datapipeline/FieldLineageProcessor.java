@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.cdap.api.lineage.field.Operation;
 import io.cdap.cdap.etl.api.batch.BatchJoiner;
+import io.cdap.cdap.etl.api.batch.SparkJoiner;
 import io.cdap.cdap.etl.api.lineage.field.FieldOperation;
 import io.cdap.cdap.etl.api.lineage.field.FieldTransformOperation;
 import io.cdap.cdap.etl.common.FieldOperationTypeAdapter;
@@ -60,7 +61,8 @@ public class FieldLineageProcessor {
     // stage has multiple inputs, for example join stages
     Set<String> noMergeRequiredStages = new HashSet<>();
     for (StageSpec stageSpec : pipelineSpec.getStages()) {
-      if (BatchJoiner.PLUGIN_TYPE.equals(stageSpec.getPlugin().getType())) {
+      if (BatchJoiner.PLUGIN_TYPE.equals(stageSpec.getPlugin().getType())
+          || SparkJoiner.PLUGIN_TYPE.equals(stageSpec.getPlugin().getType())) {
         noMergeRequiredStages.add(stageSpec.getName());
       }
     }
@@ -73,7 +75,8 @@ public class FieldLineageProcessor {
       // If current stage is of type JOIN add fields as inputstageName.fieldName
       List<String> stageInputs = new ArrayList<>();
       List<String> stageOutputs = new ArrayList<>();
-      if (BatchJoiner.PLUGIN_TYPE.equals(stageSpec.getPlugin().getType())) {
+      if (BatchJoiner.PLUGIN_TYPE.equals(stageSpec.getPlugin().getType())
+          || SparkJoiner.PLUGIN_TYPE.equals(stageSpec.getPlugin().getType())) {
         for (Map.Entry<String, Schema> entry : inputSchemas.entrySet()) {
           if (entry.getValue().getFields() != null) {
             stageInputs.addAll(entry.getValue().getFields()

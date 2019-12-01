@@ -21,6 +21,7 @@ import io.cdap.cdap.api.plugin.PluginContext;
 import io.cdap.cdap.api.preview.DataTracer;
 import io.cdap.cdap.api.spark.JavaSparkExecutionContext;
 import io.cdap.cdap.etl.api.JoinElement;
+import io.cdap.cdap.etl.api.batch.SparkJoiner;
 import io.cdap.cdap.etl.api.streaming.StreamingContext;
 import io.cdap.cdap.etl.api.streaming.StreamingSource;
 import io.cdap.cdap.etl.common.RecordInfo;
@@ -38,13 +39,16 @@ import io.cdap.cdap.etl.spark.streaming.PairDStreamCollection;
 import io.cdap.cdap.etl.spark.streaming.function.CountingTransformFunction;
 import io.cdap.cdap.etl.spark.streaming.function.DynamicJoinMerge;
 import io.cdap.cdap.etl.spark.streaming.function.DynamicJoinOn;
+import io.cdap.cdap.etl.spark.streaming.function.MultiStreamsTransform;
 import io.cdap.cdap.etl.spark.streaming.function.WrapOutputTransformFunction;
 import io.cdap.cdap.etl.spark.streaming.function.preview.LimitingFunction;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Driver for running pipelines using Spark Streaming.
@@ -123,4 +127,23 @@ public class SparkStreamingPipelineRunner extends SparkPipelineRunner {
     JavaDStream<Object> result = pairDStream.transform(new DynamicJoinMerge<>(dynamicDriverContext));
     return new DStreamCollection<>(sec, result);
   }
+
+  @Override
+  protected SparkCollection<Object> computeJoin(StageSpec stageSpec,
+    Map<String, SparkCollection<Object>> inputs,
+    StageStatisticsCollector collector) throws Exception {
+    DynamicDriverContext dynamicDriverContext = new DynamicDriverContext(stageSpec, sec, collector);
+
+    List<String> stageNames = new ArrayList<>();
+    List<JavaDStream<?>> dstreams = new ArrayList<>();
+    inputs.forEach((key, value) -> {
+      stageNames.add(key);
+      dstreams.add(value.getUnderlying());
+    });
+    JavaDStream<Object> result = streamingContext.transform(dstreams, new MultiStreamsTransform<Object>(dynamicDriverContext, stageNames));
+    return new DStreamCollection<>(sec, result);
+
+  }
+
+
 }

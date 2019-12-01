@@ -155,10 +155,13 @@ class SqlConditionsWidgetView extends React.Component<
     let error = null;
     const inputSchema = objectQuery(this.props, 'extraConfig', 'inputSchema');
 
+
     inputSchema.forEach((input) => {
       stageList.push(input.name);
       try {
         mapInputSchema[input.name] = JSON.parse(input.schema).fields.map((field) => field.name);
+        // first/default option is empty : supports optional conditions (e.g. temporal join CF CDAP-15910)  and force the user to choose join columns
+        mapInputSchema[input.name].unshift('');
       } catch (e) {
         mapInputSchema[input.name] = [];
         error = 'Error parsing input schemas.';

@@ -152,8 +152,17 @@
           <groupId>org.scala-lang</groupId>
           <artifactId>scala-library</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>net.jpountz.lz4</groupId>
+          <artifactId>lz4</artifactId>
+        </exclusion>
       </exclusions>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
     </dependency>
 
   </dependencies>

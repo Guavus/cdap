@@ -105,7 +105,7 @@ class HydratorPlusPlusNodeService {
   }
 
   shouldPropagateSchemaToNode(targetNode) {
-    if (targetNode.implicitSchema || targetNode.type === 'batchjoiner' || targetNode.type === 'splittertransform') {
+    if (targetNode.implicitSchema || targetNode.type === 'batchjoiner' || targetNode.type === 'sparkjoiner' || targetNode.type === 'splittertransform') {
       return false;
     }
 

@@ -100,9 +100,16 @@ function SqlConditionsController() {
       vm.stageList.push(input.name);
 
       try {
-        vm.mapInputSchema[input.name] = JSON.parse(input.schema).fields.map((field) => {
+        // first/default option is empty : supports optional conditions (e.g. temporal join CF CDAP-15910)  and force the user to choose join columns
+        let columns = ['--'];
+        let stageColumns = JSON.parse(input.schema).fields.map((field) => {
           return field.name;
         });
+        for (let i=0; i< stageColumns.length; i++) {
+          columns.push(stageColumns[i])
+        }
+        vm.mapInputSchema[input.name] = columns;
+        console.log("columns: "+columns)
       } catch (e) {
         console.log('ERROR: ', e);
         vm.error = 'Error parsing input schemas.';

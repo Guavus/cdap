@@ -22,6 +22,7 @@ import io.cdap.cdap.api.macro.MacroEvaluator;
 import io.cdap.cdap.api.mapreduce.MapReduceContext;
 import io.cdap.cdap.api.metrics.Metrics;
 import io.cdap.cdap.api.workflow.WorkflowToken;
+import io.cdap.cdap.etl.api.SubmitterLifecycle;
 import io.cdap.cdap.etl.api.Transform;
 import io.cdap.cdap.etl.api.batch.BatchAggregator;
 import io.cdap.cdap.etl.api.batch.BatchConfigurable;
@@ -180,7 +181,11 @@ public class MapReducePreparer extends PipelinePhasePreparer {
   }
 
   @Override
-  protected SubmitterPlugin createJoiner(BatchJoiner<?, ?, ?> batchJoiner, StageSpec stageSpec) {
+  protected SubmitterPlugin createJoiner(SubmitterLifecycle joiner, StageSpec stageSpec) {
+    // this is normally called only for legacy BatchJoiner, as SparkJoiner target spark2 only
+    assert joiner instanceof BatchJoiner;
+    BatchJoiner batchJoiner = (BatchJoiner) joiner;
+
     String stageName = stageSpec.getName();
     ContextProvider<DefaultJoinerContext> contextProvider =
       new JoinerContextProvider(pipelineRuntime, stageSpec, context.getAdmin());
