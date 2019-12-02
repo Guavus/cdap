@@ -90,7 +90,7 @@ export default class AddConnection extends Component {
       {
         type: ConnectionType.HIVESERVER2,
         label: 'HIVE Server2',
-        icon: 'icon-hive',
+        icon: 'icon-hive-server2',
         component: HIVEServer2Connection
       },
     ];

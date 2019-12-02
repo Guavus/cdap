@@ -851,7 +851,7 @@ export default class DataPrepConnections extends Component {
             <ExpandableMenu>
               <div>
                 <span className="fa fa-fw">
-                  <IconSVG name="icon-hive" />
+                  <IconSVG name="icon-hive-server2" />
                 </span>
                 <span>
                 {T.translate(`${PREFIX}.hiveserver2`, {count: this.state.hiveserver2List.length})}

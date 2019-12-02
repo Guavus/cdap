@@ -1024,6 +1024,7 @@ features:
       s3: Unable find S3 plugin. Please install Amazon S3 Plugins from Hub.
       spanner: Unable find Google Cloud Spanner plugin. Please install Google Cloud Plugins from Hub.
       missingWranglerPlugin: Cannot find wrangler-transform plugin. Please load wrangler transform from Hub
+      hiveserver2: Unable to find HIVE Server2 plugin. Please install HIVE Server2 Plugins from Hub.
     sidePanelTooltip:
       collapse: Collapse the side panel
       expand: Expand the side panel
@@ -1183,7 +1184,9 @@ features:
           EDIT: Save Changes
         url: JDBC URL
         database: Database
-        defaultTestErrorMessage: Error connecting to database
+        databaseSelectionMessage: Database field is mandatory for {connectionMode} connection
+        defaultTestErrorMessage: Error connecting to HIVE Server2
+        defaultFetchDatabaseErrorMessage: Error in fetching databases
         ErrorMessages:
           ADD: Failed to add connection
           DUPLICATE: Failed to duplicate connection
@@ -1199,7 +1202,7 @@ features:
           ADD: "Add connection: HIVE Server2"
           DUPLICATE: "Duplicate connection: {connection}"
           EDIT: "Edit connection: {connection}"
-        customLabel: "Other..."
+        customLabel: "Select Database"
       GCS:
         Buttons:
           ADD: Add Connection

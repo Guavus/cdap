@@ -26,6 +26,7 @@ import BtnWithLoading from 'components/BtnWithLoading';
 import MyDataPrepApi from 'api/dataprep';
 import { objectQuery } from 'services/helpers';
 import { ConnectionType } from 'components/DataPrepConnections/ConnectionType';
+import LoadingSVG from 'components/LoadingSVG';
 
 const LABEL_COL_CLASS = 'col-xs-4 col-form-label text-xs-right';
 const INPUT_COL_CLASS = 'col-xs-7';
@@ -45,13 +46,14 @@ export default class HIVEServer2Detail extends Component {
 
     this.state = {
       name: '',
-      database: '',
+      database: customId,
       url: '',
       error: null,
-      databaseList: ['', customId],
+      databaseList: [customId],
       customId: customId,
-      selectedDatabase: '',
       testConnectionLoading: false,
+      fetchDatabaseLoading: false,
+      databaseSelectionError:'',
       connectionResult: {
         message: '',
         type: '',
@@ -63,11 +65,12 @@ export default class HIVEServer2Detail extends Component {
     this.editConnection = this.editConnection.bind(this);
     this.testConnection = this.testConnection.bind(this);
     this.preventDefault = this.preventDefault.bind(this);
-    this.handleDatabaseChange = this.handleDatabaseChange.bind(this);
     this.handleDatabaseSelect = this.handleDatabaseSelect.bind(this);
   }
 
   fetchDatabases() {
+    this.setState({ fetchDatabaseLoading: true, databaseSelectionError: '' });
+
     let namespace = NamespaceStore.getState().selectedNamespace;
     let requestBody = {
       name: this.state.name,
@@ -84,32 +87,47 @@ export default class HIVEServer2Detail extends Component {
           customId = uuidV4();
         }
 
-        list.push(customId);
-        list.unshift('');
+        list.unshift(customId);
 
         this.setState({
           databaseList: list,
-          selectedDatabase: this.props.mode === ConnectionMode.Edit ? this.state.database : '',
-          customId
+          database: this.props.mode === ConnectionMode.Edit ? this.props.db.database : list[0],
+          customId,
+          fetchDatabaseLoading: false,
+          databaseSelectionError: ''
         });
       }, (err) => {
         console.log('err fetching database list', err);
+
+        let errorMessage = objectQuery(err, 'response', 'message') || objectQuery(err, 'response') || T.translate(`${PREFIX}.defaultFetchDatabaseErrorMessage`);
+        this.setState({
+          connectionResult: {
+            type: CARD_ACTION_TYPES.DANGER,
+            message: errorMessage
+          },
+          fetchDatabaseLoading: false
+        });
       });
   }
 
   componentWillMount() {
-    if (this.props.mode === ConnectionMode.Add) {
-      return;
-    }
-    let name = this.props.mode === ConnectionMode.Edit ? this.props.db.name : '';
-    let url = this.props.db ? this.props.db.url : '';
-    this.setState({
-      name,
-      url,
-      selectedDatabase: this.state.customId,
-    });
-    if (this.props.mode === ConnectionMode.Edit) {
-      this.fetchDatabases();
+    if (this.props.mode !== ConnectionMode.Add) {
+      let name = this.props.mode === ConnectionMode.Edit ? this.props.db.name : '';
+      let url = this.props.db ? this.props.db.url : '';
+      let database = this.props.db ? this.props.db.database : this.state.customId;
+
+      this.setState({
+        name,
+        url,
+        database,
+        databaseSelectionError: ''
+      });
+
+      if (this.props.mode === 'EDIT') {
+        setTimeout(() => {
+          this.fetchDatabases();
+        });
+      }
     }
   }
 
@@ -127,76 +145,85 @@ export default class HIVEServer2Detail extends Component {
     });
   }
 
-  handleDatabaseChange(e) {
-    this.setState({
-      database: e.target.value
-    });
-  }
-
   handleDatabaseSelect(e) {
     this.setState({
-      selectedDatabase: e.target.value
+      database: e.target.value,
+      databaseSelectionError: e.target.value === this.state.customId ? T.translate(`${PREFIX}.customLabel`) : ''
     });
   }
 
   constructProperties() {
     let properties = {};
-    if (this.state.name) {
-      properties.name = this.state.name;
-    }
     if (this.state.url) {
       properties.url = this.state.url;
+    }
+    if (this.state.database) {
+      properties.database = this.state.database;
     }
     return properties;
   }
 
   addConnection() {
-    let namespace = NamespaceStore.getState().selectedNamespace;
-
-    let requestBody = {
-      name: this.state.name,
-      type: ConnectionType.HIVESERVER2,
-      properties: this.constructProperties()
-    };
-
-    MyDataPrepApi.createConnection({ namespace }, requestBody)
-      .subscribe(() => {
-        this.setState({ error: null });
-        this.props.onAdd();
-      }, (err) => {
-        console.log('err', err);
-
-        let error = objectQuery(err, 'response', 'message') || objectQuery(err, 'response');
-        this.setState({ error });
+    if (this.state.database === '' || this.state.database === this.state.customId) {
+      this.setState({
+        databaseSelectionError: T.translate(`${PREFIX}.customLabel`)
       });
+    } else {
+      let namespace = NamespaceStore.getState().selectedNamespace;
+      this.setState({
+        databaseSelectionError: ''
+      });
+      let requestBody = {
+        name: this.state.name,
+        type: ConnectionType.HIVESERVER2,
+        properties: this.constructProperties()
+      };
+
+      MyDataPrepApi.createConnection({ namespace }, requestBody)
+        .subscribe(() => {
+          this.setState({ error: null });
+          this.props.onAdd();
+        }, (err) => {
+          console.log('err', err);
+
+          let error = objectQuery(err, 'response', 'message') || objectQuery(err, 'response');
+          this.setState({ error });
+        });
+    }
+
   }
 
   editConnection() {
-    let namespace = NamespaceStore.getState().selectedNamespace;
-
-    let params = {
-      namespace,
-      connectionId: this.props.connectionId
-    };
-
     let requestBody = {
       name: this.state.name,
       id: this.props.connectionId,
       type: ConnectionType.HIVESERVER2,
       properties: this.constructProperties()
     };
-
-    MyDataPrepApi.updateConnection(params, requestBody)
-      .subscribe(() => {
-        this.setState({ error: null });
-        this.eventEmitter.emit('DATAPREP_CONNECTION_EDIT_HIVESERVER2', this.props.connectionId);
-        this.props.onAdd();
-      }, (err) => {
-        console.log('err', err);
-
-        let error = objectQuery(err, 'response', 'message') || objectQuery(err, 'response');
-        this.setState({ error });
+    if (requestBody.properties.database == '' || requestBody.properties.database === this.state.customId) {
+      this.setState({
+        databaseSelectionError: T.translate(`${PREFIX}.customLabel`)
       });
+    } else {
+      let namespace = NamespaceStore.getState().selectedNamespace;
+
+      let params = {
+        namespace,
+        connectionId: this.props.connectionId
+      };
+
+      MyDataPrepApi.updateConnection(params, requestBody)
+        .subscribe(() => {
+          this.setState({ error: null });
+          this.eventEmitter.emit('DATAPREP_CONNECTION_EDIT_HIVESERVER2', this.props.connectionId);
+          this.props.onAdd();
+        }, (err) => {
+          console.log('err', err);
+
+          let error = objectQuery(err, 'response', 'message') || objectQuery(err, 'response');
+          this.setState({ error });
+        });
+    }
   }
 
   testConnection() {
@@ -278,54 +305,47 @@ export default class HIVEServer2Detail extends Component {
   }
 
   renderDatabase() {
+    const databaseErrorClass = this.state.databaseSelectionError ? 'database-error' : '';
     return (
       <div className="form-group row">
         <label className={LABEL_COL_CLASS}>
           {T.translate(`${PREFIX}.database`)}
         </label>
         <div className={INPUT_COL_CLASS}>
-          <select
-            className="form-control"
-            value={this.state.selectedDatabase}
-            onChange={this.handleDatabaseSelect}
-          >
-            {
-              this.state.databaseList.map((dbOption) => {
-                return (
-                  <option
-                    key={dbOption}
-                    value={dbOption}
-                  >
-                    {dbOption === this.state.customId ? T.translate(`${PREFIX}.customLabel`) : dbOption}
-                  </option>
-                );
-              })
-            }
-          </select>
-
           {
-            this.state.selectedDatabase === this.state.customId ?
-              (
-                <div className="custom-input">
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={this.state.database}
-                    onChange={this.handleDatabaseChange}
-                  />
-                </div>
-              )
-            :
-              null
+            this.state.fetchDatabaseLoading ?
+              <LoadingSVG />
+              :<select
+                  className={`form-control ${databaseErrorClass}`}
+                  value={this.state.database}
+                  onChange={this.handleDatabaseSelect}
+                >
+                  {
+                    this.state.databaseList.map((dbOption) => {
+                      return (
+                        <option
+                          key={dbOption}
+                          value={dbOption}
+                        >
+                          {dbOption === this.state.customId ? T.translate(`${PREFIX}.customLabel`) : dbOption}
+                        </option>
+                      );
+                    })
+                  }
+                </select>
           }
+
         </div>
+        {
+          this.state.databaseSelectionError ? <div className='database-error-message'>{this.state.databaseSelectionError}</div>: null
+        }
       </div>
     );
   }
 
-  renderAddConnectionButton = () => {
-    const disabled = !this.state.name || !this.state.url;
+  renderAddTestConnectionButton = () => {
     let onClickFn = this.addConnection;
+    let disabled = !this.state.name || !this.state.url || this.state.fetchDatabaseLoading;
 
     if (this.props.mode === ConnectionMode.Edit) {
       onClickFn = this.editConnection;
@@ -386,7 +406,7 @@ export default class HIVEServer2Detail extends Component {
             </div>
             {this.renderDatabase()}
           </form>
-          {this.renderAddConnectionButton()}
+          {this.renderAddTestConnectionButton()}
         </div>
 
         {this.renderMessage()}

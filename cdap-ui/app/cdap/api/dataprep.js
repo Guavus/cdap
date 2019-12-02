@@ -106,7 +106,7 @@ const MyDataPrepApi = {
   hiveserver2TestConnection: apiCreator(dataSrc, 'POST', 'REQUEST', `${connectionsPath}/hiveserver2/test`),
   hiveserver2ListTables: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables`),
   hiveserver2getDatabaseList: apiCreator(dataSrc, 'POST', 'REQUEST', `${connectionsPath}/hiveserver2/databases`),
-  gethiveserver2Specification: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables/:tableId/specification`),
+  getHiveserver2Specification: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables/:tableId/specification`),
   hiveserver2readTable: apiCreator(dataSrc, 'GET', 'REQUEST', `${connectionsPath}/:connectionId/hiveserver2/tables/:tableId/read`),
 
   // Connections

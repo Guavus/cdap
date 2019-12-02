@@ -376,21 +376,22 @@ function constructAdlsSource(artifactsList, adlsInfo) {
 function constructHiveServer2Source(artifactsList, hiveserver2Info) {
   if (!hiveserver2Info) { return null; }
 
-  let batchArtifact = find(artifactsList, { 'name': 'hive-server2-plugins' });
+  /* hive server2  */
+  let batchArtifact = find(artifactsList, { 'name': 'hivesource' });
 
   if (!batchArtifact) {
     return T.translate(`${PREFIX}.hiveserver2`);
   }
-  batchArtifact.version = '[1.7.0, 3.0.0)';
+
 
   let plugin = objectQuery(hiveserver2Info, 'values', 0);
-  let pluginName = Object.keys(plugin)[0];
+  let pluginName = Object.keys(plugin)[1];
   plugin = plugin[pluginName];
 
   let batchPluginInfo = {
     name: plugin.name,
     label: plugin.name,
-    type: 'batchsource',
+    type: 'sparkcompute',
     artifact: batchArtifact,
     properties: plugin.properties
   };
@@ -400,9 +401,36 @@ function constructHiveServer2Source(artifactsList, hiveserver2Info) {
     plugin: batchPluginInfo
   };
 
+  /* file plugin */
+  let fileBatchArtifact = find(artifactsList, { 'name': 'core-plugins' });
+
+  if (!fileBatchArtifact) {
+    return T.translate(`${PREFIX}.file`);
+  }
+
+  let filePlugin = objectQuery(hiveserver2Info, 'values', 0);
+  let filePluginName = Object.keys(filePlugin)[0];
+  filePlugin = filePlugin[filePluginName];
+
+  let fileBatchPluginInfo = {
+    name: filePlugin.name,
+    label: filePlugin.name,
+    type: 'batchsource',
+    artifact: fileBatchArtifact,
+    properties: filePlugin.properties
+  };
+
+  let fileBatchStage = {
+    name: filePluginName,
+    plugin: fileBatchPluginInfo
+  };
+
   return {
-    batchSource: batchStage,
+    batchSource: [fileBatchStage, batchStage],
     connections: [{
+      from: filePluginName,
+      to: pluginName
+    },{
       from: pluginName,
       to: 'Wrangler'
     }]
@@ -677,7 +705,11 @@ function constructProperties(workspaceInfo, pluginVersion) {
 
       if (batchSource || connectionType === 'upload') {
         if (batchSource) {
-          batchStages.push(batchSource);
+          if (Array.isArray(batchSource)) {
+            batchStages = batchStages.concat(batchSource);
+          } else {
+            batchStages.push(batchSource);
+          }
         }
         batchConfig = {
           artifact: batchArtifact,

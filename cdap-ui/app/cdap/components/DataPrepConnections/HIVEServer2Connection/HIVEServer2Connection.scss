@@ -57,5 +57,21 @@ $db-sprite-url: url('/cdap_assets/img/db-sprite.png');
     vertical-align: middle;
     margin-left: 5px;
   }
+  .database-error-message {
+    color: #d15668;
+    display: inline-block;
+    margin-top: 1%;
+    margin-left: 2%;
+  }
+  .database-error {
+    border: 1px solid #d15668;
+  }
+}
+.db-hive2binary {
+  @include db-image(9);
 }
 
+.icon-hive-server2 {
+  width: 1.5em;
+  height: 1.5em;
+}

@@ -28,7 +28,11 @@ import T from 'i18n-react';
 require('./HIVEServer2Connection.scss');
 
 const PREFIX = 'features.DataPrepConnections.AddConnections.HIVEServer2';
-
+const ConnectionMode = {
+  Add: 'ADD',
+  Edit: 'EDIT',
+  Duplicate: 'DUPLICATE',
+};
 export default class HIVEServer2Connection extends Component {
   constructor(props) {
     super(props);
@@ -37,7 +41,8 @@ export default class HIVEServer2Connection extends Component {
       name: null,
       url:'',
       error: null,
-      loading: false
+      loading: false,
+      database: ''
     };
 
     this.add = this.add.bind(this);
@@ -56,12 +61,14 @@ export default class HIVEServer2Connection extends Component {
     MyDataPrepApi.getConnection(params)
     .subscribe((res) => {
       let connInfo = objectQuery(res, 'values', 0);
-      let name = objectQuery(connInfo, 'properties', 'name');
-      const url = objectQuery(connInfo, 'properties', 'url');
+      let name = connInfo.name;
+      let url = objectQuery(connInfo, 'properties', 'url');
+      let database = objectQuery(connInfo, 'properties', 'database');
 
       this.setState({
         name,
         url,
+        database,
         loading: false
       });
 
@@ -73,7 +80,8 @@ export default class HIVEServer2Connection extends Component {
   renderHIVEServer2Detail() {
     const obj = {
       name: this.state.name,
-      url: this.state.url
+      url: this.state.url,
+      database: this.state.database
     };
     return (
       <HIVEServer2Detail
@@ -128,6 +136,6 @@ export default class HIVEServer2Connection extends Component {
 HIVEServer2Connection.propTypes = {
   close: PropTypes.func,
   onAdd: PropTypes.func,
-  mode: PropTypes.oneOf(['ADD', 'EDIT', 'DUPLICATE']).isRequired,
+  mode: PropTypes.oneOf([ConnectionMode.Add, ConnectionMode.Edit, ConnectionMode.Duplicate]).isRequired,
   connectionId: PropTypes.string
 };
