@@ -27,6 +27,8 @@ import MyDataPrepApi from 'api/dataprep';
 import { objectQuery } from 'services/helpers';
 import { ConnectionType } from 'components/DataPrepConnections/ConnectionType';
 import LoadingSVG from 'components/LoadingSVG';
+import ValidatedInput from 'components/ValidatedInput';
+import types from 'services/inputValidationTemplates';
 
 const LABEL_COL_CLASS = 'col-xs-4 col-form-label text-xs-right';
 const INPUT_COL_CLASS = 'col-xs-7';
@@ -37,6 +39,11 @@ const ConnectionMode = {
 };
 const PREFIX = 'features.DataPrepConnections.AddConnections.HIVEServer2';
 const ADDCONN_PREFIX = 'features.DataPrepConnections.AddConnections';
+const errorMap = 'error';
+const templateMap = 'template';
+const labelMap = 'label';
+const nameMap = 'name';
+const urlMap = 'url';
 
 export default class HIVEServer2Detail extends Component {
   constructor(props) {
@@ -58,6 +65,20 @@ export default class HIVEServer2Detail extends Component {
         message: '',
         type: '',
       },
+      inputs: {
+        name: {
+          error: '',
+          required: true,
+          template: 'NAME',
+          label:  T.translate(`${PREFIX}.name`),
+        },
+        url: {
+          error: '',
+          required: true,
+          template: 'NAME',
+          label:  T.translate(`${PREFIX}.url`),
+        }
+      }
     };
 
     this.eventEmitter = ee(ee);
@@ -135,14 +156,30 @@ export default class HIVEServer2Detail extends Component {
     e.preventDefault();
   }
 
-  handleChange(key, e) {
-    this.setState({
-      [key]: e.target.value,
-      connectionResult: {
-        message: '',
-        type: '',
+  handleChange = (key, e) => {
+    if (Object.keys(this.state.inputs).indexOf(key) > -1) {
+      // validate input
+      const isValid = types[this.state.inputs[key][templateMap]].validate(e.target.value);
+      let errorMsg = '';
+      if (e.target.value && !isValid) {
+        errorMsg = types[this.state.inputs[key][templateMap]].getErrorMsg();
       }
-    });
+
+      this.setState({
+        [key]: e.target.value,
+        inputs: {
+          ...this.state.inputs,
+          [key]: {
+            ...this.state.inputs[key],
+            error: errorMsg,
+          },
+        },
+      });
+    } else {
+      this.setState({
+        [key]: e.target.value,
+      });
+    }
   }
 
   handleDatabaseSelect(e) {
@@ -262,13 +299,12 @@ export default class HIVEServer2Detail extends Component {
   }
 
   renderTestButton() {
-    let disabled  = !this.state.name || !this.state.url;
     return (
       <span className='test-connection-button'>
         <BtnWithLoading
           className="btn btn-secondary"
           onClick={this.testConnection}
-          disabled={disabled}
+          disabled={this.isButtonDisable()}
           label={T.translate(`${PREFIX}.testConnection`)}
           loading={this.state.testConnectionLoading}
           darker={true}
@@ -343,9 +379,12 @@ export default class HIVEServer2Detail extends Component {
     );
   }
 
+  isButtonDisable() {
+    return !this.state.name || !this.state.url  || this.state.inputs[nameMap].error !== '' ||  this.state.inputs[urlMap].error !== ''
+  }
   renderAddTestConnectionButton = () => {
     let onClickFn = this.addConnection;
-    let disabled = !this.state.name || !this.state.url || this.state.fetchDatabaseLoading;
+    let disabled = this.isButtonDisable() || this.state.fetchDatabaseLoading;
 
     if (this.props.mode === ConnectionMode.Edit) {
       onClickFn = this.editConnection;
@@ -378,13 +417,14 @@ export default class HIVEServer2Detail extends Component {
                 <span className="asterisk">*</span>
               </label>
               <div className={INPUT_COL_CLASS}>
-                <input
+                <ValidatedInput
                   type="text"
+                  label={this.state.inputs[nameMap][labelMap]}
+                  validationError={this.state.inputs[nameMap][errorMap]}
                   className="form-control"
                   value={this.state.name}
                   onChange={this.handleChange.bind(this, 'name')}
-                  disabled={this.props.mode === ConnectionMode.Edit}
-                  placeholder={T.translate(`${PREFIX}.Placeholders.name`)}
+                  placeholder={T.translate(`${PREFIX}.Placeholders.name`).toString()}
                 />
               </div>
             </div>
@@ -395,12 +435,14 @@ export default class HIVEServer2Detail extends Component {
                 <span className="asterisk">*</span>
               </label>
               <div className={INPUT_COL_CLASS}>
-                <input
+                <ValidatedInput
                   type="text"
+                  label={this.state.inputs[urlMap][labelMap]}
+                  validationError={this.state.inputs[urlMap][errorMap]}
                   className="form-control"
                   value={this.state.url}
                   onChange={this.handleChange.bind(this, 'url')}
-                  placeholder={T.translate(`${PREFIX}.Placeholders.urlDefault`)}
+                  placeholder={T.translate(`${PREFIX}.Placeholders.urlDefault`).toString()}
                 />
               </div>
             </div>
