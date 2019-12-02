@@ -176,15 +176,15 @@ export default class HIVEServer2Browser extends Component {
         return this.renderEmpty();
       }
       return (
-        <div className="database-content-table">
-          <div className="database-content-header">
+        <div className="hiveserver2-content-table">
+          <div className="hiveserver2-content-header">
             <div className="row">
               <div className="col-xs-12">
                 <span>{T.translate(`${PREFIX}.table.namecollabel`)}</span>
               </div>
             </div>
           </div>
-          <div className="database-content-body">
+          <div className="hiveserver2-content-body">
             {
               tables.map(table => {
                 return (
@@ -216,7 +216,7 @@ export default class HIVEServer2Browser extends Component {
     }
 
     return (
-      <div className="database-browser">
+      <div className="hiveserver2-browser">
         <Provider store={DataPrepBrowserStore}>
           <DataPrepBrowserPageTitle
             browserI18NName="HIVEServer2Browser"
@@ -229,8 +229,8 @@ export default class HIVEServer2Browser extends Component {
           browserTitle={T.translate(`${PREFIX}.title`)}
         />
         <div>
-          <div className="database-browser-header">
-            <div className="database-metadata">
+          <div className="hiveserver2-browser-header">
+            <div className="hiveserver2-metadata">
               <h5>{objectQuery(this.state.info, 'info', 'name')}</h5>
               <span className="tables-count">
                 {
@@ -251,7 +251,7 @@ export default class HIVEServer2Browser extends Component {
           </div>
         </div>
 
-        <div className="database-browser-content">
+        <div className="hiveserver2-browser-content">
           { renderContents(filteredTables) }
         </div>
       </div>

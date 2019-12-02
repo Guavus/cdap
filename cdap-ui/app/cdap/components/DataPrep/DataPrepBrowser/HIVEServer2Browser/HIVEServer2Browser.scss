@@ -20,34 +20,34 @@ $header-border: #cccccc;
 $header-bg: #eeeeee;
 $content-font-color: #333333;
 
-.database-browser {
+.hiveserver2-browser {
   height: calc(100vh - 50px - 54px);
 
-  .database-browser-header,
-  .database-browser-content {
+  .hiveserver2-browser-header,
+  .hiveserver2-browser-content {
     padding-left: 15px;
     padding-right: 15px;
   }
 
-  .database-browser-content {
+  .hiveserver2-browser-content {
     height: calc(100% - 50px - 39px);
   }
 
-  .database-content-table {
+  .hiveserver2-content-table {
     padding: 0;
     height: 100%;
 
     .row {
       margin: 0;
     }
-    .database-content-header {
+    .hiveserver2-content-header {
       border-bottom: 1px solid $header-border;
       border-top: 1px solid $header-border;
       background-color: $header-bg;
       line-height: 36px;
       font-weight: 600;
     }
-    .database-content-body {
+    .hiveserver2-content-body {
       height: calc(100% - 38px);
       overflow-y: auto;
       .content-row {
@@ -65,13 +65,13 @@ $content-font-color: #333333;
     color: gray;
     font-size: 12px;
   }
-  .database-browser-header {
+  .hiveserver2-browser-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 46px;
 
-    .database-metadata { padding-left: 5px; }
+    .hiveserver2-metadata { padding-left: 5px; }
   }
   .empty-search-container {
     display: flex;

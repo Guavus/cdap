@@ -341,7 +341,7 @@ export default class HIVEServer2Detail extends Component {
   }
 
   renderDatabase() {
-    const databaseErrorClass = this.state.databaseSelectionError ? 'database-error' : '';
+    const databaseErrorClass = this.state.databaseSelectionError ? 'hiveserver2-database-error' : '';
     return (
       <div className="form-group row">
         <label className={LABEL_COL_CLASS}>
@@ -373,15 +373,16 @@ export default class HIVEServer2Detail extends Component {
 
         </div>
         {
-          this.state.databaseSelectionError ? <div className='database-error-message'>{this.state.databaseSelectionError}</div>: null
+          this.state.databaseSelectionError ? <div className='hiveserver2-database-error-message'>{this.state.databaseSelectionError}</div> : null
         }
       </div>
     );
   }
 
   isButtonDisable() {
-    return !this.state.name || !this.state.url  || this.state.inputs[nameMap].error !== '' ||  this.state.inputs[urlMap].error !== ''
+    return !this.state.name || !this.state.url || this.state.inputs[nameMap].error !== '' || this.state.inputs[urlMap].error !== '';
   }
+
   renderAddTestConnectionButton = () => {
     let onClickFn = this.addConnection;
     let disabled = this.isButtonDisable() || this.state.fetchDatabaseLoading;
