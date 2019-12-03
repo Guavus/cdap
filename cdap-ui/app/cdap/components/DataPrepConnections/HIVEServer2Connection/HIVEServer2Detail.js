@@ -17,7 +17,7 @@
 import PropTypes from 'prop-types';
 import { ModalFooter } from 'reactstrap';
 import React, { Component } from 'react';
-import NamespaceStore from 'services/NamespaceStore';
+import {getCurrentNamespace} from 'services/NamespaceStore';
 import T from 'i18n-react';
 import ee from 'event-emitter';
 import CardActionFeedback, {CARD_ACTION_TYPES} from 'components/CardActionFeedback';
@@ -50,7 +50,6 @@ export default class HIVEServer2Detail extends Component {
     super(props);
 
     let customId = uuidV4();
-
     this.state = {
       name: '',
       database: customId,
@@ -92,12 +91,8 @@ export default class HIVEServer2Detail extends Component {
   fetchDatabases() {
     this.setState({ fetchDatabaseLoading: true, databaseSelectionError: '' });
 
-    let namespace = NamespaceStore.getState().selectedNamespace;
-    let requestBody = {
-      name: this.state.name,
-      type: ConnectionType.HIVESERVER2,
-      properties: this.constructProperties()
-    };
+    let namespace = getCurrentNamespace();
+    let requestBody = this.getRequestBody();
 
     MyDataPrepApi.hiveserver2getDatabaseList({ namespace }, requestBody)
       .subscribe((databaseList) => {
@@ -112,7 +107,7 @@ export default class HIVEServer2Detail extends Component {
 
         this.setState({
           databaseList: list,
-          database: this.props.mode === ConnectionMode.Edit ? this.props.db.database : list[0],
+          database: this.props.mode == ConnectionMode.Add ? list[0] : this.props.db.database,
           customId,
           fetchDatabaseLoading: false,
           databaseSelectionError: ''
@@ -144,7 +139,7 @@ export default class HIVEServer2Detail extends Component {
         databaseSelectionError: ''
       });
 
-      if (this.props.mode === 'EDIT') {
+      if (this.props.mode === ConnectionMode.Edit || this.props.mode === ConnectionMode.Duplicate) {
         setTimeout(() => {
           this.fetchDatabases();
         });
@@ -189,6 +184,14 @@ export default class HIVEServer2Detail extends Component {
     });
   }
 
+  getRequestBody() {
+    return {
+      name: this.state.name,
+      type: ConnectionType.HIVESERVER2,
+      properties: this.constructProperties()
+    };
+  }
+
   constructProperties() {
     let properties = {};
     if (this.state.url) {
@@ -206,15 +209,12 @@ export default class HIVEServer2Detail extends Component {
         databaseSelectionError: T.translate(`${PREFIX}.customLabel`)
       });
     } else {
-      let namespace = NamespaceStore.getState().selectedNamespace;
       this.setState({
         databaseSelectionError: ''
       });
-      let requestBody = {
-        name: this.state.name,
-        type: ConnectionType.HIVESERVER2,
-        properties: this.constructProperties()
-      };
+
+      let namespace = getCurrentNamespace();
+      let requestBody = this.getRequestBody();
 
       MyDataPrepApi.createConnection({ namespace }, requestBody)
         .subscribe(() => {
@@ -231,19 +231,16 @@ export default class HIVEServer2Detail extends Component {
   }
 
   editConnection() {
+    let namespace = getCurrentNamespace();
     let requestBody = {
-      name: this.state.name,
       id: this.props.connectionId,
-      type: ConnectionType.HIVESERVER2,
-      properties: this.constructProperties()
+      ...this.getRequestBody()
     };
     if (requestBody.properties.database == '' || requestBody.properties.database === this.state.customId) {
       this.setState({
         databaseSelectionError: T.translate(`${PREFIX}.customLabel`)
       });
     } else {
-      let namespace = NamespaceStore.getState().selectedNamespace;
-
       let params = {
         namespace,
         connectionId: this.props.connectionId
@@ -266,13 +263,8 @@ export default class HIVEServer2Detail extends Component {
   testConnection() {
     this.setState({ testConnectionLoading: true });
 
-    let namespace = NamespaceStore.getState().selectedNamespace;
-
-    let requestBody = {
-      name: this.state.name,
-      type: ConnectionType.HIVESERVER2,
-      properties: this.constructProperties()
-    };
+    let namespace = getCurrentNamespace();
+    let requestBody = this.getRequestBody();
 
     MyDataPrepApi.hiveserver2TestConnection({ namespace }, requestBody)
       .subscribe((res) => {
