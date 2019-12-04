@@ -30,8 +30,9 @@ import LoadingSVG from 'components/LoadingSVG';
 import ValidatedInput from 'components/ValidatedInput';
 import types from 'services/inputValidationTemplates';
 
-const LABEL_COL_CLASS = 'col-xs-4 col-form-label text-xs-right';
+const LABEL_COL_CLASS = 'col-xs-3 col-form-label text-xs-right';
 const INPUT_COL_CLASS = 'col-xs-7';
+const TEST_BUTTON_COL_CLASS = 'col-xs-2 offset-xs-8 col-xs-offset-8';
 const ConnectionMode = {
   Add: 'ADD',
   Edit: 'EDIT',
@@ -102,12 +103,14 @@ export default class HIVEServer2Detail extends Component {
         if (list.indexOf(customId) !== -1) {
           customId = uuidV4();
         }
+        if (list.length === 0) {
+          list.push(customId);
+        }
 
-        list.unshift(customId);
-
+        const selectedDatabase = this.props.mode == ConnectionMode.Add ? list[0] : (list.indexOf(this.props.db.database) !== -1 ? this.props.db.database : list[0]);
         this.setState({
           databaseList: list,
-          database: this.props.mode == ConnectionMode.Add ? list[0] : this.props.db.database,
+          database: selectedDatabase,
           customId,
           fetchDatabaseLoading: false,
           databaseSelectionError: ''
@@ -292,18 +295,19 @@ export default class HIVEServer2Detail extends Component {
 
   renderTestButton() {
     return (
-      <span className='test-connection-button'>
-        <BtnWithLoading
-          className="btn btn-secondary"
-          onClick={this.testConnection}
-          disabled={this.isButtonDisable()}
-          label={T.translate(`${PREFIX}.testConnection`)}
-          loading={this.state.testConnectionLoading}
-          darker={true}
-        />
-      </span>
-    );
-  }
+      <div className="form-group row test-connection-button">
+        <div className={TEST_BUTTON_COL_CLASS}>
+          <BtnWithLoading
+            className="btn btn-secondary"
+            onClick={this.testConnection}
+            disabled={this.isButtonDisable()}
+            label={T.translate(`${PREFIX}.testConnection`)}
+            loading={this.state.testConnectionLoading}
+            darker={true}
+          />
+        </div>
+      </div>);
+    }
 
   renderMessage() {
     const connectionResult = this.state.connectionResult;
@@ -338,6 +342,7 @@ export default class HIVEServer2Detail extends Component {
       <div className="form-group row">
         <label className={LABEL_COL_CLASS}>
           {T.translate(`${PREFIX}.database`)}
+          <span className="asterisk">*</span>
         </label>
         <div className={INPUT_COL_CLASS}>
           {
@@ -375,9 +380,9 @@ export default class HIVEServer2Detail extends Component {
     return !this.state.name || !this.state.url || this.state.inputs[nameMap].error !== '' || this.state.inputs[urlMap].error !== '';
   }
 
-  renderAddTestConnectionButton = () => {
+  renderAddConnectionButton = () => {
     let onClickFn = this.addConnection;
-    let disabled = this.isButtonDisable() || this.state.fetchDatabaseLoading;
+    let disabled = this.isButtonDisable() || this.state.database === '' || this.state.database === this.state.customId ||this.state.fetchDatabaseLoading;
 
     if (this.props.mode === ConnectionMode.Edit) {
       onClickFn = this.editConnection;
@@ -386,14 +391,11 @@ export default class HIVEServer2Detail extends Component {
     return (
       <ModalFooter>
         <button
-          className="btn btn-primary"
-          onClick={onClickFn}
-          disabled={disabled}
-        >
+            className="btn btn-primary"
+            onClick={onClickFn}
+            disabled={disabled}>
           {T.translate(`${PREFIX}.Buttons.${this.props.mode}`)}
-        </button>
-
-        {this.renderTestButton()}
+          </button>
       </ModalFooter>
     );
   }
@@ -439,11 +441,12 @@ export default class HIVEServer2Detail extends Component {
                 />
               </div>
             </div>
+            {this.renderTestButton()}
+
             {this.renderDatabase()}
           </form>
-          {this.renderAddTestConnectionButton()}
+          {this.renderAddConnectionButton()}
         </div>
-
         {this.renderMessage()}
       </div>
     );

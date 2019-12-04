@@ -26,7 +26,18 @@ $db-sprite-url: url('/cdap_assets/img/db-sprite.png');
 }
 
 .modal-dialog.hive-server2-connection-modal {
-  .asterisk { color: $asterisk-color; }
+  .col-form-label {
+    font-weight: 500;
+    font-size: 14px;
+    padding-top: 4px;
+
+    .asterisk {
+      position: relative;
+      top: -3px;
+      left: 2px;
+      color: $asterisk-color;
+    }
+  }
   .connection-check { margin-left: 5px; }
 
   .hive-server2-detail-content {
@@ -50,7 +61,7 @@ $db-sprite-url: url('/cdap_assets/img/db-sprite.png');
   }
 
   .test-connection-button {
-    margin-left: 5px;
+    margin-right: 0%;
   }
 
   .loading-indicator {
