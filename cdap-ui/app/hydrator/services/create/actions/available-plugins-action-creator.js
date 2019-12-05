@@ -162,7 +162,13 @@ class PipelineAvailablePluginsActions {
           let parsedWidgets;
           let widgets = plugin.properties[`widgets.${pluginKey}`];
           if (pluginKey === 'Validator-transform') {
-            widgets = JSON.stringify({ 'emit-errors': true });
+            if (widgets) {
+              widgets = JSON.parse(widgets);
+              widgets['emit-errors'] = true;
+              widgets = JSON.stringify(widgets);
+            } else {
+              widgets = JSON.stringify({ 'emit-errors': true });
+            }
           }
           if (widgets) {
             try {
