@@ -1229,6 +1229,7 @@ features:
         testConnection: Test Connection
       Kafka:
         brokersList: Broker host
+        brokerHostTooltip: List of Kafka brokers specified in host1:port1, bhost2:port2 form. For example, host1.example.com:9092, host2.example.com:9092
         Buttons:
           ADD: Add Connection
           DUPLICATE: Duplicate Connection
@@ -1255,9 +1256,11 @@ features:
           kafkaProducerProperties:
             key: Enter Key
             value: Enter Value
+          topicName: Specify a Kafka topic name
         port: Port
         required: Required
         testConnection: Test Connection
+        topicName: Kafka Topic Name
         zkQuorum: Zookeeper host
         zookeeper: Zookeeper
       label: Add Connection

@@ -33,6 +33,7 @@ import KeyValuePairs from 'components/KeyValuePairs';
 import ValidatedInput from 'components/ValidatedInput';
 import types from 'services/inputValidationTemplates';
 import { Theme } from 'services/ThemeHelper';
+import {UncontrolledTooltip} from 'components/UncontrolledComponents';
 
 const PREFIX = 'features.DataPrepConnections.AddConnections.Kafka';
 const ADDCONN_PREFIX = 'features.DataPrepConnections.AddConnections';
@@ -70,6 +71,7 @@ export default class KafkaConnection extends Component {
         type: null,
         message: null
       },
+      topicName:'',
       testConnectionLoading: false,
       error: null,
       inputs: {
@@ -81,13 +83,19 @@ export default class KafkaConnection extends Component {
         },
         'principal': {
           'error': '',
-          'template': 'KERBEROS_PRINCIPAL',
+          'template': 'DEFAULT',
           'label': T.translate(`${PREFIX}.principal`)
         },
         'keytabLocation': {
           'error': '',
-          'template': 'KEYTAB_LOCATION',
+          'template': 'DEFAULT',
           'label': T.translate(`${PREFIX}.keytabLocation`)
+        },
+        'topicName': {
+          'error': '',
+          'required': true,
+          'template': 'DEFAULT',
+          'label': T.translate(`${PREFIX}.topicName`)
         }
       },
       loading: false
@@ -319,11 +327,22 @@ export default class KafkaConnection extends Component {
   }
 
   /** Return true if there is some error. */
-  testInputs() {
+  testErrorsInInputs() {
     let isSomeErrorInputs = Object.keys(this.state.inputs).some(key => this.state.inputs[key]['error'] !== '');
+
+    /* check for kafka-properties */
     let kafkaProducerProperties = this.state.kafkaProducerProperties ? this.state.kafkaProducerProperties.pairs : DEFAULT_KAFKA_PRODUCER_PROPERTIES.pairs;
     let isSomeErrorKeyValuePairs = kafkaProducerProperties.some(property => { return (!property.validKey || !property.validValue);});
-    return isSomeErrorInputs || isSomeErrorKeyValuePairs;
+
+    /* check for broker list */
+    let isSomeErrorBrokerList = this.state.brokersList.some(broker => { return !broker.valid; });
+
+    return isSomeErrorInputs || isSomeErrorKeyValuePairs || isSomeErrorBrokerList;
+  }
+
+  isBrokerListEmpty() {
+    let isBrokerEmpty = this.state.brokersList.some(broker => { return (broker.host === '' || broker.port === '');});
+    return isBrokerEmpty;
   }
 
   handleChange(key, e) {
@@ -352,11 +371,15 @@ export default class KafkaConnection extends Component {
     }
   }
 
-  renderKafka() {
+  renderKafkaBrokerList() {
     return (
       <div className="form-group row">
-        <label className={LABEL_COL_CLASS}>
+        <label className={LABEL_COL_CLASS} id="kafka-broker-host">
           {T.translate(`${PREFIX}.brokersList`)}
+          <UncontrolledTooltip
+              target="kafka-broker-host">
+              {T.translate(`${PREFIX}.brokerHostTooltip`)}
+          </UncontrolledTooltip>
           <span className="asterisk">*</span>
         </label>
         <div className={INPUT_COL_CLASS}>
@@ -369,15 +392,12 @@ export default class KafkaConnection extends Component {
     );
   }
 
+  isButtonDisabled() {
+    return !this.state.name || !this.state.topicName || this.state.testConnectionLoading || this.testErrorsInInputs() ||  this.isBrokerListEmpty();
+  }
+
   renderAddConnectionButton() {
-    let disabled = this.testInputs() || !this.state.name;
-    disabled = disabled ||
-      this.state.brokersList.length === 0 ||
-      this.state.testConnectionLoading ||
-      (
-        this.state.brokersList.length === 1 &&
-        (!this.state.brokersList[0].host || !this.state.brokersList[0].port)
-      );
+    let disabled = this.isButtonDisabled();
 
     let onClickFn = this.addConnection;
 
@@ -401,8 +421,7 @@ export default class KafkaConnection extends Component {
   }
 
   renderTestButton() {
-    let disabled = this.testInputs() || this.state.testConnectionLoading || !this.state.name;
-    disabled = disabled || this.state.brokersList.length === 0 || (this.state.brokersList.length === 1 && (!this.state.brokersList[0].host || !this.state.brokersList[0].port));
+    let disabled = this.isButtonDisabled();
 
     return (
       <BtnWithLoading
@@ -518,6 +537,8 @@ export default class KafkaConnection extends Component {
       <div className="kafka-detail">
 
         <div className="form">
+
+          {/* connection name */}
           <div className="form-group row">
             <label className={LABEL_COL_CLASS}>
               {T.translate(`${PREFIX}.name`)}
@@ -541,7 +562,30 @@ export default class KafkaConnection extends Component {
             </div>
           </div>
 
-          {this.renderKafka()}
+          {this.renderKafkaBrokerList()}
+
+          {/* kafka topic name */}
+          <div className="form-group row">
+            <label className={LABEL_COL_CLASS}>
+              {T.translate(`${PREFIX}.topicName`)}
+              { this.state.inputs['topicName']['required'] &&
+                <span className="asterisk">*</span>
+              }
+            </label>
+            <div className={INPUT_COL_CLASS}>
+              <div className="input-name">
+                <ValidatedInput
+                  type="text"
+                  label={this.state.inputs['topicName']['label']}
+                  validationError={this.state.inputs['topicName']['error']}
+                  className="form-control"
+                  value={this.state.topicName}
+                  onChange={this.handleChange.bind(this, 'topicName')}
+                  placeholder={T.translate(`${PREFIX}.Placeholders.topicName`)}
+                />
+              </div>
+            </div>
+          </div>
           {
             Theme.isCustomerJIO ? null : this.renderPrincipalKeytabLocation()
           }
