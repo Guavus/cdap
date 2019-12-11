@@ -1248,9 +1248,10 @@ features:
           ADD: "Add connection: Kafka"
           DUPLICATE: "Duplicate connection: {connection}"
           EDIT: "Edit connection: {connection}"
+        messageFormat: Message Format
         name: Connection name
         Placeholders:
-          name: Specify a name to identify this connection,
+          name: Specify a name to identify this connection
           principal: Specify a Kerberos Principal to this connection
           keytabLocation: Specify a Keytab Location to this connection
           kafkaProducerProperties:

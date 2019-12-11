@@ -50,6 +50,13 @@ const DEFAULT_KAFKA_PRODUCER_PROPERTIES = {
   }]
 };
 
+const MESSAGE_FORMAT = [
+  "csv",
+  "avro",
+  "binary",
+  "text",
+  "tsv"
+]
 require('./KafkaConnection.scss');
 
 export default class KafkaConnection extends Component {
@@ -64,16 +71,17 @@ export default class KafkaConnection extends Component {
         uniqueId: uuidV4(),
         valid: true,
       }],
-      principal: '',
-      keytabLocation: '',
-      kafkaProducerProperties: DEFAULT_KAFKA_PRODUCER_PROPERTIES,
       connectionResult: {
         type: null,
         message: null
       },
+      error: null,
+      keytabLocation: '',
+      kafkaProducerProperties: DEFAULT_KAFKA_PRODUCER_PROPERTIES,
+      messageFormat: 'text',
+      principal: '',
       topicName:'',
       testConnectionLoading: false,
-      error: null,
       inputs: {
         'name': {
           'error': '',
@@ -487,17 +495,14 @@ export default class KafkaConnection extends Component {
             {T.translate(`${PREFIX}.principal`)}
           </label>
           <div className={INPUT_COL_CLASS}>
-            <div className="input-name">
-              <ValidatedInput
-                type="text"
-                label={this.state.inputs['principal']['label']}
-                validationError={this.state.inputs['principal']['error']}
-                className="form-control"
-                value={this.state.principal}
-                onChange={this.handleChange.bind(this, 'principal')}
-                placeholder={T.translate(`${PREFIX}.Placeholders.principal`)}
-              />
-            </div>
+            <ValidatedInput
+              type="text"
+              label={this.state.inputs['principal']['label']}
+              validationError={this.state.inputs['principal']['error']}
+              value={this.state.principal}
+              onChange={this.handleChange.bind(this, 'principal')}
+              placeholder={T.translate(`${PREFIX}.Placeholders.principal`)}
+            />
           </div>
         </div>
 
@@ -507,22 +512,81 @@ export default class KafkaConnection extends Component {
             {T.translate(`${PREFIX}.keytabLocation`)}
           </label>
           <div className={INPUT_COL_CLASS}>
-            <div className="input-name">
-              <ValidatedInput
-                type="text"
-                label={this.state.inputs['keytabLocation']['label']}
-                validationError={this.state.inputs['keytabLocation']['error']}
-                className="form-control"
-                value={this.state.keytabLocation}
-                onChange={this.handleChange.bind(this, 'keytabLocation')}
-                placeholder={T.translate(`${PREFIX}.Placeholders.keytabLocation`)}
-              />
-            </div>
+            <ValidatedInput
+              type="text"
+              label={this.state.inputs['keytabLocation']['label']}
+              validationError={this.state.inputs['keytabLocation']['error']}
+              value={this.state.keytabLocation}
+              onChange={this.handleChange.bind(this, 'keytabLocation')}
+              placeholder={T.translate(`${PREFIX}.Placeholders.keytabLocation`)}
+            />
           </div>
         </div>
       </div>
     );
   }
+
+  renderKafkaTopicName() {
+    return (
+      <div className="form-group row">
+        <label className={LABEL_COL_CLASS}>
+          {T.translate(`${PREFIX}.topicName`)}
+          {this.state.inputs['topicName']['required'] &&
+            <span className="asterisk">*</span>
+          }
+        </label>
+        <div className={INPUT_COL_CLASS}>
+          <ValidatedInput
+            type="text"
+            label={this.state.inputs['topicName']['label']}
+            validationError={this.state.inputs['topicName']['error']}
+            value={this.state.topicName}
+            onChange={this.handleChange.bind(this, 'topicName')}
+            placeholder={T.translate(`${PREFIX}.Placeholders.topicName`)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  renderMessageFormat() {
+    return (
+      <div className="form-group row">
+        <label className={LABEL_COL_CLASS}>
+          {T.translate(`${PREFIX}.messageFormat`)}
+        </label>
+        <div className={INPUT_COL_CLASS}>
+          <div className="input-text">
+            <select
+              className="form-control"
+              value={this.state.messageFormat}
+              onChange={this.handleChange.bind(this, 'messageFormat')}
+            >
+              {
+                MESSAGE_FORMAT.map((format) => {
+                  return (
+                    <option
+                      value={format}
+                      key={format}
+                    >
+                      {format}
+                    </option>
+                  );
+                })
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderCompressionType() {
+    return (
+      <div></div>
+    )
+  }
+
   renderContent() {
     if (this.state.loading) {
       return (
@@ -547,45 +611,22 @@ export default class KafkaConnection extends Component {
               }
             </label>
             <div className={INPUT_COL_CLASS}>
-              <div className="input-name">
-                <ValidatedInput
-                  type="text"
-                  label={this.state.inputs['name']['label']}
-                  validationError={this.state.inputs['name']['error']}
-                  className="form-control"
-                  value={this.state.name}
-                  onChange={this.handleChange.bind(this, 'name')}
-                  disabled={this.props.mode === 'EDIT'}
-                  placeholder={T.translate(`${PREFIX}.Placeholders.name`)}
-                />
-              </div>
+              <ValidatedInput
+                type="text"
+                label={this.state.inputs['name']['label']}
+                validationError={this.state.inputs['name']['error']}
+                value={this.state.name}
+                onChange={this.handleChange.bind(this, 'name')}
+                disabled={this.props.mode === 'EDIT'}
+                placeholder={T.translate(`${PREFIX}.Placeholders.name`)}
+              />
             </div>
           </div>
 
           {this.renderKafkaBrokerList()}
-
-          {/* kafka topic name */}
-          <div className="form-group row">
-            <label className={LABEL_COL_CLASS}>
-              {T.translate(`${PREFIX}.topicName`)}
-              { this.state.inputs['topicName']['required'] &&
-                <span className="asterisk">*</span>
-              }
-            </label>
-            <div className={INPUT_COL_CLASS}>
-              <div className="input-name">
-                <ValidatedInput
-                  type="text"
-                  label={this.state.inputs['topicName']['label']}
-                  validationError={this.state.inputs['topicName']['error']}
-                  className="form-control"
-                  value={this.state.topicName}
-                  onChange={this.handleChange.bind(this, 'topicName')}
-                  placeholder={T.translate(`${PREFIX}.Placeholders.topicName`)}
-                />
-              </div>
-            </div>
-          </div>
+          {this.renderKafkaTopicName()}
+          {this.renderMessageFormat()}
+          {this.renderCompressionType()}
           {
             Theme.isCustomerJIO ? null : this.renderPrincipalKeytabLocation()
           }
