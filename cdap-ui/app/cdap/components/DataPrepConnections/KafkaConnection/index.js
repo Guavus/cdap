@@ -18,8 +18,8 @@ import PropTypes from 'prop-types';
 
 import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import {objectQuery, isNilOrEmpty} from 'services/helpers';
-import NamespaceStore from 'services/NamespaceStore';
+import { objectQuery, isNilOrEmpty } from 'services/helpers';
+import { getCurrentNamespace } from 'services/NamespaceStore';
 import MyDataPrepApi from 'api/dataprep';
 import T from 'i18n-react';
 import LoadingSVG from 'components/LoadingSVG';
@@ -56,7 +56,7 @@ const MESSAGE_FORMAT = [
   "binary",
   "text",
   "tsv"
-]
+];
 require('./KafkaConnection.scss');
 
 export default class KafkaConnection extends Component {
@@ -82,6 +82,8 @@ export default class KafkaConnection extends Component {
       principal: '',
       topicName:'',
       testConnectionLoading: false,
+      hortonworksSchemaRegistryURL: '',
+      schemaName: '',
       inputs: {
         'name': {
           'error': '',
@@ -104,6 +106,16 @@ export default class KafkaConnection extends Component {
           'required': true,
           'template': 'DEFAULT',
           'label': T.translate(`${PREFIX}.topicName`)
+        },
+        'hortonworksSchemaRegistryURL': {
+          'error': '',
+          'template': 'DEFAULT',
+          'label': T.translate(`${PREFIX}.hortonworksSchemaRegistryURL`)
+        },
+        'schemaName': {
+          'error': '',
+          'template': 'DEFAULT',
+          'label': T.translate(`${PREFIX}.schemaName`)
         }
       },
       loading: false
@@ -124,7 +136,7 @@ export default class KafkaConnection extends Component {
 
     this.setState({ loading: true });
 
-    let namespace = NamespaceStore.getState().selectedNamespace;
+    let namespace = getCurrentNamespace();
 
     let params = {
       namespace,
@@ -141,13 +153,21 @@ export default class KafkaConnection extends Component {
         let brokersList = this.parseBrokers(brokers);
         let principal = objectQuery(info, 'properties', 'principal');
         let keytabLocation = objectQuery(info, 'properties', 'keytabLocation');
-        let kafkaProducerProperties = {'pairs': this.getKeyValPair(JSON.parse(kafkaProducerPropertiesPairs))};
+        let kafkaProducerProperties = { 'pairs': this.getKeyValPair(JSON.parse(kafkaProducerPropertiesPairs)) };
+        let topicName = objectQuery(info, 'properties', 'topicName');
+        let messageFormat = objectQuery(info, 'properties', 'messageFormat');
+        let hortonworksSchemaRegistryURL = objectQuery(info, 'properties', 'hortonworksSchemaRegistryURL');
+        let schemaName = objectQuery(info, 'properties', 'schemaName');
         this.setState({
           name,
           brokersList,
           principal,
           keytabLocation,
           kafkaProducerProperties,
+          topicName,
+          messageFormat,
+          hortonworksSchemaRegistryURL,
+          schemaName,
           loading: false
         });
       }, (err) => {
@@ -226,7 +246,11 @@ export default class KafkaConnection extends Component {
   getProperties() {
     const prop = {
       brokers: this.convertBrokersList(),
-      kafkaProducerProperties: JSON.stringify(this.getKeyValObject())
+      kafkaProducerProperties: JSON.stringify(this.getKeyValObject()),
+      topicName: this.state.topicName,
+      messageFormat: this.state.messageFormat,
+      hortonworksSchemaRegistryURL: this.state.hortonworksSchemaRegistryURL,
+      schemaName: this.state.schemaName
     };
     return Theme.isCustomerJIO ? prop :
       {
@@ -236,7 +260,7 @@ export default class KafkaConnection extends Component {
       };
   }
   addConnection() {
-    let namespace = NamespaceStore.getState().selectedNamespace;
+    let namespace = getCurrentNamespace();
 
     let requestBody = {
       name: this.state.name,
@@ -258,7 +282,7 @@ export default class KafkaConnection extends Component {
   }
 
   editConnection() {
-    let namespace = NamespaceStore.getState().selectedNamespace;
+    let namespace = getCurrentNamespace();
 
     let params = {
       namespace,
@@ -302,7 +326,7 @@ export default class KafkaConnection extends Component {
       error: null
     });
 
-    let namespace = NamespaceStore.getState().selectedNamespace;
+    let namespace = getCurrentNamespace();
 
     let requestBody = {
       name: this.state.name,
@@ -565,10 +589,8 @@ export default class KafkaConnection extends Component {
               {
                 MESSAGE_FORMAT.map((format) => {
                   return (
-                    <option
-                      value={format}
-                      key={format}
-                    >
+                    <option value={format}
+                      key={format}>
                       {format}
                     </option>
                   );
@@ -578,13 +600,52 @@ export default class KafkaConnection extends Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
+  renderAvroSpecificInputs() {
+    return (
+      <div>
+        {/* Hortonworks Schema Registry URL */}
+        <div className="form-group row">
+          <label className={LABEL_COL_CLASS}>
+            {T.translate(`${PREFIX}.hortonworksSchemaRegistryURL`)}
+          </label>
+          <div className={INPUT_COL_CLASS}>
+            <ValidatedInput
+              type="text"
+              label={this.state.inputs['hortonworksSchemaRegistryURL']['label']}
+              validationError={this.state.inputs['hortonworksSchemaRegistryURL']['error']}
+              value={this.state.hortonworksSchemaRegistryURL}
+              onChange={this.handleChange.bind(this, 'hortonworksSchemaRegistryURL')}
+              placeholder={T.translate(`${PREFIX}.Placeholders.hortonworksSchemaRegistryURL`)}
+            />
+          </div>
+        </div>
+
+        {/* Schema Name */}
+        <div className="form-group row">
+          <label className={LABEL_COL_CLASS}>
+            {T.translate(`${PREFIX}.schemaName`)}
+          </label>
+          <div className={INPUT_COL_CLASS}>
+            <ValidatedInput
+              type="text"
+              label={this.state.inputs['schemaName']['label']}
+              validationError={this.state.inputs['schemaName']['error']}
+              value={this.state.schemaName}
+              onChange={this.handleChange.bind(this, 'schemaName')}
+              placeholder={T.translate(`${PREFIX}.Placeholders.schemaName`)}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
   renderCompressionType() {
     return (
       <div></div>
-    )
+    );
   }
 
   renderContent() {
@@ -626,7 +687,9 @@ export default class KafkaConnection extends Component {
           {this.renderKafkaBrokerList()}
           {this.renderKafkaTopicName()}
           {this.renderMessageFormat()}
-          {this.renderCompressionType()}
+          {
+            this.state.messageFormat === 'avro' ? this.renderAvroSpecificInputs() : null
+          }
           {
             Theme.isCustomerJIO ? null : this.renderPrincipalKeytabLocation()
           }

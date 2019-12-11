@@ -1240,9 +1240,9 @@ features:
           ADD: Failed to add connection
           DUPLICATE: Failed to duplicate connection
           EDIT: Failed to edit connection
+        hortonworksSchemaRegistryURL: Hortonworks Schema Registry URL
         kafka: Kafka
         kafkaProducerProperties: Additional Kafka Producer Properties
-        principal: Kerberos Principal
         keytabLocation: Keytab Location
         ModalHeader:
           ADD: "Add connection: Kafka"
@@ -1250,16 +1250,20 @@ features:
           EDIT: "Edit connection: {connection}"
         messageFormat: Message Format
         name: Connection name
+        principal: Kerberos Principal
         Placeholders:
           name: Specify a name to identify this connection
-          principal: Specify a Kerberos Principal to this connection
+          hortonworksSchemaRegistryURL: Specify a Hortonworks Schema Registry URL to this connection
           keytabLocation: Specify a Keytab Location to this connection
           kafkaProducerProperties:
             key: Enter Key
             value: Enter Value
+          principal: Specify a Kerberos Principal to this connection
+          schemaName: Specify a Schema Name to get avro schema
           topicName: Specify a Kafka topic name
         port: Port
         required: Required
+        schemaName: Schema Name
         testConnection: Test Connection
         topicName: Kafka Topic Name
         zkQuorum: Zookeeper host
