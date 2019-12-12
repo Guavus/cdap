@@ -169,12 +169,25 @@
            display: none;
          }
        }
-       .search-input {
+       .pipeline-search-contianer {
         width: 30%;
         float: left;
-        margin-top: 14px;
-        margin-right: 20px;
-      }
+        .search-input {
+          margin-top: 7px;
+          margin-right: 20px;
+          padding-left: 40px;
+        }
+        .input-search-icon {
+          position: absolute;
+          padding: 9px 8px;
+          margin-top: 7px;
+          border-right: 1px solid #ccc;
+          span {
+            color: rgba(0, 0, 0, 0.35);
+            font-size: 14px;
+          }
+        }
+       }
      }
      .toppanel-tooltip {
        &.in { opacity: 1; }
