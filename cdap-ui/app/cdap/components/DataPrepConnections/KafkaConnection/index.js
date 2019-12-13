@@ -78,9 +78,9 @@ export default class KafkaConnection extends Component {
       error: null,
       keytabLocation: '',
       kafkaProducerProperties: DEFAULT_KAFKA_PRODUCER_PROPERTIES,
-      messageFormat: 'text',
+      format: 'text',
       principal: '',
-      topicName:'',
+      topic:'',
       testConnectionLoading: false,
       hortonworksSchemaRegistryURL: '',
       schemaName: '',
@@ -101,11 +101,11 @@ export default class KafkaConnection extends Component {
           'template': 'DEFAULT',
           'label': T.translate(`${PREFIX}.keytabLocation`)
         },
-        'topicName': {
+        'topic': {
           'error': '',
           'required': true,
           'template': 'DEFAULT',
-          'label': T.translate(`${PREFIX}.topicName`)
+          'label': T.translate(`${PREFIX}.topic`)
         },
         'hortonworksSchemaRegistryURL': {
           'error': '',
@@ -154,18 +154,18 @@ export default class KafkaConnection extends Component {
         let principal = objectQuery(info, 'properties', 'principal');
         let keytabLocation = objectQuery(info, 'properties', 'keytabLocation');
         let kafkaProducerProperties = { 'pairs': this.getKeyValPair(JSON.parse(kafkaProducerPropertiesPairs)) };
-        let topicName = objectQuery(info, 'properties', 'topicName');
-        let messageFormat = objectQuery(info, 'properties', 'messageFormat');
-        let hortonworksSchemaRegistryURL = objectQuery(info, 'properties', 'hortonworksSchemaRegistryURL');
-        let schemaName = objectQuery(info, 'properties', 'schemaName');
+        let topic = objectQuery(info, 'properties', 'topic');
+        let format = objectQuery(info, 'properties', 'format');
+        let hortonworksSchemaRegistryURL = objectQuery(info, 'properties', 'schema.registry.url');
+        let schemaName = objectQuery(info, 'properties', 'schema.name');
         this.setState({
           name,
           brokersList,
           principal,
           keytabLocation,
           kafkaProducerProperties,
-          topicName,
-          messageFormat,
+          topic,
+          format,
           hortonworksSchemaRegistryURL,
           schemaName,
           loading: false
@@ -247,10 +247,10 @@ export default class KafkaConnection extends Component {
     const prop = {
       brokers: this.convertBrokersList(),
       kafkaProducerProperties: JSON.stringify(this.getKeyValObject()),
-      topicName: this.state.topicName,
-      messageFormat: this.state.messageFormat,
-      hortonworksSchemaRegistryURL: this.state.hortonworksSchemaRegistryURL,
-      schemaName: this.state.schemaName
+      topic: this.state.topic,
+      format: this.state.format,
+      'schema.registry.url': this.state.hortonworksSchemaRegistryURL,
+      'schema.name': this.state.schemaName
     };
     return Theme.isCustomerJIO ? prop :
       {
@@ -425,7 +425,7 @@ export default class KafkaConnection extends Component {
   }
 
   isButtonDisabled() {
-    return !this.state.name || !this.state.topicName || this.state.testConnectionLoading || this.testErrorsInInputs() ||  this.isBrokerListEmpty();
+    return !this.state.name || !this.state.topic || this.state.testConnectionLoading || this.testErrorsInInputs() ||  this.isBrokerListEmpty();
   }
 
   renderAddConnectionButton() {
@@ -554,19 +554,19 @@ export default class KafkaConnection extends Component {
     return (
       <div className="form-group row">
         <label className={LABEL_COL_CLASS}>
-          {T.translate(`${PREFIX}.topicName`)}
-          {this.state.inputs['topicName']['required'] &&
+          {T.translate(`${PREFIX}.topic`)}
+          {this.state.inputs['topic']['required'] &&
             <span className="asterisk">*</span>
           }
         </label>
         <div className={INPUT_COL_CLASS}>
           <ValidatedInput
             type="text"
-            label={this.state.inputs['topicName']['label']}
-            validationError={this.state.inputs['topicName']['error']}
-            value={this.state.topicName}
-            onChange={this.handleChange.bind(this, 'topicName')}
-            placeholder={T.translate(`${PREFIX}.Placeholders.topicName`)}
+            label={this.state.inputs['topic']['label']}
+            validationError={this.state.inputs['topic']['error']}
+            value={this.state.topic}
+            onChange={this.handleChange.bind(this, 'topic')}
+            placeholder={T.translate(`${PREFIX}.Placeholders.topic`)}
           />
         </div>
       </div>
@@ -577,14 +577,14 @@ export default class KafkaConnection extends Component {
     return (
       <div className="form-group row">
         <label className={LABEL_COL_CLASS}>
-          {T.translate(`${PREFIX}.messageFormat`)}
+          {T.translate(`${PREFIX}.format`)}
         </label>
         <div className={INPUT_COL_CLASS}>
           <div className="input-text">
             <select
               className="form-control"
-              value={this.state.messageFormat}
-              onChange={this.handleChange.bind(this, 'messageFormat')}
+              value={this.state.format}
+              onChange={this.handleChange.bind(this, 'format')}
             >
               {
                 MESSAGE_FORMAT.map((format) => {
@@ -642,11 +642,7 @@ export default class KafkaConnection extends Component {
       </div>
     );
   }
-  renderCompressionType() {
-    return (
-      <div></div>
-    );
-  }
+
 
   renderContent() {
     if (this.state.loading) {
@@ -688,7 +684,7 @@ export default class KafkaConnection extends Component {
           {this.renderKafkaTopicName()}
           {this.renderMessageFormat()}
           {
-            this.state.messageFormat === 'avro' ? this.renderAvroSpecificInputs() : null
+            this.state.format === 'avro' ? this.renderAvroSpecificInputs() : null
           }
           {
             Theme.isCustomerJIO ? null : this.renderPrincipalKeytabLocation()

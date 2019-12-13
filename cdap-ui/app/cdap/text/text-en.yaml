@@ -1248,7 +1248,7 @@ features:
           ADD: "Add connection: Kafka"
           DUPLICATE: "Duplicate connection: {connection}"
           EDIT: "Edit connection: {connection}"
-        messageFormat: Message Format
+        format: Message Format
         name: Connection name
         principal: Kerberos Principal
         Placeholders:
@@ -1260,12 +1260,12 @@ features:
             value: Enter Value
           principal: Specify a Kerberos Principal to this connection
           schemaName: Specify a Schema Name to get avro schema
-          topicName: Specify a Kafka topic name
+          topic: Specify a Kafka topic name
         port: Port
         required: Required
         schemaName: Schema Name
         testConnection: Test Connection
-        topicName: Kafka Topic Name
+        topic: Kafka Topic Name
         zkQuorum: Zookeeper host
         zookeeper: Zookeeper
       label: Add Connection

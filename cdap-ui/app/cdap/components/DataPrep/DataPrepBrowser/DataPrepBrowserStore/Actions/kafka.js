@@ -50,17 +50,11 @@ const setKafkaAsActiveBrowser = (payload) => {
   MyDataPrepApi.getConnection(params)
     .subscribe((res) => {
       let info = objectQuery(res, 'values', 0);
-
-      MyDataPrepApi.listTopics({namespace}, info)
-        .subscribe((topics) => {
-          setKafkaProperties({
-            info,
-            topics: topics.values,
-            connectionId: params.connectionId
-          });
-        }, (err) => {
-          setError(err);
-        });
+      setKafkaProperties({
+        info,
+        topics: info.properties.topic ? [info.properties.topic]: [],
+        connectionId: params.connectionId
+      });
     }, (err) => {
       setError(err);
     });
