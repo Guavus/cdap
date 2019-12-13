@@ -15,9 +15,10 @@
  */
 
 angular.module(PKG.name + '.commons')
-  .controller('DAGPlusPlusCtrl', function MyDAGController(jsPlumb, $scope, $timeout, DAGPlusPlusFactory, GLOBALS, DAGPlusPlusNodesActionsFactory, $window, DAGPlusPlusNodesStore, $rootScope, $popover, uuid, DAGPlusPlusNodesDispatcher, NonStorePipelineErrorFactory, AvailablePluginsStore, myHelpers, HydratorPlusPlusCanvasFactory, HydratorPlusPlusConfigStore) {
+  .controller('DAGPlusPlusCtrl', function MyDAGController(jsPlumb, $scope, $timeout, DAGPlusPlusFactory, GLOBALS, DAGPlusPlusNodesActionsFactory, $window, DAGPlusPlusNodesStore, $rootScope, $popover, uuid, DAGPlusPlusNodesDispatcher, NonStorePipelineErrorFactory, AvailablePluginsStore, myHelpers, HydratorPlusPlusCanvasFactory, HydratorPlusPlusConfigStore, HydratorPlusPlusLeftPanelStore,  HydratorPlusPlusPluginActions, $stateParams, mySettings, myAlertOnValium) {
 
     var vm = this;
+    vm.mySettings = mySettings;
 
     var dispatcher = DAGPlusPlusNodesDispatcher.getDispatcher();
     var undoListenerId = dispatcher.register('onUndoActions', resetEndpointsAndConnections);
@@ -981,6 +982,67 @@ angular.module(PKG.name + '.commons')
       });
 
     });
+
+    vm.onSaveAsTemplate = (node) => {
+      const properties = {
+        artifact: node.plugin.artifact,
+        pluginTemplate: `${node.plugin.label?node.plugin.label:node.plugin.name}-template`,
+        description: node.description,
+        properties: angular.copy(node.plugin.properties),
+        pluginType: node.type,
+        pluginName: node.plugin.name,
+        templateType: 'cdap-data-pipeline',
+        outputSchema: node.outputSchema,
+        lock: {},
+        nodeClass: 'plugin-templates'
+        };
+      vm.nodeMenuOpen = null;
+
+      vm.mySettings.get('pluginTemplates')
+      .then(function(res) {
+        console.log('Result ', res);
+
+        if (!angular.isObject(res)) {
+          res = {};
+        }
+
+        var namespace = $stateParams.namespace;
+
+        var config = myHelpers.objectQuery(res, namespace, properties.templateType, properties.pluginType, properties.pluginTemplate);
+
+        if (config) {
+          myAlertOnValium.show({
+            type: 'danger',
+            title: 'Error',
+            content: 'Plugin template already exists'
+          });
+          return;
+        }
+
+        var chain = [
+          namespace,
+          properties.templateType,
+          properties.pluginType,
+          properties.pluginTemplate
+        ];
+
+        myHelpers.objectSetter(res, chain, properties);
+        vm.mySettings.set('pluginTemplates', res)
+          .then(function () {
+            myAlertOnValium.show({
+              type: 'success',
+              content: 'Plugin template save successfull'
+            });
+
+            HydratorPlusPlusLeftPanelStore.dispatch(
+              HydratorPlusPlusPluginActions.fetchTemplates(
+                { namespace: $stateParams.namespace },
+                { namespace: $stateParams.namespace, pipelineType: properties.templateType }
+              )
+            );
+          });
+      });
+    };
 
     vm.onNodeCopy = (node) => {
       const config = {
