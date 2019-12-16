@@ -32,7 +32,7 @@ $secondary-btn-color: $brand-primary;
 
     .configuration-content-container {
       /* 50px: height from bottom of buttons to horizontal line */
-      height: calc(100% - 50px);
+      height: calc(100% - 65px);
       border-bottom: 1px solid $border-color;
 
       .configuration-step-content {
