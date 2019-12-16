@@ -34,7 +34,7 @@
     "rules-engine": false,
     "metadata": false,
     "hub": false,
-    "ingest-data": true,
+    "ingest-data": false,
     "add-namespace": true,
     "enable-jio": true,
     "batch-pipeline-connection":["upload","file","database","table","s3","gcs","bigquery","spanner","adls","hiveserver2"],
