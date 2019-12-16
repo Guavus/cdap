@@ -30,6 +30,7 @@ import DataPrepActions from 'components/DataPrep/store/DataPrepActions';
 import debounce from 'lodash/debounce';
 import {setPopoverOffset} from 'components/DataPrep/helper';
 import { Theme } from 'services/ThemeHelper';
+import AvroRecordModal from 'components/DataPrep/Directives/Parse/Modals/AvroRecordModal';
 
 const SUFFIX = 'features.DataPrep.Directives.Parse';
 
@@ -46,7 +47,8 @@ const DIRECTIVE_MAP = {
   'FIXEDLENGTH': 'parse-as-fixed-length',
   'HL7': 'parse-as-hl7',
   'AVRO': 'parse-as-avro-file',
-  'EXCEL': 'parse-as-excel'
+  'EXCEL': 'parse-as-excel',
+  'AVRORECORD': 'parse-as-avro-schema',
 };
 
 export default class ParseDirective extends Component {
@@ -70,9 +72,10 @@ export default class ParseDirective extends Component {
       'SIMPLEDATE',
       'NATURALDATE',
       'FIXEDLENGTH',
-      'HL7'
+      'HL7',
+      'AVRORECORD'
     ];
-    this.PARSE_OPTIONS = Theme.isCustomerJIO ? ['CSV', 'AVRO', 'EXCEL', 'XML', 'JSON', 'XMLTOJSON','SIMPLEDATE', 'NATURALDATE'] : this.PARSE_OPTIONS;
+    this.PARSE_OPTIONS = Theme.isCustomerJIO ? ['CSV', 'AVRO', 'EXCEL', 'XML', 'JSON', 'XMLTOJSON','SIMPLEDATE', 'NATURALDATE','AVRORECORD'] : this.PARSE_OPTIONS;
     window.addEventListener('resize', this.offsetCalcDebounce);
   }
 
@@ -195,6 +198,15 @@ export default class ParseDirective extends Component {
     );
   }
 
+  renderAvroRecordModal() {
+    return (
+      <AvroRecordModal
+        toggle={this.selectParse.bind(this, null)}
+        onApply={this.applyDirective.bind(this)}
+      />
+    );
+  }
+
   renderModal() {
     if (!this.state.selectedParse) { return null; }
 
@@ -206,6 +218,8 @@ export default class ParseDirective extends Component {
       return this.renderSimpleDateModal();
     } else if (this.state.selectedParse === 'EXCEL') {
       return this.renderExcelModal();
+    } else if (this.state.selectedParse === 'AVRORECORD') {
+      return this.renderAvroRecordModal();
     } else {
       return this.renderSingleFieldModal();
     }

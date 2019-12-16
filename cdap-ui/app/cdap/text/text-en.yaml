@@ -991,6 +991,10 @@ features:
             fieldLabel: Depth
             label: XML to JSON
             placeholder: Enter depth
+          AVRORECORD:
+            placeholder: Please enter avro schema
+            modalTitle: Please Enter Avro Schema
+            label: Avro Record
         title: Parse
       SetCharEncoding:
         disabledTooltip: Character encoding can only be set on columns of data type 'bytes'
