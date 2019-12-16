@@ -55,10 +55,6 @@ export default class AvroRecordModal extends Component {
     this.setState({avroSchema: e.target.value});
   }
 
-  formatSchema(e) {
-    console.log(e);
-  }
-
   renderCustomText() {
     return (
       <div className="json-editor">
@@ -79,11 +75,6 @@ export default class AvroRecordModal extends Component {
           >
             {this.state.avroSchema}
           </textarea>
-
-          {/* <button className="tidy-button btn btn-default"
-            onClick={this.formatSchema}>
-            Format
-          </button> */}
         </div>
       </div>
     );
