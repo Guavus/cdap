@@ -331,7 +331,7 @@ export default class IngestDataFromDataPrep extends Component {
         project: '${adlsProject}',
       },
       'HIVESERVER2': {
-        project: '${adlsProject}',
+        project: '${hiveserver2Project}',
       }
     };
     pipelineConfig.config.stages = pipelineConfig.config.stages.map(stage => {
