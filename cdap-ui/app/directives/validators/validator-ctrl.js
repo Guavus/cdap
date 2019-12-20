@@ -73,7 +73,12 @@ angular.module(PKG.name + '.commons')
             v.displayName = v.name + ' (' + key + ')';
             vm.functionMap[v.validationKey] = v;
           });
-          vm.validators = vm.validators.concat(value.functions);
+
+          var validators = vm.validators.concat(value.functions);
+          for (var i = 0; i < $scope.inputSchema.fields.length; i++){
+            var type = $scope.inputSchema.fields[i].type[0];
+            vm.validators[$scope.inputSchema.fields[i].name] = _.filter(validators, obj => { return obj.type.indexOf(type) !== -1; });
+          }
         });
 
         if (!$scope.model.validationFields) {

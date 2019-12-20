@@ -6,141 +6,163 @@
         "name": "isDate",
         "arguments": ["<field:1>"],
         "ecode": 1,
-        "emessage": "wrong date in <field:1>"
+        "emessage": "wrong date in <field:1>",
+        "type": ["string"]
       },
       {
         "name": "isCreditCard",
         "arguments" : ["<field:1>"],
         "ecode": 2,
-        "emessage": "<field:1> is not a valid credit card"
+        "emessage": "<field:1> is not a valid credit card",
+        "type": ["string"]
       },
       {
         "name": "isBlankOrNull",
         "arguments": ["<field:1>"],
         "ecode": 3,
-        "emessage": "<field:1> is not blank or null"
+        "emessage": "<field:1> is not blank or null",
+        "type": ["string"]
       },
       {
         "name": "isEmail",
         "arguments": ["<field:1>"],
         "ecode": 4,
-        "emessage": "<field:1> is not a valid email address"
+        "emessage": "<field:1> is not a valid email address",
+        "type": ["string"]
       },
       {
         "name": "isInRange",
         "arguments": ["<field:1>", "min", "max"],
         "ecode": 5,
-        "emessage": "<field:1> is not within the valid range"
+        "emessage": "<field:1> is not within the valid range",
+        "type": ["int", "long", "short", "double", "float"]
       },
       {
         "name": "isInt",
         "arguments": ["<field:1>"],
         "ecode": 6,
-        "emessage": "<field:1> cannot be safely converted to an int primitive"
+        "emessage": "<field:1> cannot be safely converted to an int primitive",
+        "type": ["string"]
       },
       {
         "name": "isLong",
         "arguments": ["<field:1>"],
         "ecode": 7,
-        "emessage": "<field:1> cannot be safely converted to a long primitive"
+        "emessage": "<field:1> cannot be safely converted to a long primitive",
+        "type": ["string"]
       },
       {
         "name": "isShort",
         "arguments": ["<field:1>"],
         "ecode": 8,
-        "emessage": "<field:1> cannot be safely converted to a short primitive"
+        "emessage": "<field:1> cannot be safely converted to a short primitive",
+        "type": ["string"]
       },
       {
         "name": "isUrl",
         "arguments": ["<field:1>"],
         "ecode": 9,
-        "emessage": "<field:1> is not a valid URL"
+        "emessage": "<field:1> is not a valid URL",
+        "type": ["string"]
       },
       {
         "name": "matchRegex",
         "arguments": ["pattern", "<field:1>"],
         "ecode": 10,
-        "emessage": "<field:1> does not match the valid pattern"
+        "emessage": "<field:1> does not match the valid pattern",
+        "type": ["string"]
       },
       {
         "name": "maxLength",
         "arguments": ["<field:1>", "maxlength"],
         "ecode": 11,
-        "emessage": "<field:1> length is greater than the maximum"
+        "emessage": "<field:1> length is greater than the maximum",
+        "type": ["string"]
       },
       {
         "name": "maxValue",
         "arguments": ["<field:1>", "maxValue"],
         "ecode": 12,
-        "emessage": "<field:1> value is greater than maximum"
+        "emessage": "<field:1> value is greater than maximum",
+        "type": ["int", "long", "double", "float"]
       },
       {
         "name": "minValue",
         "arguments": ["<field:1>", "minValue"],
         "ecode": 13,
-        "emessage": "<field:1> value is less than the minimum"
+        "emessage": "<field:1> value is less than the minimum",
+        "type": ["int", "long", "double", "float"]
       },
       {
         "name": "minLength",
         "arguments": ["<field:1>", "minLength"],
         "ecode": 14,
-        "emessage": "<field:1> length is less than the minimum"
+        "emessage": "<field:1> length is less than the minimum",
+        "type": ["string"]
       },
       {
         "name": "isValidISBN",
         "arguments": ["<field:1>"],
         "ecode": 15,
-        "emessage": "<field:1> is not a valid ISBN-10 or ISBN-13 code"
+        "emessage": "<field:1> is not a valid ISBN-10 or ISBN-13 code",
+        "type": ["string"]
       },
       {
         "name": "isValidInet4Address",
         "arguments": ["<field:1>"],
         "ecode": 17,
-        "emessage": "<field:1> is not a IPv4 address"
+        "emessage": "<field:1> is not a IPv4 address",
+        "type": ["string"]
       },
       {
         "name": "isValidInet6Address",
         "arguments": ["<field:1>"],
         "ecode": 18,
-        "emessage": "<field:1> is not a IPv6 address"
+        "emessage": "<field:1> is not a IPv6 address",
+        "type": ["string"]
       },
       {
         "name": "isValidIp",
         "arguments": ["<field:1>"],
         "ecode": 19,
-        "emessage": "<field:1> is not valid IP address"
+        "emessage": "<field:1> is not valid IP address",
+        "type": ["string"]
       },
       {
         "name": "isValidCountryCodeTid",
         "arguments": ["<field:1>"],
         "ecode": 20,
-        "emessage": "<field:1> does not match any IANA-defined country code top-level domain"
+        "emessage": "<field:1> does not match any IANA-defined country code top-level domain",
+        "type": ["string"]
       },
       {
         "name": "isValidGenericTId",
         "arguments": ["<field:1>"],
         "ecode": 21,
-        "emessage": "<field:1> does not match any IANA-defined generic top-level domain"
+        "emessage": "<field:1> does not match any IANA-defined generic top-level domain",
+        "type": ["string"]
       },
       {
         "name": "isValidInfrastructureTId",
         "arguments": ["<field:1>"],
         "ecode": 22,
-        "emessage": "<field:1> does not match any IANA-defined infrastructure top-level domain"
+        "emessage": "<field:1> does not match any IANA-defined infrastructure top-level domain",
+        "type": ["string"]
       },
       {
         "name": "isValidLocalTId",
         "arguments": ["<field:1>"],
         "ecode": 22,
-        "emessage": "<field:1> does not match any widely used local domains"
+        "emessage": "<field:1> does not match any widely used local domains",
+        "type": ["string"]
       },
       {
         "name": "isValidTId",
         "arguments": ["<field:1>"],
         "ecode": 22,
-        "emessage": "<field:1> does not match any IANA-defined top-level domain"
+        "emessage": "<field:1> does not match any IANA-defined top-level domain",
+        "type": ["string"]
       }
     ]
   }
 }
-

@@ -78,7 +78,7 @@
               </div>
             </div>
 
-            <div class="panel-body">
+            <div class="panel-body" ng-if='ValidatorsCtrl.validators[key].length > 0'>
               <div class="row" ng-repeat="rule in value">
                 <div class="rule-box">
 
@@ -100,7 +100,7 @@
                   <div class="main-rule">
                     <div class="select-wrapper">
                       <select class="form-control"
-                        ng-options="validator.validationKey as validator.displayName for validator in ValidatorsCtrl.validators"
+                        ng-options="validator.validationKey as validator.displayName for validator in ValidatorsCtrl.validators[key]"
                         ng-model="rule.validation"></select>
                     </div>
                   </div>
@@ -137,6 +137,10 @@
                   <i class="fa fa-plus"></i>
                 </button>
               </div>
+            </div>
+
+            <div class='panel-body' ng-if='ValidatorsCtrl.validators[key].length == 0'>
+              <p>No Rule applicable on {{ key }} field</p>
             </div>
           </div>
 

@@ -453,8 +453,8 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         });
   });
 
-  
- 
+
+
 
   function authentication(req, res) {
     var opts = {
@@ -514,7 +514,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     This is only for semantic differntiation. In the future ideally
     these endpoints will vary based on success failure conditions.
     (A 404 vs warning for login vs token)
-    
+
   */
   app.post('/login', authentication);
 
@@ -653,11 +653,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
 
   app.get('/validators', [
     function (req, res) {
-      var validatorJsonFile = 'validators.json';
-      if (uiThemeConfig && uiThemeConfig['features'] && uiThemeConfig['features']['enable-jio']) {
-        validatorJsonFile = 'jioValidators.json';
-      }
-      var filePath = __dirname + '/../templates/validators/' + validatorJsonFile;
+      var filePath = __dirname + '/../templates/validators/validators.json';
       var config = {};
       var validators = {};
       res.header({
