@@ -393,11 +393,16 @@ body.theme-cdap {
       &.no-header {
         margin-top: 0px !important;
       }
+      .table-responsive {
+        max-height: ~'calc(100vh - 215px)';
+      }
       .table-responsive.no-header{
         margin-top: 50px;
       }
       table.table {
         background-color: white;
+        position: relative;
+        border-collapse: separate;
 
         th,
         td {
@@ -414,6 +419,9 @@ body.theme-cdap {
         th {
           font-weight: 500;
           text-transform: initial;
+          position: sticky;
+          top: 11px;
+          background: white;
         }
 
         td > span.status-bubble {
