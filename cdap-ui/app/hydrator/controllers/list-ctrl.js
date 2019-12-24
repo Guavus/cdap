@@ -35,7 +35,8 @@ angular.module(PKG.name + '.feature.hydrator')
       running: 0,
       draft: 0
     };
-    vm.PAGE_SIZE = 10;
+    vm.pipelineLimit = [10, 15, 20, 25, 30, 35, 40];
+    vm.PAGE_SIZE = vm.pipelineLimit[0];
     vm.GLOBALS = GLOBALS;
     vm.searchText = '';
     vm.featureName = window.CaskCommon.ThemeHelper.Theme.featureNames.pipelines;
@@ -48,7 +49,6 @@ angular.module(PKG.name + '.feature.hydrator')
         Math.floor(vm.pipelineList.length) >= pageNumber
       );
     };
-
     vm.setCurrentPage = () => {
       let pageNumber = parseInt($stateParams.page, 10);
       if (pageNumber && vm.checkForValidPage(pageNumber)) {

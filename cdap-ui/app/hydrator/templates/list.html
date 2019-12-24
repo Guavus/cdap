@@ -48,6 +48,7 @@
   <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"
   ng-click="ListController.refreshScreen()"></i>
   <!-- <button ng-click="ListController.exportPipelines()">exportAll </button> -->
+  <select ng-model="ListController.PAGE_SIZE" ng-options="limit for limit in ListController.pipelineLimit"></select>
   <cask-resource-center-button></cask-resource-center-button>
 </div>
 
@@ -72,7 +73,7 @@
           </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="pipeline in (ListController.filteredPipeline = (ListController.pipelineList | filter: ListController.searchText)) | orderBy:sortable.predicate:sortable.reverse | myPaginate:ListController.currentPage">
+          <tr ng-repeat="pipeline in (ListController.filteredPipeline = (ListController.pipelineList | filter: ListController.searchText)) | orderBy:sortable.predicate:sortable.reverse | myPaginate:ListController.currentPage:ListController.PAGE_SIZE">
             <td><input type="checkbox" name="name4" ng-click="ListController.selectDeselectPipeline($event, pipeline)" ng-model="pipeline.selected" /></td>
             <td class="pipeline-name">
               <a ui-sref="hydrator.detail({ pipelineId: pipeline.name })" ng-if="::!pipeline.isDraft">
@@ -138,8 +139,9 @@
       <uib-pagination
         total-items="(ListController.pipelineList | filter: ListController.searchText).length"
         ng-change="ListController.goToPage()"
-        ng-model="ListController.currentPage"></uib-pagination>
-      </div>
+        ng-model="ListController.currentPage"
+        items-per-page="ListController.PAGE_SIZE"></uib-pagination>
+    </div>
 
   </div>
 
