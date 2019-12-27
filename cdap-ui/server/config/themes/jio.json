@@ -27,7 +27,7 @@
   "features": {
     "about-product": true,
     "dashboard": true,
-    "reports": true,
+    "reports": false,
     "data-prep": true,
     "pipelines": true,
     "analytics": false,
