@@ -35,6 +35,9 @@ export default class FastActions extends Component {
         break;
       case 'application':
         fastActionTypes = ['setPreferences', 'delete'];
+        if (this.props.entity.isHydrator) {
+          fastActionTypes.push('viewPipeline');
+        }
         break;
       case 'stream':
         fastActionTypes = ['truncate', 'delete', 'explore', 'sendEvents', 'viewEvents'];

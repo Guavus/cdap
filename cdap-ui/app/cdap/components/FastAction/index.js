@@ -25,7 +25,9 @@ import SendEventAction from 'components/FastAction/SendEventAction';
 import SetPreferenceAction from 'components/FastAction/SetPreferenceAction';
 import LogAction from 'components/FastAction/LogAction';
 import ViewEventsAction from 'components/FastAction/ViewEventsAction';
-import {objectQuery} from 'services/helpers';
+import ViewPipeline from 'components/FastAction/ViewPipeline';
+
+import { objectQuery } from 'services/helpers';
 
 export default class FastAction extends Component {
   constructor(props) {
@@ -100,6 +102,13 @@ export default class FastAction extends Component {
             argsToAction={objectQuery(this.props.argsToAction)}
           />
         );
+      case 'viewPipeline':
+          return (
+            <ViewPipeline
+              entity={this.props.entity}
+              argsToAction={objectQuery(this.props.argsToAction)}
+            />
+          );
     }
   }
 
@@ -109,7 +118,7 @@ export default class FastAction extends Component {
 }
 
 FastAction.propTypes = {
-  type: PropTypes.oneOf(['delete', 'truncate', 'startStop', 'sendEvents', 'explore', 'setPreferences', 'log', 'viewEvents']),
+  type: PropTypes.oneOf(['delete', 'truncate', 'startStop', 'sendEvents', 'explore', 'setPreferences', 'log', 'viewEvents', 'viewPipeline']),
   entity: PropTypes.object,
   onSuccess: PropTypes.func,
   opened: PropTypes.bool,
