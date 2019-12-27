@@ -38,6 +38,7 @@ angular.module(PKG.name + '.feature.hydrator')
     vm.pipelineLimit = [10, 15, 20, 25, 30, 35, 40];
     vm.PAGE_SIZE = vm.pipelineLimit[0];
     vm.GLOBALS = GLOBALS;
+    vm.maxPageSize = 10;
     vm.searchText = '';
     vm.featureName = window.CaskCommon.ThemeHelper.Theme.featureNames.pipelines;
     vm.headerClass = !window.CaskCommon.ThemeHelper.Theme.showHeader ? 'no-header' : '';

@@ -140,7 +140,10 @@
         total-items="(ListController.pipelineList | filter: ListController.searchText).length"
         ng-change="ListController.goToPage()"
         ng-model="ListController.currentPage"
-        items-per-page="ListController.PAGE_SIZE"></uib-pagination>
+        items-per-page="ListController.PAGE_SIZE"
+        boundary-link-numbers="true"
+        rotate="false"
+        max-size="ListController.maxPageSize" ></uib-pagination>
     </div>
 
   </div>
