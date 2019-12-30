@@ -20,38 +20,36 @@ import React, { Component } from 'react';
 import FastActionButton from '../FastActionButton';
 import T from 'i18n-react';
 import { Tooltip } from 'reactstrap';
-import ViewPipelineModal from 'components/FastAction/ViewPipeline/ViewPipelineModal';
+import NamespaceStore from 'services/NamespaceStore';
 
 export default class ViewPipelineAccess extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      modal: false,
+      entity: this.props.entity,
       tooltipOpen: false
     };
 
-    this.toggleModal = this.toggleModal.bind(this);
+    this.goToPipelinePage = this.goToPipelinePage.bind(this);
     this.toggleTooltip = this.toggleTooltip.bind(this);
   }
 
-  toggleModal() {
-    this.setState({modal: !this.state.modal});
+  goToPipelinePage() {
+    let pipelineId = this.state.entity.id;
+    let namespace = NamespaceStore.getState().selectedNamespace;
+    let url = window.getHydratorUrl({
+      stateName: 'hydrator.detail',
+      stateParams: {
+        namespace,
+        pipelineId
+      }
+    });
+    window.open(url, '_blank');
   }
 
   toggleTooltip() {
     this.setState({tooltipOpen: !this.state.tooltipOpen});
-  }
-
-  renderModal() {
-    if (!this.state.modal) { return null; }
-
-    return (
-      <ViewPipelineModal
-        entity={this.props.entity}
-        onClose={this.toggleModal}
-      />
-    );
   }
 
   render() {
@@ -60,8 +58,8 @@ export default class ViewPipelineAccess extends Component {
     return (
       <span className="btn btn-secondary btn-sm">
         <FastActionButton
-          icon="icon-filter"
-          action={this.toggleModal}
+          icon="view-pipeline"
+          action={this.goToPipelinePage}
           id={tooltipId}
         />
 
@@ -74,9 +72,6 @@ export default class ViewPipelineAccess extends Component {
         >
           {T.translate('features.FastAction.viewPipeline.label')}
         </Tooltip>
-
-        {this.renderModal()}
-
       </span>
     );
   }
