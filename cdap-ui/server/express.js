@@ -16,7 +16,7 @@
 
 /* global require, module, process, __dirname */
 var UrlValidator = require('./urlValidator.js');
-
+var JSZip = require('jszip');
 
 module.exports = {
   getApp: function () {
@@ -453,8 +453,8 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         });
   });
 
-  
- 
+
+
 
   function authentication(req, res) {
     var opts = {
@@ -514,34 +514,13 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     This is only for semantic differntiation. In the future ideally
     these endpoints will vary based on success failure conditions.
     (A 404 vs warning for login vs token)
-    
+
   */
   app.post('/login', authentication);
 
   app.get('/backendstatus', [
     function (req, res) {
-      var protocol,
-          port;
-      if (cdapConfig['ssl.external.enabled'] === 'true') {
-        protocol = 'https://';
-      } else {
-        protocol = 'http://';
-      }
-
-      if (cdapConfig['ssl.external.enabled'] === 'true') {
-        port = cdapConfig['router.ssl.server.port'];
-      } else {
-        port = cdapConfig['router.server.port'];
-      }
-
-      var link = [
-        protocol,
-        cdapConfig['router.server.address'],
-        ':',
-        port,
-        '/v3/namespaces'
-      ].join('');
-
+      var link = getBackendURL() + '/namespaces';
       // FIXME: The reason for doing this is here: https://issues.cask.co/browse/CDAP-9059
       // TL;DR - The source of this issue is because of large browser urls
       // which gets added to headers while making /backendstatus http call.
@@ -753,19 +732,22 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     }
   ]);
 
+  function getBackendURL() {
+    return [
+      cdapConfig['ssl.external.enabled'] === 'true' ? 'https://' : 'http://',
+      cdapConfig['router.server.address'],
+      ':',
+      cdapConfig['ssl.external.enabled'] === 'true' ? cdapConfig['router.ssl.server.port']: cdapConfig['router.server.port'],
+      '/v3'
+    ].join('');
+  }
   function isAuthenticated(req) {
     return new Promise(function(resolve) {
       if (!authAddress.enabled) {
         return resolve(true);
       } else {
         if (req.cookies.CDAP_Auth_Token) {
-          var checkAuthorizedUrl = [
-            cdapConfig['ssl.external.enabled'] === 'true' ? 'https://' : 'http://',
-            cdapConfig['router.server.address'],
-            ':',
-            cdapConfig['ssl.external.enabled'] === 'true' ? cdapConfig['router.ssl.server.port']: cdapConfig['router.server.port'],
-            '/v3/version'
-          ].join('');
+          var checkAuthorizedUrl = getBackendURL() + '/version';
           var opts = {
             url: checkAuthorizedUrl,
             headers: {
@@ -848,6 +830,49 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     res.send('angular.module("'+pkg.name+'.config", [])' +
               '.constant("MY_CONFIG",'+data+');');
   });
+
+  app.post('/:namespace/apps/export', function (req, res) {
+    var reqData = req.body;
+    var pipelines = reqData.pipelineList;
+    var promises = [];
+    var appDetailUrl = getBackendURL()+ '/namespaces' + req.path;
+    var reqHeaders = req.headers;
+    reqHeaders['Accept'] = 'application/json';
+    reqHeaders['Accept-Charset'] = 'utf-8';
+    pipelines.forEach(pipeline => {
+      promises.push(new Promise(function(resolve) {
+          request({
+              url: appDetailUrl.replace('export',pipeline),
+              method: 'GET',
+            },
+              function (nerr, nres, nbody) {
+                if (nerr || nres.statusCode !== 200) {
+                  return resolve(null);
+                } else {
+                  return resolve(JSON.parse(nbody));
+                }
+              }
+        );
+      }));
+    });
+
+    Promise.all(promises).then(function(values) {
+      values = values.concat(reqData.draftList);
+      var zip = new JSZip();
+      values.map(value => {
+        if (value && value.name) {
+          zip.file(`${value.name}.json`, JSON.stringify(value, null, 4));
+        }
+      });
+
+      zip.generateNodeStream({type:'nodebuffer',streamFiles:true})
+        .pipe(fs.createWriteStream('exports'))
+        .on('finish', function () {
+          res.download('exports');
+        });
+    });
+  });
+
 
   app.all(['/oldcdap', '/oldcdap*'], [
     function (req, res) {

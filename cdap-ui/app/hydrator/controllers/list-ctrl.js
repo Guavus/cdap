@@ -18,7 +18,7 @@ angular.module(PKG.name + '.feature.hydrator')
   .controller('HydratorPlusPlusListController',
   function(
     $scope, myPipelineApi, $stateParams, GLOBALS,
-    mySettings, $state, myHelpers,
+    mySettings, $state, $http, myHelpers,
     myAppsApi, myAlertOnValium, myLoadingService,
     $interval, moment, MyPipelineStatusMapper,
     myPipelineCommonApi, PROGRAM_STATUSES) {
@@ -43,6 +43,7 @@ angular.module(PKG.name + '.feature.hydrator')
     vm.featureName = window.CaskCommon.ThemeHelper.Theme.featureNames.pipelines;
     vm.headerClass = !window.CaskCommon.ThemeHelper.Theme.showHeader ? 'no-header' : '';
     vm.isSelectAll = false;
+    vm.isPipelineDownloadProgress = false;
     vm.checkForValidPage = (pageNumber) => {
       return (
         !Number.isNaN(pageNumber) &&
@@ -383,8 +384,8 @@ angular.module(PKG.name + '.feature.hydrator')
     };
 
     vm.exportPipelines = () => {
-      var req = {
-        namespace: '',
+      vm.isPipelineDownloadProgress = true;
+      var reqData = {
         pipelineList: [],
         draftList:[]
       };
@@ -392,12 +393,46 @@ angular.module(PKG.name + '.feature.hydrator')
         if(app.selected) {
           if (app.isDraft) {
             const {artifact, description, name, config} = vm.draftPipeLineList[app.id];
-            req.draftList.push({artifact, description, name, config});
+            reqData.draftList.push({artifact, description, name, config});
           } else {
-            req.pipelineList.push(app.name);
+            reqData.pipelineList.push(app.name);
           }
         }
       });
+
+      var exportReq = {
+        method: 'POST',
+        url:`/${$stateParams.namespace}/apps/export`,
+        data: reqData,
+        responseType: 'blob'
+      };
+
+      $http(exportReq).then((response) => {
+        if(response.data) {
+          const url = window.URL.createObjectURL(response.data);
+          const dummyElement = document.createElement('a');
+          dummyElement.style.display = 'none';
+          dummyElement.href = url;
+          dummyElement.download = 'piplines.zip';
+          document.body.appendChild(dummyElement);
+          dummyElement.click();
+          document.body.removeChild(dummyElement);
+        }
+        vm.isPipelineDownloadProgress = false;
+        myAlertOnValium.show({
+          type: 'success',
+          content: 'Pipelines exported successfully'
+        });
+        console.log('download sucessfully', response);
+      }, (err) => {
+        vm.isPipelineDownloadProgress = false;
+        myAlertOnValium.show({
+          type: 'danger',
+          content:  'Pipelines  export failed'
+        });
+        console.log('not able to download', err);
+      });
+
     };
 
     vm.getPipelines();
