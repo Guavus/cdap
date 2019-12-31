@@ -21,23 +21,23 @@
         <span class="fa fa-search"></span>
       </span>
 
-    <input type="text" class="search-input form-control" ng-model="ListController.searchText.name" placeholder="Search Pipeline ..."
+    <input type="text" class="search-input form-control" ng-model="ListController.searchText" placeholder="Search Pipeline ..."
       ng-change="ListController.pipeNameSearchChangeHandler()">
 
   </div>
   <ul ng-if="ListController.pipelineList.length > 0" class="list-unstyled list-inline pull-left">
-    <li ng-click='ListController.status = ""'>
+    <li ng-click='ListController.displayStatus = ""'>
       <span>{{ ListController.pipelineList.length }}</span>
       <span>Total</span>
     </li>
-    <li ng-click='ListController.status = "running"'>
+    <li ng-click='ListController.displayStatus = "running"'>
       <i class="fa text-light-running"></i>
       <span>
         {{ ListController.statusCount.running }}
       </span>
       <span>Running</span>
     </li>
-    <li ng-click='ListController.status = "draft"'>
+    <li ng-click='ListController.displayStatus = "draft"'>
       <i class="fa text-outline-grey"></i>
       <span>
         {{ ListController.statusCount.draft }}
@@ -74,7 +74,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="pipeline in (ListController.filteredPipeline = (ListController.pipelineList | filter: ListController.searchText | filter: ListController.status )) | orderBy:sortable.predicate:sortable.reverse | myPaginate:ListController.currentPage:ListController.PAGE_SIZE">
+          <tr ng-repeat="pipeline in (ListController.filteredPipeline = (ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.displayStatus} )) | orderBy:sortable.predicate:sortable.reverse | myPaginate:ListController.currentPage:ListController.PAGE_SIZE">
             <td><input type="checkbox" name="name4" ng-click="ListController.selectDeselectPipeline($event, pipeline)" ng-model="pipeline.selected" /></td>
             <td class="pipeline-name" title="{{pipeline.description !== '' ?  pipeline.description : pipeline.name }}">
               <a ui-sref="hydrator.detail({ pipelineId: pipeline.name })" ng-if="::!pipeline.isDraft">
@@ -136,9 +136,9 @@
       </table>
     </div>
 
-    <div class="text-center" ng-if="(ListController.pipelineList | filter: ListController.searchText |filter: ListController.status).length > ListController.PAGE_SIZE">
+    <div class="text-center" ng-if="(ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.displayStatus}).length > ListController.PAGE_SIZE">
       <uib-pagination
-        total-items="(ListController.pipelineList | filter: ListController.searchText | filter: ListController.status).length"
+        total-items="(ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.displayStatus}).length"
         ng-change="ListController.goToPage()"
         ng-model="ListController.currentPage"
         items-per-page="ListController.PAGE_SIZE"

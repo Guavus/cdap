@@ -35,6 +35,7 @@ angular.module(PKG.name + '.feature.hydrator')
       running: 0,
       draft: 0
     };
+    vm.displayStatus = '';
     vm.pipelineLimit = [10, 15, 20, 25, 30, 35, 40];
     vm.PAGE_SIZE = vm.pipelineLimit[0];
     vm.GLOBALS = GLOBALS;
