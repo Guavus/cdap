@@ -381,8 +381,9 @@ angular.module(PKG.name + '.feature.hydrator')
       vm.filteredPipeline.map((app) => app['selected'] = vm.isSelectAll);
     };
 
-    vm.selectDeselectPipeline = (evnet, pipeline) => {
-      pipeline.selected = evnet.target.checked;
+    vm.selectDeselectPipeline = (event, pipeline) => {
+      event.stopPropagation();
+      pipeline.selected = event.target.checked;
       vm.updateSelectAllStatus();
     };
 
@@ -452,5 +453,29 @@ angular.module(PKG.name + '.feature.hydrator')
     };
 
     vm.getPipelines();
+
+    vm.goToPipelinePage = (pipeline) => {
+      let url = '';
+      if (pipeline.isDraft) {
+        url = window.getHydratorUrl({
+          stateName: 'hydrator.create',
+          stateParams: {
+            namespace: $stateParams.namespace,
+            draftId: pipeline.id,
+            artifactType: pipeline.artifact.name
+          }
+        });
+      } else {
+        url = window.getHydratorUrl({
+          stateName: 'hydrator.detail',
+          stateParams: {
+            namespace: $stateParams.namespace,
+            pipelineId: pipeline.name
+          }
+        });
+      }
+
+      window.location.href = url;
+    };
 
   });
