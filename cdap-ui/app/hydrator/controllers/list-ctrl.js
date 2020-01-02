@@ -445,7 +445,7 @@ angular.module(PKG.name + '.feature.hydrator')
         vm.isPipelineDownloadProgress = false;
         myAlertOnValium.show({
           type: 'danger',
-          content:  'Pipelines  export failed'
+          content:  'Pipelines export failed'
         });
         console.log('not able to download', err);
       });

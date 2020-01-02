@@ -409,11 +409,23 @@ body.theme-cdap {
           color: @gray-dark;
           padding-right: 15px;
           padding-left: 15px;
+          &.pipeline-name-header{
+            padding-left: 0px;
+          }
+          &.pipeline-select-checkbox {
+            padding-right: 0px;
+            width: 20px;
+            input[type="checkbox"] {
+              font-size: 20px;
+              margin: 0px;
+            }
+          }
           &.pipeline-name {
             max-width: 300px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            padding-left: 0px;
           }
         }
         th {

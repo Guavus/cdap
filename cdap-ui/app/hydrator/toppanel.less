@@ -188,6 +188,17 @@
             font-size: 14px;
           }
        }
+       .pipeline-export-button {
+          height: 26px;
+          line-height: 1.7;
+          border-radius: 5px;
+          background: #ddd;
+          cursor: pointer;
+          outline: none;
+          i {
+            font-size: 16px;
+          }
+       }
      }
      .toppanel-tooltip {
        &.in { opacity: 1; }
@@ -702,7 +713,7 @@
        }
        ul {
          border-left: 1px solid @table-border-color;
-         line-height: 60px;
+         line-height: 1;
          margin: 0;
          li {
            padding: 0 15px;
@@ -718,6 +729,22 @@
            }
          }
        }
+       .refresh-pipeline-item {
+          border-right: 1px solid #dddddd;
+          .refresh-pipeline {
+            font-size: 22px !important;
+            line-height: 3 !important;
+            height: 60px;
+            padding-left: 15px;
+            cursor: pointer;
+          }
+        }
+        .pipeline-limit-container {
+          border-right: 1px solid #dddddd;
+          font-size: 16px;
+          line-height: 4;
+          height: 60px;
+        }
        a.btn-primary {
          position: absolute;
          right: 40px;

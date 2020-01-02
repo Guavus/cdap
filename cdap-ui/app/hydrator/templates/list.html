@@ -17,10 +17,9 @@
 <div class="side-panel top clearfix {{ListController.headerClass}}">
   <h1 class="pull-left">{{ ListController.featureName }}</h1>
   <div class="pipeline-search-contianer">
-      <span class="input-search-icon">
-        <span class="fa fa-search"></span>
-      </span>
-
+    <span class="input-search-icon">
+      <span class="fa fa-search"></span>
+    </span>
     <input type="text" class="search-input form-control" ng-model="ListController.searchText" placeholder="Search Pipeline ..."
       ng-change="ListController.pipeNameSearchChangeHandler()">
 
@@ -44,15 +43,22 @@
       </span>
       <span>Drafts</span>
     </li>
+    <li class="refresh-pipeline-item">
+      <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"
+        ng-click="ListController.refreshScreen()"></i>
+    </li>
+    <li class="pipeline-limit-container">
+      <span>#Pipelines: </span>
+      <select class="pipeline-limit-dropdown" ng-model="ListController.PAGE_SIZE" ng-options="limit for limit in ListController.pipelineLimit"></select>
+    </li>
+    <li>
+      <button class="pipeline-export-button" ng-disabled="ListController.isPipelineDownloadProgress"
+        ng-click="ListController.exportPipelines()" value="Export Pipeline(s)"><i class="fa fa-download" aria-hidden="true"></i>Export Pipeline(s)</button>
+    </li>
+    <li>
+      <button class="delete-all-button" ng-click="ListController.deleteAll()" value="Delete Pipeline(s)"><i class="fa fa-trash-o" aria-hidden="true"></i>Delete Pipeline(s)</button>
+    </li>
   </ul>
-  <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"
-  ng-click="ListController.refreshScreen()"></i>
-  <!-- <button ng-click="ListController.exportPipelines()">exportAll </button> -->
-  <select ng-model="ListController.PAGE_SIZE" ng-options="limit for limit in ListController.pipelineLimit"></select>
-  <input type="button" ng-disabled="ListController.isPipelineDownloadProgress" ng-click="ListController.exportPipelines()" value = "exportAll" />
-  <button class="delete-all-button" ng-click="ListController.deleteAll()"
-    value="Delete Pipeline(s)"><i class="fa fa-trash-o" aria-hidden="true"></i>Delete Pipeline(s)</button>
-
   <cask-resource-center-button></cask-resource-center-button>
 </div>
 
@@ -65,7 +71,7 @@
             <th skip-sort="true">
               <input name="select_all" value="1" type="checkbox"  ng-checked="ListController.isSelectAll" ng-click="ListController.selectDeselectAll()">
             </th>
-            <th data-predicate="name">Pipeline name</th>
+            <th data-predicate="name" class="pipeline-name-header">Pipeline name</th>
             <th data-predicate="artifact.name">Type</th>
             <th data-predicate="latestRun.status">Status</th>
             <th skip-sort>Total runs</th>
@@ -79,7 +85,7 @@
         <tbody>
           <tr ng-repeat="pipeline in (ListController.filteredPipeline = (ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.displayStatus} )) | orderBy:sortable.predicate:sortable.reverse | myPaginate:ListController.currentPage:ListController.PAGE_SIZE"
               ng-click="ListController.goToPipelinePage(pipeline)">
-            <td><input type="checkbox" name="name4" ng-click="ListController.selectDeselectPipeline($event, pipeline)" ng-model="pipeline.selected" /></td>
+            <td class="pipeline-select-checkbox"><input type="checkbox" name="name4" ng-click="ListController.selectDeselectPipeline($event, pipeline)" ng-model="pipeline.selected" /></td>
             <td class="pipeline-name" title="{{pipeline.description !== '' ?  pipeline.description : pipeline.name }}">
               <a ng-if="::!pipeline.isDraft">
                 {{::pipeline.name}}
