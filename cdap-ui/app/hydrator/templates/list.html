@@ -29,14 +29,14 @@
       <span>{{ ListController.pipelineList.length }}</span>
       <span>Total</span>
     </li>
-    <li ng-click='ListController.displayStatus = "running"'>
+    <li ng-click='ListController.displayStatus = "running"' ng-class="{'active-status': ListController.displayStatus=='running'}">
       <i class="fa text-light-running"></i>
       <span>
         {{ ListController.statusCount.running }}
       </span>
       <span>Running</span>
     </li>
-    <li ng-click='ListController.displayStatus = "draft"'>
+    <li ng-click='ListController.displayStatus = "draft"' ng-class="{'active-status': ListController.displayStatus=='draft'}">
       <i class="fa text-outline-grey"></i>
       <span>
         {{ ListController.statusCount.draft }}
