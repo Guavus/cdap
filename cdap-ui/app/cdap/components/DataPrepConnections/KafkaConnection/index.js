@@ -131,7 +131,6 @@ export default class KafkaConnection extends Component {
     this.handleBrokersChange = this.handleBrokersChange.bind(this);
     this.onKeyValueChange = this.onKeyValueChange.bind(this);
     this.handleKafkaTopicChange = this.handleKafkaTopicChange.bind(this);
-
   }
 
   fetchKafkaTopicList() {
@@ -175,7 +174,10 @@ export default class KafkaConnection extends Component {
   }
 
   componentWillMount() {
-    if (this.props.mode === ConnectionMode.Add) { return; }
+    if (this.props.mode === ConnectionMode.Add) {
+      this.fetchKafkaTopicList();
+      return;
+    }
 
     this.setState({ loading: true });
 
@@ -478,7 +480,7 @@ export default class KafkaConnection extends Component {
   }
 
   isButtonDisabled() {
-    return !this.state.name || !this.state.topic || this.state.testConnectionLoading || this.testErrorsInInputs() ||  this.isBrokerListEmpty();
+    return !this.state.name || !this.state.topic || this.state.testConnectionLoading || this.testErrorsInInputs() ||  this.isBrokerListEmpty() || this.state.fetchKafkaTopicLoading;
   }
 
   renderAddConnectionButton() {
