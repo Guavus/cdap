@@ -34,7 +34,11 @@ import ValidatedInput from 'components/ValidatedInput';
 import types from 'services/inputValidationTemplates';
 import { Theme } from 'services/ThemeHelper';
 import {UncontrolledTooltip} from 'components/UncontrolledComponents';
-
+const ConnectionMode = {
+  Add: 'ADD',
+  Edit: 'EDIT',
+  Duplicate: 'DUPLICATE',
+};
 const PREFIX = 'features.DataPrepConnections.AddConnections.Kafka';
 const ADDCONN_PREFIX = 'features.DataPrepConnections.AddConnections';
 
@@ -62,7 +66,7 @@ require('./KafkaConnection.scss');
 export default class KafkaConnection extends Component {
   constructor(props) {
     super(props);
-
+    let customId = uuidV4();
     this.state = {
       name: '',
       brokersList: [{
@@ -80,7 +84,11 @@ export default class KafkaConnection extends Component {
       kafkaProducerProperties: DEFAULT_KAFKA_PRODUCER_PROPERTIES,
       format: 'text',
       principal: '',
-      topic:'',
+      topic: customId,
+      topicList: [customId],
+      fetchKafkaTopicLoading: false,
+      kafkaTopicSelectionError: '',
+      customId: customId,
       testConnectionLoading: false,
       hortonworksSchemaRegistryURL: '',
       schemaName: '',
@@ -100,12 +108,6 @@ export default class KafkaConnection extends Component {
           'error': '',
           'template': 'DEFAULT',
           'label': T.translate(`${PREFIX}.keytabLocation`)
-        },
-        'topic': {
-          'error': '',
-          'required': true,
-          'template': 'DEFAULT',
-          'label': T.translate(`${PREFIX}.topic`)
         },
         'hortonworksSchemaRegistryURL': {
           'error': '',
@@ -128,11 +130,52 @@ export default class KafkaConnection extends Component {
     this.testConnection = this.testConnection.bind(this);
     this.handleBrokersChange = this.handleBrokersChange.bind(this);
     this.onKeyValueChange = this.onKeyValueChange.bind(this);
+    this.handleKafkaTopicChange = this.handleKafkaTopicChange.bind(this);
 
   }
 
+  fetchKafkaTopicList() {
+    this.setState({ fetchKafkaTopicLoading: true, kafkaTopicSelectionError: '' });
+    let namespace = getCurrentNamespace();
+    let params = {
+      namespace,
+      connectionId: this.props.connectionId
+    };
+
+    MyDataPrepApi.listTopics({namespace}, params)
+    .subscribe((topics) => {
+      let list = topics.values.sort();
+      let customId = this.state.customId;
+
+      if (list.indexOf(customId) !== -1) {
+        customId = uuidV4();
+      }
+      if (list.length === 0) {
+        list.push(customId);
+      }
+
+      const topic = this.props.mode == ConnectionMode.Add ? list[0] : (list.indexOf(this.state.topic) !== -1 ? this.state.topic : list[0]);
+      this.setState({
+        topicList: list,
+        topic: topic,
+        customId,
+        fetchKafkaTopicLoading: false,
+        kafkaTopicSelectionError: ''
+      });
+    }, (err) => {
+      let errorMessage = objectQuery(err, 'response', 'message') || objectQuery(err, 'response') || T.translate(`${PREFIX}.defaultFetchKafkaTopicErrorMessage`);
+      this.setState({
+        connectionResult: {
+          type: CARD_ACTION_TYPES.DANGER,
+          message: errorMessage
+        },
+        fetchKafkaTopicLoading: false
+      });
+    });
+  }
+
   componentWillMount() {
-    if (this.props.mode === 'ADD') { return; }
+    if (this.props.mode === ConnectionMode.Add) { return; }
 
     this.setState({ loading: true });
 
@@ -149,7 +192,7 @@ export default class KafkaConnection extends Component {
           brokers = objectQuery(info, 'properties', 'brokers'),
           kafkaProducerPropertiesPairs = objectQuery(info, 'properties', 'kafkaProducerProperties');
 
-        let name = this.props.mode === 'EDIT' ? info.name : '';
+        let name = this.props.mode === ConnectionMode.Edit ? info.name : '';
         let brokersList = this.parseBrokers(brokers);
         let principal = objectQuery(info, 'properties', 'principal');
         let keytabLocation = objectQuery(info, 'properties', 'keytabLocation');
@@ -169,6 +212,9 @@ export default class KafkaConnection extends Component {
           hortonworksSchemaRegistryURL,
           schemaName,
           loading: false
+        });
+        setTimeout(() => {
+          this.fetchKafkaTopicList();
         });
       }, (err) => {
         console.log('failed to fetch connection detail', err);
@@ -234,6 +280,13 @@ export default class KafkaConnection extends Component {
   handleBrokersChange(rows) {
     this.setState({
       brokersList: rows
+    });
+  }
+
+  handleKafkaTopicChange(e) {
+    this.setState({
+      topic: e.target.value,
+      kafkaTopicSelectionError: e.target.value === this.state.customId ? T.translate(`${PREFIX}.customLabel`) : ''
     });
   }
 
@@ -433,7 +486,7 @@ export default class KafkaConnection extends Component {
 
     let onClickFn = this.addConnection;
 
-    if (this.props.mode === 'EDIT') {
+    if (this.props.mode === ConnectionMode.Edit) {
       onClickFn = this.editConnection;
     }
 
@@ -551,24 +604,42 @@ export default class KafkaConnection extends Component {
   }
 
   renderKafkaTopicName() {
+    const kafkaTopicsErrorClass = this.state.kafkaTopicSelectionError ? 'kafka-topic-error' : '';
+
     return (
       <div className="form-group row">
         <label className={LABEL_COL_CLASS}>
           {T.translate(`${PREFIX}.topic`)}
-          {this.state.inputs['topic']['required'] &&
-            <span className="asterisk">*</span>
-          }
+          <span className="asterisk">*</span>
         </label>
         <div className={INPUT_COL_CLASS}>
-          <ValidatedInput
-            type="text"
-            label={this.state.inputs['topic']['label']}
-            validationError={this.state.inputs['topic']['error']}
-            value={this.state.topic}
-            onChange={this.handleChange.bind(this, 'topic')}
-            placeholder={T.translate(`${PREFIX}.Placeholders.topic`)}
-          />
+          {
+            this.state.fetchKafkaTopicLoading ?
+              <LoadingSVG />
+              :<select
+                  className={`form-control ${kafkaTopicsErrorClass}`}
+                  value={this.state.topic}
+                  onChange={this.handleKafkaTopicChange}
+                >
+                  {
+                    this.state.topicList.map((topic) => {
+                      return (
+                        <option
+                          key={topic}
+                          value={topic}
+                        >
+                          {topic === this.state.customId ? T.translate(`${PREFIX}.customLabel`) : topic}
+                        </option>
+                      );
+                    })
+                  }
+                </select>
+          }
+
         </div>
+      {
+        this.state.kafkaTopicSelectionError ? <div className='kafka-topic-error-message'>{this.state.kafkaTopicSelectionError}</div> : null
+      }
       </div>
     );
   }
@@ -674,7 +745,7 @@ export default class KafkaConnection extends Component {
                 validationError={this.state.inputs['name']['error']}
                 value={this.state.name}
                 onChange={this.handleChange.bind(this, 'name')}
-                disabled={this.props.mode === 'EDIT'}
+                disabled={this.props.mode === ConnectionMode.Edit}
                 placeholder={T.translate(`${PREFIX}.Placeholders.name`)}
               />
             </div>
@@ -725,6 +796,6 @@ export default class KafkaConnection extends Component {
 KafkaConnection.propTypes = {
   close: PropTypes.func,
   onAdd: PropTypes.func,
-  mode: PropTypes.oneOf(['ADD', 'EDIT', 'DUPLICATE']).isRequired,
+  mode: PropTypes.oneOf([ConnectionMode.Add, ConnectionMode.Edit, ConnectionMode.Duplicate]).isRequired,
   connectionId: PropTypes.string
 };

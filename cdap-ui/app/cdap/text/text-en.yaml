@@ -1186,6 +1186,7 @@ features:
           ADD: Add Connection
           DUPLICATE: Duplicate Connection
           EDIT: Save Changes
+        customLabel: "Select Database"
         url: JDBC URL
         database: Database
         databaseSelectionMessage: Database field is mandatory for {connectionMode} connection
@@ -1206,7 +1207,7 @@ features:
           ADD: "Add connection: HIVE Server2"
           DUPLICATE: "Duplicate connection: {connection}"
           EDIT: "Edit connection: {connection}"
-        customLabel: "Select Database"
+
       GCS:
         Buttons:
           ADD: Add Connection
@@ -1239,7 +1240,9 @@ features:
           DUPLICATE: Duplicate Connection
           EDIT: Save Changes
         connectionType: Connection type
+        customLabel: "Select Kafka Topic"
         defaultTestErrorMessage: Cannot connect to Kafka
+        defaultFetchKafkaTopicErrorMessage: Error in fetching kafka topics
         ErrorMessages:
           ADD: Failed to add connection
           DUPLICATE: Failed to duplicate connection
