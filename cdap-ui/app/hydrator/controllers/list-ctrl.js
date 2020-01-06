@@ -150,14 +150,8 @@ angular.module(PKG.name + '.feature.hydrator')
               }, pipelines.pipelineList)
                 .$promise;
             })
-            .then(
-              function success() {
-                vm.pipelineDeleteStatus('success', `Pipelines deleted successfully`);
-              },
-              function error(err) {
-                vm.pipelineDeleteStatus('danger', (err && err.data ? err.data : 'Pipelines deletion failed'));
-              }
-            );
+            .then(() => { vm.pipelineDeleteStatus('success', `Pipelines deleted successfully`); })
+            .catch(err => { vm.pipelineDeleteStatus('danger', (err && err.data ? err.data : 'Pipelines deletion failed')); });
         });
     };
 
