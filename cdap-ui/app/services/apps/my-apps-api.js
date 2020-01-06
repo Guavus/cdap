@@ -20,16 +20,18 @@ angular.module(PKG.name + '.services')
     var url = myCdapUrl.constructUrl,
         basePath = '/namespaces/:namespace/apps',
         listPath = basePath,
-        detailPath = basePath + '/:appId';
+        detailPath = basePath + '/:appId',
+        deleteAllPath = '/namespaces/:namespace/apps-delete';
 
     return $resource(
       url({ _cdapPath: basePath }),
-    {
-      appId: '@appId'
-    },
-    {
-      delete: myHelpers.getConfig('DELETE', 'REQUEST', detailPath),
-      list: myHelpers.getConfig('GET', 'REQUEST', listPath, true),
-      get: myHelpers.getConfig('GET', 'REQUEST', detailPath)
+      {
+        appId: '@appId'
+      },
+      {
+        delete: myHelpers.getConfig('DELETE', 'REQUEST', detailPath),
+        deleteAll: myHelpers.getConfig('POST', 'REQUEST', deleteAllPath),
+        list: myHelpers.getConfig('GET', 'REQUEST', listPath, true),
+        get: myHelpers.getConfig('GET', 'REQUEST', detailPath)
     });
   });

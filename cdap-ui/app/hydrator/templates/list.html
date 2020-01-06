@@ -50,6 +50,9 @@
   <!-- <button ng-click="ListController.exportPipelines()">exportAll </button> -->
   <select ng-model="ListController.PAGE_SIZE" ng-options="limit for limit in ListController.pipelineLimit"></select>
   <input type="button" ng-disabled="ListController.isPipelineDownloadProgress" ng-click="ListController.exportPipelines()" value = "exportAll" />
+  <button class="delete-all-button" ng-click="ListController.deleteAll()"
+    value="Delete Pipeline(s)"><i class="fa fa-trash-o" aria-hidden="true"></i>Delete Pipeline(s)</button>
+
   <cask-resource-center-button></cask-resource-center-button>
 </div>
 

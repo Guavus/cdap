@@ -74,6 +74,17 @@ angular.module(PKG.name + '.feature.hydrator')
       vm.fetchRunsCount();
     };
 
+    vm.pipelineDeleteStatus = (status, message) => {
+      myLoadingService.hideLoadingIconImmediate();
+      $state.reload()
+        .then(function() {
+          myAlertOnValium.show({
+            type: status,
+            content: message
+          });
+        });
+    };
+
     vm.deleteDraft = function(draftId) {
       myLoadingService.showLoadingIcon()
       .then(function() {
@@ -88,26 +99,13 @@ angular.module(PKG.name + '.feature.hydrator')
             return mySettings.set('hydratorDrafts', res);
           })
           .then(
-              function success() {
-                myLoadingService.hideLoadingIconImmediate();
-                $state.reload()
-                  .then(function() {
-                    myAlertOnValium.show({
-                      type: 'success',
-                      content: 'Pipeline draft ' + draftName + ' deleted successfully'
-                    });
-                  });
-              },
-              function error() {
-                myLoadingService.hideLoadingIconImmediate();
-                $state.reload()
-                  .then(function() {
-                    myAlertOnValium.show({
-                      type: 'danger',
-                      content: 'Pipeline draft ' + draftName + ' delete failed'
-                    });
-                  });
-              });
+            function success() {
+              vm.pipelineDeleteStatus('success', `Pipeline draft ${draftName} deleted successfully`);
+            },
+            function error() {
+              vm.pipelineDeleteStatus('danger', `Pipeline draft ${draftName} delete failed`);
+            }
+          );
       });
     };
 
@@ -122,25 +120,45 @@ angular.module(PKG.name + '.feature.hydrator')
         return myAppsApi.delete(deleteParams)
           .$promise;
       })
-      .then(function success () {
-        myLoadingService.hideLoadingIconImmediate();
-        $state.reload()
-          .then(function() {
-            myAlertOnValium.show({
-              type: 'success',
-              content: 'Pipeline ' + appId + ' deleted successfully'
-            });
-          });
-      }, function error () {
-        myLoadingService.hideLoadingIconImmediate();
-        $state.reload()
-          .then(function() {
-            myAlertOnValium.show({
-              type: 'danger',
-              content:  'Pipeline ' + appId + ' delete failed'
-            });
-          });
-      });
+      .then(
+        function success() {
+          vm.pipelineDeleteStatus('success', `Pipeline ${appId} deleted successfully`);
+        },
+        function error() {
+          vm.pipelineDeleteStatus('danger', `Pipeline ${appId} delete failed`);
+        }
+      );
+    };
+
+    vm.deleteAll = function () {
+      let pipelines = vm.selectedPipeline();
+      myLoadingService.showLoadingIcon()
+        .then(function () {
+          mySettings.get('hydratorDrafts')
+            .then(function (res) {
+              for (let i = 0; i < pipelines.draftList.length; i++) {
+                let draft = myHelpers.objectQuery(res, $stateParams.namespace, pipelines.draftList[i].draftId);
+                if (draft) {
+                  delete res[$stateParams.namespace][pipelines.draftList[i].draftId];
+                }
+              }
+              return mySettings.set('hydratorDrafts', res);
+            })
+            .then(function () {
+              return myAppsApi.deleteAll({
+                namespace: $state.params.namespace
+              }, pipelines.pipelineList)
+                .$promise;
+            })
+            .then(
+              function success() {
+                vm.pipelineDeleteStatus('success', `Pipelines deleted successfully`);
+              },
+              function error(err) {
+                vm.pipelineDeleteStatus('danger', (err && err.data ? err.data : 'Pipelines deletion failed'));
+              }
+            );
+        });
     };
 
     $scope.$on('$destroy', function() {
@@ -351,7 +369,6 @@ angular.module(PKG.name + '.feature.hydrator')
         });
     };
 
-
     vm.updateSelectAllStatus = () => {
       //update select all check box status
       if(vm.filteredPipeline.length>0) {
@@ -360,7 +377,6 @@ angular.module(PKG.name + '.feature.hydrator')
         vm.isSelectAll = false;
       }
     };
-
 
     vm.pipeNameSearchChangeHandler = () => {
       setTimeout(() => vm.updateSelectAllStatus());
@@ -384,22 +400,27 @@ angular.module(PKG.name + '.feature.hydrator')
       });
     };
 
-    vm.exportPipelines = () => {
-      vm.isPipelineDownloadProgress = true;
-      var reqData = {
-        pipelineList: [],
-        draftList:[]
+    vm.selectedPipeline = () => {
+      let pipelines = {
+        draftList: [],
+        pipelineList: []
       };
       angular.forEach(vm.pipelineList, function (app) {
-        if(app.selected) {
+        if (app.selected) {
           if (app.isDraft) {
-            const {artifact, description, name, config} = vm.draftPipeLineList[app.id];
-            reqData.draftList.push({artifact, description, name, config});
+            const { artifact, description, name, config } = vm.draftPipeLineList[app.id];
+            pipelines.draftList.push({ artifact, description, name, config, draftId: app.id });
           } else {
-            reqData.pipelineList.push(app.name);
+            pipelines.pipelineList.push(app.name);
           }
         }
       });
+      return pipelines;
+    };
+
+    vm.exportPipelines = () => {
+      vm.isPipelineDownloadProgress = true;
+      let reqData = vm.selectedPipeline();
 
       var exportReq = {
         method: 'POST',
