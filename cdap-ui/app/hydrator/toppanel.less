@@ -182,29 +182,23 @@
           position: absolute;
           padding: 7px 8px;
           margin-top: 7px;
-          border-right: 1px solid #ccc;
+          border-right: 1px solid @grey-05;
           span {
             color: rgba(0, 0, 0, 0.35);
             font-size: 14px;
           }
        }
-       .pipeline-export-button,
-       .delete-all-button {
-          height: 26px;
-          line-height: 1.7;
-          border-radius: 5px;
-          background: #ddd;
-          cursor: pointer;
-          outline: none;
-          i {
-            font-size: 16px;
-          }
+       .delete-all-button,
+       .export-btn,
+       .refresh-pipeline {
+          padding: 12px;
+          border-radius: 24px;
+          background-color: #dbdbdb;
+          line-height: 0.8;
+          margin-right: 6px;
        }
-       .active-status {
-          height: 32px;
-          line-height: 2;
-          background-color: #d7d7d7;
-          border-radius: 10px;
+       .delete-all-button {
+         color: @brand-danger;
        }
      }
      .toppanel-tooltip {
@@ -736,18 +730,14 @@
            }
          }
        }
-       .refresh-pipeline-item {
-          border-right: 1px solid #dddddd;
-          .refresh-pipeline {
-            font-size: 22px !important;
-            line-height: 3 !important;
-            height: 60px;
-            padding-left: 15px;
-            cursor: pointer;
-          }
-        }
+       .pipeline-icons {
+        padding: 10px 15px 7px 15px;
+        height: 60px;
+        float: right;
+        font-size: 20px;
+        margin-right: 5%;
+       }
         .pipeline-limit-container {
-          border-right: 1px solid #dddddd;
           font-size: 16px;
           line-height: 4;
           height: 60px;

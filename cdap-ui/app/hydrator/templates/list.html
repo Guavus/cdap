@@ -43,22 +43,18 @@
       </span>
       <span>Drafts</span>
     </li>
-    <li class="refresh-pipeline-item">
-      <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"
-        ng-click="ListController.refreshScreen()"></i>
-    </li>
+
     <li class="pipeline-limit-container">
-      <span>#Pipelines: </span>
       <select class="pipeline-limit-dropdown" ng-model="ListController.PAGE_SIZE" ng-options="limit for limit in ListController.pipelineLimit"></select>
-    </li>
-    <li>
-      <button class="pipeline-export-button" ng-disabled="ListController.isPipelineDownloadProgress"
-        ng-click="ListController.exportPipelines()" value="Export Pipeline(s)"><i class="fa fa-download" aria-hidden="true"></i>Export Pipeline(s)</button>
-    </li>
-    <li>
-      <button class="delete-all-button" ng-click="ListController.deleteAll()" value="Delete Pipeline(s)"><i class="fa fa-trash-o" aria-hidden="true"></i>Delete Pipeline(s)</button>
+      <span>Pipelines</span>
     </li>
   </ul>
+  <div class="pipeline-icons">
+    <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"
+        ng-click="ListController.refreshScreen()"></i>
+    <i ng-disabled="ListController.isPipelineDownloadProgress" ng-click="ListController.exportPipelines()" title="Export" class="fa fa-download export-btn" aria-hidden="true"></i>
+    <i ng-click="ListController.deleteAll()" class="fa fa-trash-o delete-all-button" aria-hidden="true" title="Delete Pipeline(s)"></i>
+  </div>
   <cask-resource-center-button></cask-resource-center-button>
 </div>
 
