@@ -31,14 +31,14 @@
         <button id="btn-append-to-body" type="button" class="btn btn-primary pipeline-type-button" uib-dropdown-toggle>
           <span class="button-text icon-{{ ListController.GLOBALS.iconArtifact[ListController.selectedPipelineType] }}"></span>
           <span class="button-text" ng-if='ListController.selectedPipelineType !== "All"'>{{ ::ListController.GLOBALS.artifactConvert[ListController.selectedPipelineType] }} ({{ListController.selectedTypePipelineCount}})</span>
-          <span class="button-text" ng-if='ListController.selectedPipelineType == "All"'>All ({{ListController.selectedTypePipelineCount}})</span>
+          <span class="button-text" ng-if='ListController.selectedPipelineType == "All"'>Data Pipeline - All ({{ListController.selectedTypePipelineCount}})</span>
           <i class="fa fa-filter" aria-hidden="true"></i>
         </button>
         <ul class="dropdown-menu pipeline-type-dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-body">
           <li role="menuitem" ng-repeat="(key, value) in ListController.pipelineTypeCountMap" value="{{key}}" ng-click="ListController.selectedPipelineType = key">
             <span class="icon-{{ ListController.GLOBALS.iconArtifact[key] }}"></span>
             <span ng-if='key !== "All"'> {{ ::ListController.GLOBALS.artifactConvert[key] }} ({{value}}) </span>
-            <span ng-if='key == "All"'> All ({{value}})</span>
+            <span ng-if='key == "All"'> Data Pipeline - All ({{value}})</span>
           </li>
         </ul>
       </span>
