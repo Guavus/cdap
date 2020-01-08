@@ -36,6 +36,7 @@ angular.module(PKG.name + '.feature.hydrator')
     this.missingArtifactsMap = {};
 
     this.loading = false;
+    this.upgradeORdowngrade = window.CaskCommon.Version.prototype.compareVersion(this.cdapVersion, this.pipelineConfig.artifact.version ) === 1 ? 'upgraded' : 'downgraded';
 
     const checkStages = () => {
       if (this.loading) { return; }
