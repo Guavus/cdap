@@ -186,20 +186,91 @@
           span {
             color: rgba(0, 0, 0, 0.35);
             font-size: 14px;
+        }
+       }
+      .pipeline-actions {
+        display: inline-block;
+        margin: 0 5% 0 0px;
+        padding: 10px 15px;
+        border-left: 1px solid #ddd;
+        height: inherit;
+        width: 56%;
+        .status-bubble {
+          margin-right: 5px;
+          &.status-green { color: @brand-success; }
+          &.status-red { color: @brand-danger; }
+          &.status-grey { color: @cdap-gray; }
+
+          &.status-light-grey { color: @cdap-light-grey; }
+          &.status-light-green { color: @cdap-light-green; }
+          &.status-blue { color: @cdap-blue; }
+          &.status-light-red { color: @cdap-light-red; }
+          &.status-white { color: @cdap-white; }
+          .icon-svg {
+            font-size: 16px;
           }
-       }
-       .delete-all-button,
-       .export-btn,
-       .refresh-pipeline {
-          padding: 12px;
-          border-radius: 24px;
-          background-color: #dbdbdb;
-          line-height: 0.8;
-          margin-right: 6px;
-       }
-       .delete-all-button {
-         color: @brand-danger;
-       }
+        }
+        .pipeline-status-dropdown,
+        .pipeline-limit-Dropdown {
+          float: left;
+          margin-top: 5px;
+          margin-right: 2%;
+          button {
+            display: flex;
+            height: 30px;
+            line-height: 1;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 6px;
+          }
+          .button-text {
+            padding: 2px;
+            color: @grey-01;
+            font-weight: 500;
+          }
+          .pipeline-label {
+            font-size: 15px;
+            margin-top: 2px;
+          }
+          .caret {
+            margin: 5px;
+            color: @grey-01;
+          }
+          .pipeline-status-dropdown-menu,
+          .pipeline-limit-dropdown-menu {
+            font-size: 14px;
+            li {
+              padding: 5px 10px;
+              display: flex;
+              span {
+                font-size: 14px;
+              }
+            }
+          }
+        }
+        .pipeline-limit-Dropdown {
+          display: flex;
+          .pipeline-limit-dropdown-menu {
+            min-width: 60px;
+          }
+        }
+        .pipeline-icons {
+          font-size: 20px;
+          float: right;
+          .delete-all-button,
+          .export-btn,
+          .refresh-pipeline {
+              padding: 12px;
+              border-radius: 24px;
+              background-color: #dbdbdb;
+              line-height: 0.8;
+              margin-right: 6px;
+          }
+          .delete-all-button {
+            color: @brand-danger;
+          }
+        }
+      }
      }
      .toppanel-tooltip {
        &.in { opacity: 1; }
@@ -730,18 +801,7 @@
            }
          }
        }
-       .pipeline-icons {
-        padding: 10px 15px 7px 15px;
-        height: 60px;
-        float: right;
-        font-size: 20px;
-        margin-right: 5%;
-       }
-        .pipeline-limit-container {
-          font-size: 16px;
-          line-height: 4;
-          height: 60px;
-        }
+
        a.btn-primary {
          position: absolute;
          right: 40px;

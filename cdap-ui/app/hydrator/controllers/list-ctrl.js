@@ -31,11 +31,9 @@ angular.module(PKG.name + '.feature.hydrator')
     vm.pipelineListLoaded = false;
     vm.MyPipelineStatusMapper = MyPipelineStatusMapper;
     var eventEmitter = window.CaskCommon.ee(window.CaskCommon.ee);
-    vm.statusCount = {
-      running: 0,
-      draft: 0
-    };
-    vm.displayStatus = '';
+    vm.displayStatusCountMap = undefined;
+    vm.displayStatus = 'Total';
+    vm.selectedStatusCount = 0;
     vm.pipelineLimit = [10, 15, 20, 25, 30, 35, 40];
     vm.PAGE_SIZE = vm.pipelineLimit[0];
     vm.GLOBALS = GLOBALS;
@@ -331,12 +329,11 @@ angular.module(PKG.name + '.feature.hydrator')
         if (!vm.latestRunExists(app)) {
           app.displayStatus = vm.MyPipelineStatusMapper.lookupDisplayStatus(PROGRAM_STATUSES.DEPLOYED);
         } else {
-          if(app.latestRun.status === PROGRAM_STATUSES.RUNNING){
-            vm.statusCount.running++;
-          }
           app.displayStatus = vm.MyPipelineStatusMapper.lookupDisplayStatus(app.latestRun.status);
         }
       });
+      vm.displayStatusCountMap = _.countBy(vm.pipelineList.map(item => item.displayStatus).sort());
+      vm.displayStatusCountMap['Total'] = vm.selectedStatusCount = vm.pipelineList.length;
     };
 
     vm.fetchDrafts = () => {
@@ -349,7 +346,6 @@ angular.module(PKG.name + '.feature.hydrator')
           }
           if (Object.keys(draftsList).length) {
             angular.forEach(res[$stateParams.namespace], function(value, key) {
-              vm.statusCount.draft++;
               vm.pipelineList.push({
                 isDraft: true,
                 name: value.name,
@@ -452,8 +448,6 @@ angular.module(PKG.name + '.feature.hydrator')
 
     };
 
-    vm.getPipelines();
-
     vm.goToPipelinePage = (pipeline) => {
       let url = '';
       if (pipeline.isDraft) {
@@ -477,5 +471,12 @@ angular.module(PKG.name + '.feature.hydrator')
 
       window.location.href = url;
     };
+
+    vm.getDisplayStatus = () => {
+      vm.selectedStatusCount = vm.displayStatusCountMap !== undefined ? vm.displayStatusCountMap[vm.displayStatus] : 0;
+      return vm.displayStatus === 'Total' ? '' : vm.displayStatus;
+    };
+
+    vm.getPipelines();
 
   });

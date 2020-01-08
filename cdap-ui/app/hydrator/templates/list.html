@@ -22,38 +22,47 @@
     </span>
     <input type="text" class="search-input form-control" ng-model="ListController.searchText" placeholder="Search Pipeline ..."
       ng-change="ListController.pipeNameSearchChangeHandler()">
-
   </div>
-  <ul ng-if="ListController.pipelineList.length > 0" class="list-unstyled list-inline pull-left">
-    <li ng-click='ListController.displayStatus = ""'>
-      <span>{{ ListController.pipelineList.length }}</span>
-      <span>Total</span>
-    </li>
-    <li ng-click='ListController.displayStatus = "running"' ng-class="{'active-status': ListController.displayStatus=='running'}">
-      <i class="fa text-light-running"></i>
-      <span>
-        {{ ListController.statusCount.running }}
-      </span>
-      <span>Running</span>
-    </li>
-    <li ng-click='ListController.displayStatus = "draft"' ng-class="{'active-status': ListController.displayStatus=='draft'}">
-      <i class="fa text-outline-grey"></i>
-      <span>
-        {{ ListController.statusCount.draft }}
-      </span>
-      <span>Drafts</span>
-    </li>
 
-    <li class="pipeline-limit-container">
-      <select class="pipeline-limit-dropdown" ng-model="ListController.PAGE_SIZE" ng-options="limit for limit in ListController.pipelineLimit"></select>
-      <span>Pipelines</span>
-    </li>
-  </ul>
-  <div class="pipeline-icons">
-    <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"
-        ng-click="ListController.refreshScreen()"></i>
-    <i ng-disabled="ListController.isPipelineDownloadProgress" ng-click="ListController.exportPipelines()" title="Export" class="fa fa-download export-btn" aria-hidden="true"></i>
-    <i ng-click="ListController.deleteAll()" class="fa fa-trash-o delete-all-button" aria-hidden="true" title="Delete Pipeline(s)"></i>
+  <div ng-if="ListController.pipelineList.length > 0" class="pipeline-actions">
+    <div class="pipeline-status-dropdown" uib-dropdown>
+      <button id="btn-append-to-body" type="button" class="btn btn-primary" uib-dropdown-toggle>
+        <span class="status-bubble"
+            ng-class="ListController.MyPipelineStatusMapper.getStatusIndicatorClass(ListController.displayStatus)">
+          <icon-svg name="ListController.MyPipelineStatusMapper.getStatusIndicatorIcon(ListController.displayStatus)"></icon-svg>
+        </span>
+        <span class="button-text">{{ListController.displayStatus}} ({{ListController.selectedStatusCount}})</span>
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu pipeline-status-dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-body">
+        <li role="menuitem" ng-repeat="(key, value) in ListController.displayStatusCountMap" value="{{key}}" ng-click="ListController.displayStatus = key">
+          <span class="status-bubble" ng-class="ListController.MyPipelineStatusMapper.getStatusIndicatorClass(key)">
+            <icon-svg name="ListController.MyPipelineStatusMapper.getStatusIndicatorIcon(key)"></icon-svg>
+          </span>
+          <span>{{key}} ({{value}})</span>
+        </li>
+      </ul>
+    </div>
+    <div class="pipeline-limit-Dropdown">
+      <span uib-dropdown>
+        <button type="button" class="btn btn-primary" uib-dropdown-toggle>
+          <span class="button-text">{{ListController.PAGE_SIZE}}</span>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu pipeline-limit-dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-body">
+          <li role="menuitem" ng-repeat="limit in ListController.pipelineLimit" value="{{limit}}" ng-click="ListController.PAGE_SIZE = limit">
+            <span>{{limit}}</span>
+          </li>
+        </ul>
+      </span>
+      <span class="button-text pipeline-label">Pipelines</span>
+    </div>
+    <div class="pipeline-icons">
+      <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"
+          ng-click="ListController.refreshScreen()"></i>
+      <i ng-disabled="ListController.isPipelineDownloadProgress" ng-click="ListController.exportPipelines()" title="Export" class="fa fa-download export-btn" aria-hidden="true"></i>
+      <i ng-click="ListController.deleteAll()" class="fa fa-trash-o delete-all-button" aria-hidden="true" title="Delete Pipeline(s)"></i>
+    </div>
   </div>
   <cask-resource-center-button></cask-resource-center-button>
 </div>
@@ -79,7 +88,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="pipeline in (ListController.filteredPipeline = (ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.displayStatus} )) | orderBy:sortable.predicate:sortable.reverse | myPaginate:ListController.currentPage:ListController.PAGE_SIZE"
+          <tr ng-repeat="pipeline in (ListController.filteredPipeline = (ListController.pipelineList
+                | filter: {name: ListController.searchText}
+                | filter: {displayStatus: ListController.getDisplayStatus()} ))
+                | orderBy:sortable.predicate:sortable.reverse
+                | myPaginate:ListController.currentPage:ListController.PAGE_SIZE"
               ng-click="ListController.goToPipelinePage(pipeline)">
             <td class="pipeline-select-checkbox"><input type="checkbox" name="name4" ng-click="ListController.selectDeselectPipeline($event, pipeline)" ng-model="pipeline.selected" /></td>
             <td class="pipeline-name" title="{{pipeline.description !== '' ?  pipeline.description : pipeline.name }}">
@@ -142,9 +155,9 @@
       </table>
     </div>
 
-    <div class="text-center" ng-if="(ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.displayStatus}).length > ListController.PAGE_SIZE">
+    <div class="text-center" ng-if="(ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.getDisplayStatus()}).length > ListController.PAGE_SIZE">
       <uib-pagination
-        total-items="(ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.displayStatus}).length"
+        total-items="(ListController.pipelineList | filter: {name: ListController.searchText} | filter: {displayStatus: ListController.getDisplayStatus()}).length"
         ng-change="ListController.goToPage()"
         ng-model="ListController.currentPage"
         items-per-page="ListController.PAGE_SIZE"
