@@ -190,11 +190,11 @@
        }
       .pipeline-actions {
         display: inline-block;
-        margin: 0 5% 0 0px;
+        margin: 0 3% 0 0px;
         padding: 10px 15px;
         border-left: 1px solid #ddd;
         height: inherit;
-        width: 56%;
+        width: 58%;
         .status-bubble {
           margin-right: 5px;
           &.status-green { color: @brand-success; }
@@ -211,7 +211,8 @@
           }
         }
         .pipeline-status-dropdown,
-        .pipeline-limit-Dropdown {
+        .pipeline-limit-Dropdown,
+        .pipeline-type-dropdown {
           float: left;
           margin-top: 5px;
           margin-right: 2%;
@@ -223,21 +224,28 @@
             border: 1px solid #ccc;
             padding: 6px;
           }
+          .button-text,
+          .caret,
+          i {
+            color: @grey-01;
+          }
           .button-text {
             padding: 2px;
-            color: @grey-01;
             font-weight: 500;
           }
           .pipeline-label {
             font-size: 15px;
             margin-top: 2px;
           }
-          .caret {
+          .caret{
             margin: 5px;
-            color: @grey-01;
+          }
+          i {
+            margin: 1px;
           }
           .pipeline-status-dropdown-menu,
-          .pipeline-limit-dropdown-menu {
+          .pipeline-limit-dropdown-menu,
+          .pipeline-type-dropdown-menu {
             font-size: 14px;
             li {
               padding: 5px 10px;
@@ -248,6 +256,12 @@
             }
           }
         }
+        .pipeline-type-dropdown {
+          .pipeline-type-dropdown-menu {
+            min-width: 225px;
+          }
+        }
+
         .pipeline-limit-Dropdown {
           display: flex;
           .pipeline-limit-dropdown-menu {

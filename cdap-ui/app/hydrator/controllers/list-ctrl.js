@@ -31,9 +31,15 @@ angular.module(PKG.name + '.feature.hydrator')
     vm.pipelineListLoaded = false;
     vm.MyPipelineStatusMapper = MyPipelineStatusMapper;
     var eventEmitter = window.CaskCommon.ee(window.CaskCommon.ee);
+
     vm.displayStatusCountMap = undefined;
-    vm.displayStatus = 'Total';
+    vm.displayStatus = 'All';
     vm.selectedStatusCount = 0;
+
+    vm.pipelineTypeCountMap = undefined;
+    vm.selectedPipelineType = 'All';
+    vm.selectedTypePipelineCount = 0;
+
     vm.pipelineLimit = [10, 15, 20, 25, 30, 35, 40];
     vm.PAGE_SIZE = vm.pipelineLimit[0];
     vm.GLOBALS = GLOBALS;
@@ -322,6 +328,7 @@ angular.module(PKG.name + '.feature.hydrator')
 
     vm.updateStatusAppObject =() => {
       angular.forEach(vm.pipelineList, function (app) {
+        app.artifactType = app.artifact.name;
         if (app.isDraft) {
           app.displayStatus = vm.MyPipelineStatusMapper.lookupDisplayStatus(PROGRAM_STATUSES.DRAFT);
           return;
@@ -333,7 +340,9 @@ angular.module(PKG.name + '.feature.hydrator')
         }
       });
       vm.displayStatusCountMap = _.countBy(vm.pipelineList.map(item => item.displayStatus).sort());
-      vm.displayStatusCountMap['Total'] = vm.selectedStatusCount = vm.pipelineList.length;
+      vm.pipelineTypeCountMap = _.countBy(vm.pipelineList.map(item => item.artifact.name).sort());
+      vm.displayStatusCountMap['All'] = vm.selectedStatusCount = vm.pipelineList.length;
+      vm.pipelineTypeCountMap['All'] = vm.selectedTypePipelineCount = vm.pipelineList.length;
     };
 
     vm.fetchDrafts = () => {
@@ -474,7 +483,12 @@ angular.module(PKG.name + '.feature.hydrator')
 
     vm.getDisplayStatus = () => {
       vm.selectedStatusCount = vm.displayStatusCountMap !== undefined ? vm.displayStatusCountMap[vm.displayStatus] : 0;
-      return vm.displayStatus === 'Total' ? '' : vm.displayStatus;
+      return vm.displayStatus === 'All' ? '' : vm.displayStatus;
+    };
+
+    vm.getPipelineType = () => {
+      vm.selectedTypePipelineCount = vm.pipelineTypeCountMap !== undefined ? vm.pipelineTypeCountMap[vm.selectedPipelineType] : 0;
+      return vm.selectedPipelineType === 'All' ? '' : vm.selectedPipelineType;
     };
 
     vm.getPipelines();
