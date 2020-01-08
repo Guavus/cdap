@@ -25,41 +25,48 @@
   </div>
 
   <div ng-if="ListController.pipelineList.length > 0" class="pipeline-actions">
-    <div class="pipeline-type-dropdown" uib-dropdown>
-      <button id="btn-append-to-body" type="button" class="btn btn-primary" uib-dropdown-toggle>
-        <span class="button-text icon-{{ ListController.GLOBALS.iconArtifact[ListController.selectedPipelineType] }}"></span>
-        <span class="button-text" ng-if='ListController.selectedPipelineType !== "All"'>{{ ::ListController.GLOBALS.artifactConvert[ListController.selectedPipelineType] }} ({{ListController.selectedTypePipelineCount}})</span>
-        <span class="button-text" ng-if='ListController.selectedPipelineType == "All"'>All ({{ListController.selectedTypePipelineCount}})</span>
-        <i class="fa fa-filter" aria-hidden="true"></i>
-      </button>
-      <ul class="dropdown-menu pipeline-type-dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-body">
-        <li role="menuitem" ng-repeat="(key, value) in ListController.pipelineTypeCountMap" value="{{key}}" ng-click="ListController.selectedPipelineType = key">
-          <span class="icon-{{ ListController.GLOBALS.iconArtifact[key] }}"></span>
-          <span ng-if='key !== "All"'> {{ ::ListController.GLOBALS.artifactConvert[key] }} ({{value}}) </span>
-          <span ng-if='key == "All"'> All ({{value}})</span>
-        </li>
-      </ul>
+    <div class="pipeline-type-dropdown">
+      <span class="button-text filter-label">Type: </span>
+      <span uib-dropdown>
+        <button id="btn-append-to-body" type="button" class="btn btn-primary pipeline-type-button" uib-dropdown-toggle>
+          <span class="button-text icon-{{ ListController.GLOBALS.iconArtifact[ListController.selectedPipelineType] }}"></span>
+          <span class="button-text" ng-if='ListController.selectedPipelineType !== "All"'>{{ ::ListController.GLOBALS.artifactConvert[ListController.selectedPipelineType] }} ({{ListController.selectedTypePipelineCount}})</span>
+          <span class="button-text" ng-if='ListController.selectedPipelineType == "All"'>All ({{ListController.selectedTypePipelineCount}})</span>
+          <i class="fa fa-filter" aria-hidden="true"></i>
+        </button>
+        <ul class="dropdown-menu pipeline-type-dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-body">
+          <li role="menuitem" ng-repeat="(key, value) in ListController.pipelineTypeCountMap" value="{{key}}" ng-click="ListController.selectedPipelineType = key">
+            <span class="icon-{{ ListController.GLOBALS.iconArtifact[key] }}"></span>
+            <span ng-if='key !== "All"'> {{ ::ListController.GLOBALS.artifactConvert[key] }} ({{value}}) </span>
+            <span ng-if='key == "All"'> All ({{value}})</span>
+          </li>
+        </ul>
+      </span>
     </div>
 
-    <div class="pipeline-status-dropdown" uib-dropdown>
-      <button id="btn-append-to-body" type="button" class="btn btn-primary" uib-dropdown-toggle>
-        <span class="status-bubble"
-            ng-class="ListController.MyPipelineStatusMapper.getStatusIndicatorClass(ListController.displayStatus)">
-          <icon-svg name="ListController.MyPipelineStatusMapper.getStatusIndicatorIcon(ListController.displayStatus)"></icon-svg>
-        </span>
-        <span class="button-text">{{ListController.displayStatus}} ({{ListController.selectedStatusCount}})</span>
-        <i class="fa fa-filter" aria-hidden="true"></i>
-      </button>
-      <ul class="dropdown-menu pipeline-status-dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-body">
-        <li role="menuitem" ng-repeat="(key, value) in ListController.displayStatusCountMap" value="{{key}}" ng-click="ListController.displayStatus = key">
-          <span class="status-bubble" ng-class="ListController.MyPipelineStatusMapper.getStatusIndicatorClass(key)">
-            <icon-svg name="ListController.MyPipelineStatusMapper.getStatusIndicatorIcon(key)"></icon-svg>
+    <div class="pipeline-status-dropdown">
+      <span class="button-text filter-label">Status: </span>
+      <span  uib-dropdown>
+        <button id="btn-append-to-body" type="button" class="btn btn-primary pipeline-status-button" uib-dropdown-toggle>
+          <span class="status-bubble"
+              ng-class="ListController.MyPipelineStatusMapper.getStatusIndicatorClass(ListController.displayStatus)">
+            <icon-svg name="ListController.MyPipelineStatusMapper.getStatusIndicatorIcon(ListController.displayStatus)"></icon-svg>
           </span>
-          <span>{{key}} ({{value}})</span>
-        </li>
-      </ul>
+          <span class="button-text">{{ListController.displayStatus}} ({{ListController.selectedStatusCount}})</span>
+          <i class="fa fa-filter" aria-hidden="true"></i>
+        </button>
+        <ul class="dropdown-menu pipeline-status-dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-body">
+          <li role="menuitem" ng-repeat="(key, value) in ListController.displayStatusCountMap" value="{{key}}" ng-click="ListController.displayStatus = key">
+            <span class="status-bubble" ng-class="ListController.MyPipelineStatusMapper.getStatusIndicatorClass(key)">
+              <icon-svg name="ListController.MyPipelineStatusMapper.getStatusIndicatorIcon(key)"></icon-svg>
+            </span>
+            <span>{{key}} ({{value}})</span>
+          </li>
+        </ul>
+      </span>
     </div>
     <div class="pipeline-limit-Dropdown">
+      <span class="button-text filter-label">Pipelines: </span>
       <span uib-dropdown>
         <button type="button" class="btn btn-primary" uib-dropdown-toggle>
           <span class="button-text">{{ListController.PAGE_SIZE}}</span>
@@ -71,7 +78,6 @@
           </li>
         </ul>
       </span>
-      <span class="button-text pipeline-label">Pipelines</span>
     </div>
     <div class="pipeline-icons">
       <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"

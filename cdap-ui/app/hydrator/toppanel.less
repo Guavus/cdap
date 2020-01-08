@@ -213,6 +213,7 @@
         .pipeline-status-dropdown,
         .pipeline-limit-Dropdown,
         .pipeline-type-dropdown {
+          display: flex;
           float: left;
           margin-top: 5px;
           margin-right: 2%;
@@ -233,9 +234,9 @@
             padding: 2px;
             font-weight: 500;
           }
-          .pipeline-label {
+          .filter-label{
             font-size: 15px;
-            margin-top: 2px;
+            margin: 2px 0px 0px 2px;
           }
           .caret{
             margin: 5px;
@@ -256,17 +257,15 @@
             }
           }
         }
-        .pipeline-type-dropdown {
-          .pipeline-type-dropdown-menu {
-            min-width: 225px;
-          }
+        .pipeline-limit-dropdown-menu {
+          min-width: 60px;
         }
-
-        .pipeline-limit-Dropdown {
-          display: flex;
-          .pipeline-limit-dropdown-menu {
-            min-width: 60px;
-          }
+        .pipeline-status-button {
+          min-width: 95px;
+        }
+        .pipeline-type-dropdown-menu,
+        .pipeline-type-button {
+          min-width: 225px;
         }
         .pipeline-icons {
           font-size: 20px;
