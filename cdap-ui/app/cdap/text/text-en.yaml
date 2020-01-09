@@ -1247,6 +1247,7 @@ features:
           ADD: Failed to add connection
           DUPLICATE: Failed to duplicate connection
           EDIT: Failed to edit connection
+        getKafkaTopics: Get Kafka Topics
         hortonworksSchemaRegistryURL: Hortonworks Schema Registry URL
         kafka: Kafka
         kafkaProducerProperties: Additional Kafka Producer Properties
@@ -1255,6 +1256,8 @@ features:
           ADD: "Add connection: Kafka"
           DUPLICATE: "Duplicate connection: {connection}"
           EDIT: "Edit connection: {connection}"
+        fetchKafkaTopicLabels:
+          danger: Fetch Kafka topics failed
         format: Message Format
         name: Connection name
         principal: Kerberos Principal
@@ -1278,6 +1281,7 @@ features:
       label: Add Connection
       Popover:
         title: Select a source to connect
+
       S3:
         accessKeyId: Access key ID
         accessSecretKey: Secret access key

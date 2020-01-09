@@ -16,6 +16,7 @@
 
 import PropTypes from 'prop-types';
 
+import cloneDeep from 'lodash/cloneDeep';
 import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { objectQuery, isNilOrEmpty } from 'services/helpers';
@@ -33,7 +34,8 @@ import KeyValuePairs from 'components/KeyValuePairs';
 import ValidatedInput from 'components/ValidatedInput';
 import types from 'services/inputValidationTemplates';
 import { Theme } from 'services/ThemeHelper';
-import {UncontrolledTooltip} from 'components/UncontrolledComponents';
+import { UncontrolledTooltip } from 'components/UncontrolledComponents';
+
 const ConnectionMode = {
   Add: 'ADD',
   Edit: 'EDIT',
@@ -44,6 +46,7 @@ const ADDCONN_PREFIX = 'features.DataPrepConnections.AddConnections';
 
 const LABEL_COL_CLASS = 'col-xs-3 col-form-label text-xs-right';
 const INPUT_COL_CLASS = 'col-xs-8';
+
 const DEFAULT_KAFKA_PRODUCER_PROPERTIES = {
   'pairs': [{
     'key': '',
@@ -77,11 +80,12 @@ export default class KafkaConnection extends Component {
       }],
       connectionResult: {
         type: null,
-        message: null
+        message: null,
+        api: ''
       },
       error: null,
       keytabLocation: '',
-      kafkaProducerProperties: DEFAULT_KAFKA_PRODUCER_PROPERTIES,
+      kafkaProducerProperties: cloneDeep(DEFAULT_KAFKA_PRODUCER_PROPERTIES),
       format: 'text',
       principal: '',
       topic: customId,
@@ -130,15 +134,20 @@ export default class KafkaConnection extends Component {
     this.testConnection = this.testConnection.bind(this);
     this.handleBrokersChange = this.handleBrokersChange.bind(this);
     this.onKeyValueChange = this.onKeyValueChange.bind(this);
+    this.fetchKafkaTopics = this.fetchKafkaTopics.bind(this);
     this.handleKafkaTopicChange = this.handleKafkaTopicChange.bind(this);
   }
 
-  fetchKafkaTopicList() {
+  fetchKafkaTopics() {
     this.setState({ fetchKafkaTopicLoading: true, kafkaTopicSelectionError: '' });
+
     let namespace = getCurrentNamespace();
     let params = {
-      namespace,
-      connectionId: this.props.connectionId
+      type: T.translate(`${PREFIX}.kafka`).toUpperCase(),
+      properties: {
+        brokers: this.convertBrokersList(),
+        kafkaProducerProperties: JSON.stringify(this.getKeyValObject()),
+      }
     };
 
     MyDataPrepApi.listTopics({namespace}, params)
@@ -166,7 +175,8 @@ export default class KafkaConnection extends Component {
       this.setState({
         connectionResult: {
           type: CARD_ACTION_TYPES.DANGER,
-          message: errorMessage
+          message: errorMessage,
+          api: 'fetchtopic'
         },
         fetchKafkaTopicLoading: false
       });
@@ -175,7 +185,6 @@ export default class KafkaConnection extends Component {
 
   componentWillMount() {
     if (this.props.mode === ConnectionMode.Add) {
-      this.fetchKafkaTopicList();
       return;
     }
 
@@ -216,7 +225,7 @@ export default class KafkaConnection extends Component {
           loading: false
         });
         setTimeout(() => {
-          this.fetchKafkaTopicList();
+          this.fetchKafkaTopics();
         });
       }, (err) => {
         console.log('failed to fetch connection detail', err);
@@ -228,7 +237,7 @@ export default class KafkaConnection extends Component {
   }
 
   getKeyValObject() {
-    let keyValArr = this.state.kafkaProducerProperties ? this.state.kafkaProducerProperties.pairs : DEFAULT_KAFKA_PRODUCER_PROPERTIES.pairs;
+    let keyValArr = this.state.kafkaProducerProperties ? this.state.kafkaProducerProperties.pairs : cloneDeep(DEFAULT_KAFKA_PRODUCER_PROPERTIES.pairs);
     let keyValObj = {};
     keyValArr.forEach((pair) => {
       if (pair.key.length > 0 && pair.value.length > 0) {
@@ -314,6 +323,7 @@ export default class KafkaConnection extends Component {
         keytabLocation: this.state.keytabLocation,
       };
   }
+
   addConnection() {
     let namespace = getCurrentNamespace();
 
@@ -480,7 +490,16 @@ export default class KafkaConnection extends Component {
   }
 
   isButtonDisabled() {
-    return !this.state.name || !this.state.topic || this.state.testConnectionLoading || this.testErrorsInInputs() ||  this.isBrokerListEmpty() || this.state.fetchKafkaTopicLoading;
+    return !this.state.name || this.state.topic === this.state.customId
+      || this.state.testConnectionLoading
+      || this.testErrorsInInputs()
+      || this.isBrokerListEmpty()
+      || this.state.fetchKafkaTopicLoading
+      || isNilOrEmpty(this.getKeyValObject());
+  }
+
+  isGetKafkaTopicButtonDisable() {
+    return this.testErrorsInInputs() || this.isBrokerListEmpty() || isNilOrEmpty(this.getKeyValObject());
   }
 
   renderAddConnectionButton() {
@@ -536,9 +555,10 @@ export default class KafkaConnection extends Component {
     }
 
     const connectionResultType = this.state.connectionResult.type;
+    const label = this.state.connectionResult.api === 'fetchtopic' ? `${PREFIX}.fetchKafkaTopicLabels` : `${ADDCONN_PREFIX}.TestConnectionLabels`;
     return (
       <CardActionFeedback
-        message={T.translate(`${ADDCONN_PREFIX}.TestConnectionLabels.${connectionResultType.toLowerCase()}`)}
+        message={T.translate(`${label}.${connectionResultType.toLowerCase()}`)}
         extendedMessage={connectionResultType === CARD_ACTION_TYPES.SUCCESS ? null : this.state.connectionResult.message}
         type={connectionResultType}
       />
@@ -550,6 +570,7 @@ export default class KafkaConnection extends Component {
       <div className="form-group row">
         <label className={LABEL_COL_CLASS}>
           {T.translate(`${PREFIX}.kafkaProducerProperties`)}
+          <span className="asterisk">*</span>
         </label>
         <div className={`${INPUT_COL_CLASS} kafka-producer-prop-container`}>
           <KeyValuePairs
@@ -559,6 +580,21 @@ export default class KafkaConnection extends Component {
         </div>
       </div>
     );
+  }
+
+  renderGetKafkaTopicButton() {
+    const btnClass = this.state.fetchKafkaTopicLoading ? 'kafka-topic-button-loading' : 'kafka-topic-button';
+    return (
+      <div className={`form-group row ${btnClass}`}>
+        <BtnWithLoading
+          className="btn btn-secondary"
+          onClick={this.fetchKafkaTopics}
+          disabled={this.isGetKafkaTopicButtonDisable()}
+          label={T.translate(`${PREFIX}.getKafkaTopics`)}
+          loading={this.state.fetchKafkaTopicLoading}
+          darker={true}
+        />
+      </div>);
   }
 
   onKeyValueChange(kafkaProducerProperties) {
@@ -716,7 +752,6 @@ export default class KafkaConnection extends Component {
     );
   }
 
-
   renderContent() {
     if (this.state.loading) {
       return (
@@ -754,6 +789,8 @@ export default class KafkaConnection extends Component {
           </div>
 
           {this.renderKafkaBrokerList()}
+          {this.renderKafkaProducerProperties()}
+          {this.renderGetKafkaTopicButton()}
           {this.renderKafkaTopicName()}
           {this.renderMessageFormat()}
           {
@@ -762,7 +799,6 @@ export default class KafkaConnection extends Component {
           {
             Theme.isCustomerJIO ? null : this.renderPrincipalKeytabLocation()
           }
-          {this.renderKafkaProducerProperties()}
         </div>
       </div>
     );
