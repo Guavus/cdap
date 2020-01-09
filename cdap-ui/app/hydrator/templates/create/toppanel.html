@@ -97,6 +97,11 @@
     </div>
   </div>
 
+  <div>
+      <input type="checkbox"
+        ng-model="HydratorPlusPlusTopPanelCtrl.isAutoSave"
+        ng-change="HydratorPlusPlusTopPanelCtrl.changeAutoSaveSwitch($event)">
+  </div>
   <div class="btn-group action-buttons"
        ng-if="!HydratorPlusPlusTopPanelCtrl.previewMode">
     <div class="btn border-right"

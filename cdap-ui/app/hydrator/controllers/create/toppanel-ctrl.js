@@ -68,6 +68,7 @@ class HydratorPlusPlusTopPanelCtrl {
     this.showIcon = window.CaskCommon.ThemeHelper.Theme.showPipelineCreateButton;
     $scope.getClassName = window.CaskCommon.Util.getClassNameForHeaderFooter();
 
+    this.isAutoSave = false;
     this.TEMPLATES = {
       'NAME': {
         allowed: {
@@ -180,6 +181,18 @@ class HydratorPlusPlusTopPanelCtrl {
       this.$timeout.cancel(this.focusTimeout);
       this.$timeout.cancel(this.fetchMacrosTimeout);
     });
+    this.autoSaveTimer = window.CaskCommon.Theme.autoSaveTimer || 5000;
+    this.$interval(() => {
+      if (this.isAutoSave) {
+        this.onSaveDraft(true);
+      }
+    }, this.autoSaveTimer);
+  }
+
+  changeAutoSaveSwitch() {
+    if (this.isAutoSave) {
+      this.onSaveDraft(true);
+    }
   }
 
   setDefault() {
@@ -300,8 +313,8 @@ class HydratorPlusPlusTopPanelCtrl {
     delete exportConfig.__ui__;
     this.myPipelineExportModalService.show(config, exportConfig);
   }
-  onSaveDraft() {
-    this.HydratorPlusPlusConfigActions.saveAsDraft();
+  onSaveDraft(viaAutoSave = false) {
+    this.HydratorPlusPlusConfigActions.saveAsDraft(viaAutoSave);
     this.checkNameError();
     this.$window.localStorage.setItem('LastDraftId', this.HydratorPlusPlusConfigStore.getDraftId());
     this.$window.localStorage.setItem('LastPreviewId', this.currentPreviewId);
