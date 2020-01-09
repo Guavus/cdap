@@ -84,8 +84,9 @@ interface IOnePoint0SpecJSON extends IThemeJSON {
     "ingest-data"?: boolean;
     "add-namespace"?: boolean;
     "enable-jio"?: boolean,
-    "batch-pipeline-connection"?: string[],
-    "realtime-pipeline-connection"?: string[]
+    "batch-pipeline-connection"?: string[];
+    "realtime-pipeline-connection"?: string[];
+    "auto-save-timer"?: number;
   };
 }
 
@@ -180,7 +181,7 @@ interface IThemeObj {
   isCustomerJIO?: boolean;
   batchPipelineConnection?: string[];
   realtimePipelineConnection?: string[];
-
+  autoSaveTimer?: number;
 }
 
 function getTheme(): IThemeObj {
@@ -351,6 +352,7 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
       isCustomerJIO: false,
       batchPipelineConnection: [],
       realtimePipelineConnection: [],
+      autoSaveTimer: 10000,
     };
     if (isNilOrEmpty(featuresJson)) {
       return features;
@@ -400,6 +402,9 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
     }
     if ('realtime-pipeline-connection' in featuresJson) {
       features.realtimePipelineConnection = featuresJson['realtime-pipeline-connection'];
+    }
+    if ('auto-save-timer' in featuresJson) {
+      features.autoSaveTimer = featuresJson['auto-save-timer'];
     }
     return features;
   }

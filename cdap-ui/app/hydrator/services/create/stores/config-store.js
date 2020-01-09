@@ -989,7 +989,7 @@ class HydratorPlusPlusConfigStore {
     this.state.config.maxConcurrentRuns = num;
   }
 
-  saveAsDraft() {
+  saveAsDraft(viaAutoSave = false) {
     this.HydratorPlusPlusConsoleActions.resetMessages();
     let name = this.getName();
     if (!name.length) {
@@ -1031,12 +1031,14 @@ class HydratorPlusPlusConfigStore {
       })
       .then(
         () => {
-          this.HydratorPlusPlusConsoleActions.addMessage([{
-            type: 'success',
-            content: `Draft ${config.name} saved successfully.`
-          }]);
-          this.__defaultState = angular.copy(this.state);
-          this.emitChange();
+          if (!viaAutoSave) {
+            this.HydratorPlusPlusConsoleActions.addMessage([{
+              type: 'success',
+              content: `Draft ${config.name} saved successfully.`
+            }]);
+            this.__defaultState = angular.copy(this.state);
+            this.emitChange();
+          }
         },
         err => {
           this.HydratorPlusPlusConsoleActions.addMessage([{
