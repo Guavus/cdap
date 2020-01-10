@@ -181,7 +181,7 @@ class HydratorPlusPlusTopPanelCtrl {
       this.$timeout.cancel(this.focusTimeout);
       this.$timeout.cancel(this.fetchMacrosTimeout);
     });
-    this.autoSaveTimer = window.CaskCommon.Theme.autoSaveTimer || 5000;
+    this.autoSaveTimer = window.CaskCommon && window.CaskCommon.Theme && window.CaskCommon.Theme.autoSaveTimer ? window.CaskCommon.Theme.autoSaveTimer : 5000;
     this.$interval(() => {
       if (this.isAutoSave) {
         this.onSaveDraft(true);
@@ -190,6 +190,7 @@ class HydratorPlusPlusTopPanelCtrl {
   }
 
   changeAutoSaveSwitch() {
+    this.isAutoSave = !this.isAutoSave;
     if (this.isAutoSave) {
       this.onSaveDraft(true);
     }

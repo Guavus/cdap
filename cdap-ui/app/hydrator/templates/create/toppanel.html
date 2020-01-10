@@ -97,13 +97,23 @@
     </div>
   </div>
 
-  <div>
-      <input type="checkbox"
-        ng-model="HydratorPlusPlusTopPanelCtrl.isAutoSave"
-        ng-change="HydratorPlusPlusTopPanelCtrl.changeAutoSaveSwitch($event)">
-  </div>
   <div class="btn-group action-buttons"
        ng-if="!HydratorPlusPlusTopPanelCtrl.previewMode">
+    <div class="btn"
+         ng-disabled="!HydratorPlusPlusTopPanelCtrl.hasNodes"
+         uib-tooltip="Start building a pipeline before auto saving"
+         tooltip-placement="bottom auto"
+         tooltip-enable="!HydratorPlusPlusTopPanelCtrl.hasNodes"
+         tooltip-class="toppanel-tooltip"
+         tooltip-append-to-body="true">
+      <div class="btn-container">
+        <my-toggle-switch-widget
+          is-disabled="!HydratorPlusPlusTopPanelCtrl.hasNodes"
+          is-on="HydratorPlusPlusTopPanelCtrl.isAutoSave"
+          on-toggle="HydratorPlusPlusTopPanelCtrl.changeAutoSaveSwitch()"></my-toggle-switch-widget>
+          <div class="button-label">AutoSave</div>
+      </div>
+    </div>
     <div class="btn border-right"
          ng-click="HydratorPlusPlusTopPanelCtrl.isPreviewEnabled && HydratorPlusPlusTopPanelCtrl.togglePreviewMode()"
          uib-tooltip="Pipeline preview is not available in distributed mode."

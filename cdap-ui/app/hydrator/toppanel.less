@@ -168,6 +168,18 @@
          @media (max-width: @screen-xs-max) {
            display: none;
          }
+
+         my-toggle-switch-widget {
+           .ng-toggle-switch-container {
+              height: 18px;
+              .toggle-switch.off {
+                background-color: gray;
+              }
+              .switch-button {
+                height: 14px;
+              }
+           }
+         }
        }
        .pipeline-search-contianer {
           width: 25%;
@@ -581,7 +593,7 @@
        }
      }
      .action-buttons {
-       min-width: 430px;
+       min-width: 500px;
        .btn {
          &.ng-animate.ng-leave {
            display: none;
