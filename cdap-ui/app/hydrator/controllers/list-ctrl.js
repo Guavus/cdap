@@ -136,6 +136,10 @@ angular.module(PKG.name + '.feature.hydrator')
 
     vm.deleteAll = function () {
       let pipelines = vm.selectedPipeline();
+      if (pipelines.isSelectionEmpty) {
+        return;
+      }
+
       myLoadingService.showLoadingIcon()
         .then(function () {
           mySettings.get('hydratorDrafts')
@@ -403,7 +407,8 @@ angular.module(PKG.name + '.feature.hydrator')
     vm.selectedPipeline = () => {
       let pipelines = {
         draftList: [],
-        pipelineList: []
+        pipelineList: [],
+        isSelectionEmpty: true,
       };
       angular.forEach(vm.pipelineList, function (app) {
         if (app.selected) {
@@ -415,13 +420,21 @@ angular.module(PKG.name + '.feature.hydrator')
           }
         }
       });
+
+      if (pipelines.draftList.length>0 || pipelines.pipelineList.length>0) {
+        pipelines.isSelectionEmpty = false;
+      }
+
       return pipelines;
     };
 
     vm.exportPipelines = () => {
-      vm.isPipelineDownloadProgress = true;
       let reqData = vm.selectedPipeline();
+      if (reqData.isSelectionEmpty) {
+        return;
+      }
 
+      vm.isPipelineDownloadProgress = true;
       var exportReq = {
         method: 'POST',
         url:`/${$stateParams.namespace}/apps/export`,
