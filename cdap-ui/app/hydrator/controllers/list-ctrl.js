@@ -40,6 +40,7 @@ angular.module(PKG.name + '.feature.hydrator')
     vm.selectedPipelineType = 'All';
     vm.selectedTypePipelineCount = 0;
 
+    vm.isPipelineActionsDisable = true;
     vm.pipelineLimit = [10, 15, 20, 25, 30, 35, 40];
     vm.PAGE_SIZE = vm.pipelineLimit[0];
     vm.GLOBALS = GLOBALS;
@@ -386,14 +387,17 @@ angular.module(PKG.name + '.feature.hydrator')
     };
 
     vm.selectDeselectAll = () => {
-       vm.isSelectAll = !vm.isSelectAll;
+      vm.isSelectAll = !vm.isSelectAll;
       vm.filteredPipeline.map((app) => app['selected'] = vm.isSelectAll);
+
+      vm.isPipelineActionsDisable = vm.selectedPipeline().isSelectionEmpty;
     };
 
     vm.selectDeselectPipeline = (event, pipeline) => {
       event.stopPropagation();
       pipeline.selected = event.target.checked;
       vm.updateSelectAllStatus();
+      vm.isPipelineActionsDisable = vm.selectedPipeline().isSelectionEmpty;
     };
 
 

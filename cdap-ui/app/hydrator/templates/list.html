@@ -80,10 +80,25 @@
       </span>
     </div>
     <div class="pipeline-icons">
-      <i ng-if="ListController.pipelineList.length > 0" class="fa fa-refresh refresh-pipeline" title="Refresh pipeline list"
+      <!-- refresh pipeline icon -->
+      <i class="fa fa-refresh refresh-pipeline"
+          title="Refresh pipeline list"
           ng-click="ListController.refreshScreen()"></i>
-      <i ng-disabled="ListController.isPipelineDownloadProgress" ng-click="ListController.exportPipelines()" title="Export" class="fa fa-download export-btn" aria-hidden="true"></i>
-      <i ng-click="ListController.deleteAll()" class="fa fa-trash-o delete-all-button" aria-hidden="true" title="Delete Pipeline(s)"></i>
+
+      <!-- export pipeline icon -->
+      <i ng-disabled="ListController.isPipelineActionsDisable && ListController.isPipelineDownloadProgress"
+          ng-click="ListController.exportPipelines()"
+          title="Export" class="fa fa-download export-btn"
+          aria-hidden="true"
+          ng-class="{'disabled': ListController.isPipelineActionsDisable || ListController.isPipelineDownloadProgress}"></i>
+
+      <!-- delete pipeline icons -->
+      <i ng-disabled="ListController.isPipelineActionsDisable"
+          ng-click="ListController.deleteAll()"
+          class="fa fa-trash-o delete-all-button"
+          aria-hidden="true"
+          title="Delete Pipeline(s)"
+          ng-class="{'disabled': ListController.isPipelineActionsDisable}"></i>
     </div>
   </div>
   <cask-resource-center-button></cask-resource-center-button>
