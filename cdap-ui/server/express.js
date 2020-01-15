@@ -127,8 +127,8 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
   catch (e) { log.error('Favicon missing! Please run `gulp build`'); }
 
   app.use(compression());
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json({limit: "1gb"}));
+  app.use(bodyParser.urlencoded({ limit: "1gb", extended: true, parameterLimit:50000 }));
   app.use(cookieParser());
   app.use(function (err, req, res, next) {
     log.error(err);
