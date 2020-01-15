@@ -170,8 +170,9 @@
          }
        }
        .pipeline-search-contianer {
-          width: 30%;
+          width: 25%;
           float: left;
+          padding: 7px 10px 0px 0px;
         }
         .search-input {
           margin-top: 7px;
@@ -191,10 +192,10 @@
       .pipeline-actions {
         display: inline-block;
         margin: 0 3% 0 0px;
-        padding: 10px 15px;
+        padding: 10px 10px;
         border-left: 1px solid #ddd;
         height: inherit;
-        width: 58%;
+        width: 62%;
         .status-bubble {
           margin-right: 5px;
           &.status-green { color: @brand-success; }
@@ -215,8 +216,7 @@
         .pipeline-type-dropdown {
           display: flex;
           float: left;
-          margin-top: 5px;
-          margin-right: 2%;
+          margin: 5px 5px 0 0;
           button {
             display: flex;
             height: 30px;
@@ -230,6 +230,9 @@
           i {
             color: @grey-01;
           }
+          i {
+            margin-left: auto;
+          }
           .button-text {
             padding: 2px;
             font-weight: 500;
@@ -240,9 +243,6 @@
           }
           .caret{
             margin: 5px;
-          }
-          i {
-            margin: 1px;
           }
           .pipeline-status-dropdown-menu,
           .pipeline-limit-dropdown-menu,
@@ -273,11 +273,15 @@
           .delete-all-button,
           .export-btn,
           .refresh-pipeline {
-              padding: 12px;
-              border-radius: 24px;
-              background-color: #dbdbdb;
-              line-height: 0.8;
-              margin-right: 6px;
+            padding: 12px;
+            border-radius: 24px;
+            background-color: #dbdbdb;
+            line-height: 0.8;
+            margin-right: 6px;
+            &.disabled {
+              cursor: not-allowed;
+              opacity: 0.5;
+            }
           }
           .delete-all-button {
             color: @brand-danger;
