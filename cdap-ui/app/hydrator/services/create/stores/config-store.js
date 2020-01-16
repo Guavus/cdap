@@ -1036,15 +1036,18 @@ class HydratorPlusPlusConfigStore {
               type: 'success',
               content: `Draft ${config.name} saved successfully.`
             }]);
-            this.__defaultState = angular.copy(this.state);
-            this.emitChange();
           }
+          this.__defaultState = angular.copy(this.state);
+          this.emitChange();
         },
         err => {
-          this.HydratorPlusPlusConsoleActions.addMessage([{
-            type: 'error',
-            content: err
-          }]);
+          const check = viaAutoSave ? (!document.querySelector('.alert') ? true : false) : true;
+          if (check) {
+            this.HydratorPlusPlusConsoleActions.addMessage([{
+              type: 'error',
+              content: err
+            }]);
+          }
         }
       );
   }
