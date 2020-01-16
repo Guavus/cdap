@@ -32,4 +32,5 @@ export enum JIOConnectionType {
   FILE = "FILE",
   HIVESERVER2 = "HIVESERVER2",
   KAFKA = "KAFKA",
+  S3 = "S3",
 }
