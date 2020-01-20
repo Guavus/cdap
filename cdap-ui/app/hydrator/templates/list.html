@@ -119,7 +119,7 @@
               ng-click="ListController.goToPipelinePage(pipeline)">
             <td class="pipeline-select-checkbox"><input type="checkbox" name="name4" ng-click="ListController.selectDeselectPipeline($event, pipeline)" ng-model="pipeline.selected" /></td>
             <td class="pipeline-name" title="{{pipeline.description !== '' ?  pipeline.description : pipeline.name }}">
-              <a ng-if="::!pipeline.isDraft">
+              <a ui-sref="hydrator.detail({ pipelineId: pipeline.name })" ng-if="::!pipeline.isDraft">
                 {{::pipeline.name}}
               </a>
               <a ui-sref="hydrator.create({ draftId: pipeline.id, type:pipeline.artifactType })" ng-if="::pipeline.isDraft">

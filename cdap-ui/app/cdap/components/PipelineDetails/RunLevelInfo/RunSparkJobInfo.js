@@ -30,7 +30,7 @@ const mapStateToProps = (state) => {
 };
 
 const RunSparkJobInfo = ({ currentRun }) => {
-  const url = currentRun.hasOwnProperty('properties') && currentRun.properties.hasOwnProperty('yarnApplicationTrackingUrl.phase-1') ? currentRun.properties['yarnApplicationTrackingUrl.phase-1'] : '';
+  const url = currentRun && currentRun.hasOwnProperty('properties') && currentRun.properties.hasOwnProperty('yarnApplicationTrackingUrl.phase-1') ? currentRun.properties['yarnApplicationTrackingUrl.phase-1'] : '';
 
   const SparkUIBtnComp = () => (
     <div className='run-sparkui-btn'>
