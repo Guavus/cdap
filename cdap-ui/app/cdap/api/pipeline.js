@@ -34,7 +34,7 @@ export const MyPipelineApi = {
 
   getStatistics: apiCreator(dataSrc, 'GET', 'REQUEST', statsPath),
   getRunDetails: apiCreator(dataSrc, 'GET', 'REQUEST', `${programPath}/runs/:runid`),
-  getRuns: apiCreator(dataSrc, 'GET', 'REQUEST', `${programPath}/runs`),
+  getRuns: apiCreator(dataSrc, 'GET', 'REQUEST', `${programPath}/runs?limit=:runsCount`),
   pollRuns: apiCreator(dataSrc, 'GET', 'POLL', `${programPath}/runs`),
   getRunsCount: apiCreator(dataSrc, 'POST', 'REQUEST', `${runsCountPath}`),
   pollRunsCount: apiCreator(dataSrc, 'POST', 'POLL', `${runsCountPath}`),

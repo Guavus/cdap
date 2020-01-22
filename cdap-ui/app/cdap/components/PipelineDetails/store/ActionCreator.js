@@ -208,17 +208,19 @@ const pollRunsCount = ({appId, programType, programName: programId, namespace}) 
     programType,
     programId
   }];
-  return MyPipelineApi
-    .pollRunsCount({ namespace }, postBody)
-    .subscribe(runsCountArray => {
-      let runsCount = runsCountArray[0].runCount;
-      PipelineDetailStore.dispatch({
-        type: ACTIONS.SET_RUNS_COUNT,
-        payload: {
-          runsCount
-        }
-      });
+  let runsCount = MyPipelineApi.pollRunsCount({ namespace }, postBody);
+  runsCount.subscribe(runsCountArray => {
+    let runsCount = runsCountArray[0].runCount;
+    PipelineDetailStore.dispatch({
+      type: ACTIONS.SET_RUNS_COUNT,
+      payload: {
+        runsCount
+      }
     });
+  }, (err) => {
+    console.log(err);
+  });
+  return runsCount;
 };
 
 const pollRuns = (params) => {
