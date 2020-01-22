@@ -192,7 +192,15 @@ const getRunDetails = ({namespace, appId, programType, programName, runid}) => {
     });
 };
 
+const addProperty = (propertyValue, propertyName) => {
+  if (propertyValue === -1) {
+    return {};
+  }
+  return {[propertyName]: propertyValue};
+};
+
 const getRuns = (params) => {
+  params = Object.assign({}, params, addProperty(params.limit, 'limit'), addProperty(params.start, 'start'), addProperty(params.end, 'end'));
   let runsFetch = MyPipelineApi.getRuns(params);
   runsFetch.subscribe(runs => {
     setRuns(runs);

@@ -73,7 +73,7 @@
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu pipeline-limit-dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-body">
-          <li role="menuitem" ng-repeat="limit in ListController.pipelineLimit" value="{{limit}}" ng-click="ListController.PAGE_SIZE = limit">
+          <li role="menuitem" ng-repeat="limit in ListController.pipelineLimit" value="{{limit}}" ng-click="ListController.PAGE_SIZE = limit;ListController.goToPage();">
             <span>{{limit}}</span>
           </li>
         </ul>

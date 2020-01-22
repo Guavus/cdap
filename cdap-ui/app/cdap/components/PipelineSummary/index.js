@@ -105,7 +105,8 @@ export default class PipelineSummary extends Component {
             appId,
             programType: convertProgramToApi(programType),
             programId,
-            pipelineConfig
+            pipelineConfig,
+            limit: this.state.totalRunsCount
           });
         }
       }
@@ -262,7 +263,8 @@ export default class PipelineSummary extends Component {
       programId,
       pipelineConfig,
       start,
-      end
+      end,
+      limit: this.state.totalRunsCount
     });
   }
   renderTitleBar() {

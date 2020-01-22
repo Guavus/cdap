@@ -45,7 +45,7 @@ angular.module(PKG.name + '.feature.hydrator')
         appId: rPipelineDetail.name,
         programType,
         programName,
-        runsCount
+        limit: runsCount
       });
 
       runsFetch.subscribe(() => {

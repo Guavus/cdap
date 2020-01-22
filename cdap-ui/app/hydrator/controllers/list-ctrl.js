@@ -258,7 +258,7 @@ angular.module(PKG.name + '.feature.hydrator')
     vm.getCurrentVisiblePipelines = () => {
       return vm.pipelineList.slice(
         (vm.currentPage - 1) * vm.PAGE_SIZE,
-        ((vm.currentPage - 1) * vm.PAGE_SIZE) + 10
+        ((vm.currentPage - 1) * vm.PAGE_SIZE) + vm.PAGE_SIZE
       );
     };
 
