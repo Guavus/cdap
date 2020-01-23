@@ -122,10 +122,6 @@ export default class HistoryTab extends Component {
         });
   }
 
-  shouldComponentUpdate() {
-    return false;
-  }
-
   componentWillUnmount() {
     this.pollSubscriptions
       .forEach(subscription => {
