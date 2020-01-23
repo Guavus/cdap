@@ -26,6 +26,9 @@ import SortableTable from 'components/SortableTable';
 import T from 'i18n-react';
 import orderBy from 'lodash/orderBy';
 import StatusMapper from 'services/StatusMapper';
+import { pollRunsCount } from 'components/PipelineDetails/store/ActionCreator';
+import PipelineDetailStore from 'components/PipelineDetails/store';
+import { GLOBALS } from 'services/global-constants';
 
 require('./HistoryTab.scss');
 
@@ -58,7 +61,7 @@ export default class HistoryTab extends Component {
 
   pollSubscriptions = [];
 
-  componentWillMount() {
+  componentDidMount() {
     this.state
         .entity
         .programs
@@ -67,46 +70,60 @@ export default class HistoryTab extends Component {
           let programId = program.name;
           let appId = program.app;
           let namespace = NamespaceStore.getState().selectedNamespace;
-          this.pollSubscriptions.push(
-            MyProgramApi
-            .pollRuns({ namespace, programId, programType, appId})
-            .subscribe(res => {
-              let newRuns;
-              if (this.state.history) {
-                newRuns = res.filter(runRecord => {
-                  return !this.state.history.filter( existingRun => existingRun.runid === runRecord.runid).length;
-                });
-              } else {
-                newRuns = res;
-              }
-              let history = [...(this.state.history || [])];
-              history = history.map(runRecord => {
-                let runFromBackend = res.find(r => r.runid === runRecord.runid);
-                if (!runFromBackend) {
-                  return runRecord;
-                }
-                runRecord.status = runFromBackend.status;
-                runRecord.end = runRecord.end !== runFromBackend.end ? runFromBackend.end : runRecord.end;
-                return runRecord;
-              });
-              newRuns = newRuns.map( r => {
-                return Object.assign({}, r, {
-                  programName: programId,
-                  programType,
-                  appId
-                });
-              });
-              res = orderBy([
-                ...newRuns,
-                ...history,
-              ], ['start'], ['desc']);
+          let _pollRunsCount = pollRunsCount({
+            appId,
+            programType: programType === GLOBALS.etlDataPipeline ? 'Workflow' : 'Spark',
+            programName: programId,
+            namespace
+          });
+          _pollRunsCount.subscribe(() => {
+            let { runsCount } = PipelineDetailStore.getState();
+            this.pollSubscriptions.push(
+              MyProgramApi
+                .pollRuns({ namespace, programId, programType, appId, limit: (runsCount ? runsCount : 100) })
+                .subscribe(res => {
+                  let newRuns;
+                  if (this.state.history) {
+                    newRuns = res.filter(runRecord => {
+                      return !this.state.history.filter(existingRun => existingRun.runid === runRecord.runid).length;
+                    });
+                  } else {
+                    newRuns = res;
+                  }
+                  let history = [...(this.state.history || [])];
+                  history = history.map(runRecord => {
+                    let runFromBackend = res.find(r => r.runid === runRecord.runid);
+                    if (!runFromBackend) {
+                      return runRecord;
+                    }
+                    runRecord.status = runFromBackend.status;
+                    runRecord.end = runRecord.end !== runFromBackend.end ? runFromBackend.end : runRecord.end;
+                    return runRecord;
+                  });
+                  newRuns = newRuns.map(r => {
+                    return Object.assign({}, r, {
+                      programName: programId,
+                      programType,
+                      appId
+                    });
+                  });
+                  res = orderBy([
+                    ...newRuns,
+                    ...history,
+                  ], ['start'], ['desc']);
 
-              this.setState({
-                history: res
-              });
-            })
-          );
+                  this.setState({
+                    history: res
+                  });
+                  this.forceUpdate();
+                })
+            );
+          });
         });
+  }
+
+  shouldComponentUpdate() {
+    return false;
   }
 
   componentWillUnmount() {
