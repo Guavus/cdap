@@ -181,10 +181,10 @@ class HydratorPlusPlusTopPanelCtrl {
       this.$timeout.cancel(this.focusTimeout);
       this.$timeout.cancel(this.fetchMacrosTimeout);
     });
+
+  /* FOR AUTO SAVE */
+    this.autoSaveTimeInterval = null;
     this.autoSaveTimer = window.CaskCommon && window.CaskCommon.Theme && window.CaskCommon.Theme.autoSaveTimer ? window.CaskCommon.Theme.autoSaveTimer : 10000;
-    this.$interval(() => {
-      this.checkPipelineSaveOnAutoSave();
-    }, this.autoSaveTimer);
   }
 
   checkPipelineSaveOnAutoSave() {
@@ -199,6 +199,13 @@ class HydratorPlusPlusTopPanelCtrl {
   changeAutoSaveSwitch() {
     this.isAutoSave = !this.isAutoSave;
     this.checkPipelineSaveOnAutoSave();
+    if (this.isAutoSave) {
+      this.autoSaveTimeInterval = this.$interval(() => {
+        this.checkPipelineSaveOnAutoSave();
+      }, this.autoSaveTimer);
+    } else {
+      this.$interval.cancel(this.autoSaveTimeInterval);
+    }
   }
 
   setDefault() {
