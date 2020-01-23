@@ -23,6 +23,10 @@ import NamespaceStore from 'services/NamespaceStore';
 import {convertProgramToApi} from 'services/program-api-converter';
 import {Tooltip} from 'reactstrap';
 import T from 'i18n-react';
+import { pollRunsCount } from 'components/PipelineDetails/store/ActionCreator';
+import PipelineDetailStore from 'components/PipelineDetails/store';
+import { GLOBALS } from 'services/global-constants';
+
 
 export default class LogAction extends Component {
   constructor(props) {
@@ -40,18 +44,30 @@ export default class LogAction extends Component {
     if (this.state.runId) { return; }
     let namespace = NamespaceStore.getState().selectedNamespace;
 
-    this.pollRuns$ = MyProgramApi.pollRuns({
-      namespace,
+    let _pollRunsCount = pollRunsCount({
       appId: this.props.entity.applicationId,
-      programType: convertProgramToApi(this.props.entity.programType),
-      programId: this.props.entity.id
-    }).subscribe((res) => {
-      if (res.length > 0) {
-        this.setState({
-          runId: res[0].runid
-        });
-      }
+      programType: convertProgramToApi(this.props.entity.programType) === GLOBALS.etlDataPipeline ? 'Workflow' : 'Spark',
+      programName: this.props.entity.id,
+      namespace: namespace
     });
+    _pollRunsCount.subscribe(() => {
+      let { runsCount } = PipelineDetailStore.getState();
+      const limit = runsCount ? runsCount : 100;
+      this.pollRuns$ = MyProgramApi.pollRuns({
+        namespace,
+        appId: this.props.entity.applicationId,
+        programType: convertProgramToApi(this.props.entity.programType),
+        programId: this.props.entity.id,
+        limit
+      }).subscribe((res) => {
+        if (res.length > 0) {
+          this.setState({
+            runId: res[0].runid
+          });
+        }
+      });
+    })
+
   }
 
   componentWillUnmount() {

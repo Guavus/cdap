@@ -22,6 +22,9 @@ import NamespaceStore from 'services/NamespaceStore';
 import {convertProgramToApi} from 'services/program-api-converter';
 import StatusMapper from 'services/StatusMapper';
 import T from 'i18n-react';
+import { pollRunsCount } from 'components/PipelineDetails/store/ActionCreator';
+import PipelineDetailStore from 'components/PipelineDetails/store';
+import { GLOBALS } from 'services/global-constants';
 
 export default class ProgramMetrics extends Component {
   constructor(props) {
@@ -49,7 +52,16 @@ export default class ProgramMetrics extends Component {
     } else {
       this.runsApi = MyProgramApi.runs;
     }
-    this.programMetrics$ = this.runsApi(params)
+    let _pollRunsCount = pollRunsCount({
+      appId: params.appId,
+      programType: params.programType === GLOBALS.etlDataPipeline ? 'Workflow' : 'Spark',
+      programName: params.programId,
+      namespace: params.namespace
+    });
+    _pollRunsCount.subscribe(() => {
+      let { runsCount } = PipelineDetailStore.getState();
+      params['limit'] = runsCount ? runsCount : 100;
+      this.programMetrics$ = this.runsApi(params)
       .combineLatest(MyProgramApi.pollStatus(params))
       .subscribe((res) => {
         this.setState({
@@ -58,10 +70,13 @@ export default class ProgramMetrics extends Component {
           loading: false
         });
       });
+    })
   }
 
   componentWillUnmount() {
-    this.programMetrics$.unsubscribe();
+    if (this.programMetrics$) {
+      this.programMetrics$.unsubscribe();
+    }
   }
 
   render () {
