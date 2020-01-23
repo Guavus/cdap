@@ -62,15 +62,15 @@ export default class ProgramMetrics extends Component {
       let { runsCount } = PipelineDetailStore.getState();
       params['limit'] = runsCount ? runsCount : 100;
       this.programMetrics$ = this.runsApi(params)
-      .combineLatest(MyProgramApi.pollStatus(params))
-      .subscribe((res) => {
-        this.setState({
-          status: res[1].status,
-          numRuns: res[0].length,
-          loading: false
+        .combineLatest(MyProgramApi.pollStatus(params))
+        .subscribe((res) => {
+          this.setState({
+            status: res[1].status,
+            numRuns: res[0].length,
+            loading: false
+          });
         });
-      });
-    })
+    });
   }
 
   componentWillUnmount() {

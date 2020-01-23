@@ -66,8 +66,7 @@ export default class LogAction extends Component {
           });
         }
       });
-    })
-
+    });
   }
 
   componentWillUnmount() {
