@@ -87,6 +87,7 @@ interface IOnePoint0SpecJSON extends IThemeJSON {
     "batch-pipeline-connection"?: string[];
     "realtime-pipeline-connection"?: string[];
     "auto-save-timer"?: number;
+    "startstop-disable"?: string[]
   };
 }
 
@@ -182,6 +183,7 @@ interface IThemeObj {
   batchPipelineConnection?: string[];
   realtimePipelineConnection?: string[];
   autoSaveTimer?: number;
+  startstopDisable?: string[];
 }
 
 function getTheme(): IThemeObj {
@@ -353,6 +355,7 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
       batchPipelineConnection: [],
       realtimePipelineConnection: [],
       autoSaveTimer: 10000,
+      startstopDisable: [],
     };
     if (isNilOrEmpty(featuresJson)) {
       return features;
@@ -405,6 +408,9 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
     }
     if ('auto-save-timer' in featuresJson) {
       features.autoSaveTimer = featuresJson['auto-save-timer'];
+    }
+    if ('startstop-disable' in featuresJson) {
+      features.startstopDisable = featuresJson['startstop-disable'];
     }
     return features;
   }
