@@ -36,6 +36,7 @@
     "hub": true,
     "ingest-data": true,
     "add-namespace": true,
-    "auto-save-timer": 10000
+    "auto-save-timer": 10000,
+    "startstop-disable":["dataprep"]
   }
 }
