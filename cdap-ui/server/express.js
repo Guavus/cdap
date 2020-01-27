@@ -737,7 +737,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       '/v3'
     ].join('');
   }
-  function isAuthenticated(req) {
+  function isAuthenticated(req, res) {
     return new Promise(function(resolve) {
       if (!authAddress.enabled) {
         return resolve(true);
@@ -840,6 +840,9 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
           request({
               url: appDetailUrl.replace('export',pipeline),
               method: 'GET',
+              headers: {
+                authorization: 'Bearer ' + req.cookies['CDAP_Auth_Token']
+              }
             },
               function (nerr, nres, nbody) {
                 if (nerr || nres.statusCode !== 200) {
