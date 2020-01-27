@@ -23,61 +23,81 @@ const featureNames = Theme.featureNames;
 
 const tour = new GuidedTour();
 
+const PIPELINE_STEP = {
+  id: 'pipelines',
+  title: featureNames.pipelines,
+  text: [
+    T.translate(`${PREFIX}.Pipelines.text`, { featureName: featureNames.pipelines }).toString(),
+    '<img class="img-fluid" src="/cdap_assets/img/nux/Pipeline_NUX.png" />',
+  ],
+  attachTo: '#navbar-pipelines bottom',
+  shouldFocus: true,
+};
+
+const DATAPREP_STEP = {
+  id: 'preparation',
+  title: featureNames.dataPrep,
+  text: [
+    T.translate(`${PREFIX}.Preparation.text`, { featureName: featureNames.dataPrep }).toString(),
+    '<img class="img-fluid" src="/cdap_assets/img/nux/Dataprep_NUX.png" />',
+  ],
+  attachTo: '#navbar-preparation bottom',
+  shouldFocus: true,
+};
+
+const METADATA_STEP = {
+  id: 'metadata',
+  title: featureNames.metadata,
+  text: [
+    T.translate(`${PREFIX}.Metadata.text`, { featureName: featureNames.metadata }).toString(),
+    '<img class="img-fluid" src="/cdap_assets/img/nux/Metadata_NUX.png" />',
+  ],
+  attachTo: '#navbar-metadata bottom',
+  shouldFocus: true,
+};
+
+const HUB_STEP = {
+  id: 'hub',
+  title: featureNames.hub,
+  text: [
+    T.translate(`${PREFIX}.Hub.text`, {
+      productName: Theme.productName,
+      featureName: featureNames.hub,
+    }).toString(),
+    '<img class="img-fluid" src="/cdap_assets/img/nux/Hub_NUX.png" />',
+  ],
+  attachTo: '#navbar-hub bottom',
+  shouldFocus: true,
+};
+
 const steps: ITourStep[] = [
   {
     id: 'control-center',
     title: featureNames.controlCenter,
     text: [
-      T.translate(`${PREFIX}.ControlCenter.text`, {featureName: featureNames.controlCenter}).toString(),
+      T.translate(`${PREFIX}.ControlCenter.text`, { featureName: featureNames.controlCenter }).toString(),
       '<img class="img-fluid" src="/cdap_assets/img/nux/Control_Center_NUX.png" />',
     ],
     attachTo: '#navbar-control-center bottom',
     shouldFocus: true,
-  },
-  {
-    id: 'pipelines',
-    title: featureNames.pipelines,
-    text: [
-      T.translate(`${PREFIX}.Pipelines.text`, {featureName: featureNames.pipelines}).toString(),
-      '<img class="img-fluid" src="/cdap_assets/img/nux/Pipeline_NUX.png" />',
-    ],
-    attachTo: '#navbar-pipelines bottom',
-    shouldFocus: true,
-  },
-  {
-    id: 'preparation',
-    title: featureNames.dataPrep,
-    text: [
-      T.translate(`${PREFIX}.Preparation.text`, {featureName: featureNames.dataPrep}).toString(),
-      '<img class="img-fluid" src="/cdap_assets/img/nux/Dataprep_NUX.png" />',
-    ],
-    attachTo: '#navbar-preparation bottom',
-    shouldFocus: true,
-  },
-  {
-    id: 'metadata',
-    title: featureNames.metadata,
-    text: [
-      T.translate(`${PREFIX}.Metadata.text`, {featureName: featureNames.metadata}).toString(),
-      '<img class="img-fluid" src="/cdap_assets/img/nux/Metadata_NUX.png" />',
-    ],
-    attachTo: '#navbar-metadata bottom',
-    shouldFocus: true,
-  },
-  {
-    id: 'hub',
-    title: featureNames.hub,
-    text: [
-      T.translate(`${PREFIX}.Hub.text`, {
-        productName: Theme.productName,
-        featureName: featureNames.hub,
-      }).toString(),
-      '<img class="img-fluid" src="/cdap_assets/img/nux/Hub_NUX.png" />',
-    ],
-    attachTo: '#navbar-hub bottom',
-    shouldFocus: true,
-  },
+  }
 ];
+
+if (Theme) {
+  // sequence should be similar sequence in which tabs/modules are -> recommended
+  if (Theme.showPipelines) {
+    steps.push(PIPELINE_STEP);
+  }
+  if (Theme.showDataPrep) {
+    steps.push(DATAPREP_STEP);
+  }
+  if (Theme.showMetadata) {
+    steps.push(METADATA_STEP);
+  }
+  if (Theme.showHub) {
+    steps.push(HUB_STEP);
+  }
+}
 
 tour.addSteps(steps);
 
