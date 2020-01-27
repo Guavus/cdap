@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 
 import React, { Component } from 'react';
 import {MyProgramApi} from 'api/program';
-import {convertProgramToApi} from 'services/program-api-converter';
+import { convertProgramToApi, convertProgramToMetricParams } from 'services/program-api-converter';
 import NamespaceStore from 'services/NamespaceStore';
 import {humanReadableDate} from 'services/helpers';
 import LogAction from 'components/FastAction/LogAction';
@@ -28,7 +28,6 @@ import orderBy from 'lodash/orderBy';
 import StatusMapper from 'services/StatusMapper';
 import { pollRunsCount } from 'components/PipelineDetails/store/ActionCreator';
 import PipelineDetailStore from 'components/PipelineDetails/store';
-import { GLOBALS } from 'services/global-constants';
 
 require('./HistoryTab.scss');
 
@@ -72,7 +71,7 @@ export default class HistoryTab extends Component {
           let namespace = NamespaceStore.getState().selectedNamespace;
           let _pollRunsCount = pollRunsCount({
             appId,
-            programType: programType === GLOBALS.etlDataPipeline ? 'Workflow' : 'Spark',
+            programType: convertProgramToMetricParams(programType),
             programName: programId,
             namespace
           });
