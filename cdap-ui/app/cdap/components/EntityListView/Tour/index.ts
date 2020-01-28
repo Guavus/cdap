@@ -80,7 +80,7 @@ const steps: ITourStep[] = [
     ],
     attachTo: '#navbar-control-center bottom',
     shouldFocus: true,
-  }
+  },
 ];
 
 if (Theme) {
