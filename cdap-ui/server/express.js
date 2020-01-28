@@ -737,7 +737,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       '/v3'
     ].join('');
   }
-  function isAuthenticated(req, res) {
+  function isAuthenticated(req) {
     return new Promise(function(resolve) {
       if (!authAddress.enabled) {
         return resolve(true);
