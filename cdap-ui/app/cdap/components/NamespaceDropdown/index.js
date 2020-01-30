@@ -37,6 +37,8 @@ import {preventPropagation} from 'services/helpers';
 import { Theme } from 'services/ThemeHelper';
 import If from 'components/If';
 import classnames from 'classnames';
+import MyUserStoreApi from 'api/userstore';
+
 require('./NamespaceDropdown.scss');
 
 export default class NamespaceDropdown extends Component {
@@ -139,6 +141,7 @@ export default class NamespaceDropdown extends Component {
         defaultNamespace: clickedNamespace
       });
       localStorage.setItem('DefaultNamespace', clickedNamespace);
+      MyUserStoreApi.post(null, { selectedNamespace: clickedNamespace });
     }
   }
   getNumMetrics() {
