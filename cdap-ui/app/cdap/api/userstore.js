@@ -21,7 +21,8 @@ let dataSrc = DataSourceConfigurer.getInstance();
 let basepath = '/configuration/user';
 const MyUserStoreApi = {
   get: apiCreator(dataSrc, 'GET', 'REQUEST', basepath),
-  set: apiCreator(dataSrc, 'PUT', 'REQUEST', basepath)
+  set: apiCreator(dataSrc, 'PUT', 'REQUEST', basepath),
+  post: apiCreator(dataSrc, 'POST', 'REQUEST', basepath)
 };
 
 export default MyUserStoreApi;
