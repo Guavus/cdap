@@ -73,7 +73,7 @@ export default class FastActions extends Component {
   }
 
   isFastActionDisable(action, type) {
-    if (type === 'startStop' && action === 'stop' && Theme && Theme.stopDisable && Theme.stopDisable.indexOf(this.props.entity.applicationId) !== -1) {
+    if (type === 'startStop' && action === 'stop' && this.props.entity && Theme && Theme.stopDisable && Theme.stopDisable.indexOf(this.props.entity.applicationId) !== -1) {
       return true;
     }
     return false;
