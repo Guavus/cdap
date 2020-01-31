@@ -24,7 +24,6 @@ import {convertProgramToApi} from 'services/program-api-converter';
 import ConfirmationModal from 'components/ConfirmationModal';
 import IconSVG from 'components/IconSVG';
 import { Tooltip } from 'reactstrap';
-import { Theme } from 'services/ThemeHelper';
 import T from 'i18n-react';
 
 export default class StartStopAction extends Component {
@@ -154,7 +153,7 @@ export default class StartStopAction extends Component {
         iconClass = 'text-danger';
       }
     }
-    const isButtonDisable = this.startStop === 'stop' && (Theme && Theme.startstopDisable ? Theme.startstopDisable.indexOf(this.params.appId) !== -1 : false);
+    const isButtonDisable = this.props.isActionDisable(this.startStop, this.props.type);
 
     return (
       <span className="btn btn-secondary btn-sm">
@@ -217,5 +216,7 @@ StartStopAction.propTypes = {
     applicationId: PropTypes.string.isRequired,
     programType: PropTypes.string.isRequired
   }),
-  onSuccess: PropTypes.func
+  onSuccess: PropTypes.func,
+  isActionDisable: PropTypes.func,
+  type: PropTypes.string
 };
