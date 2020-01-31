@@ -20,6 +20,7 @@ import React, { Component } from 'react';
 import FastAction from 'components/FastAction';
 import {objectQuery} from 'services/helpers';
 import isNil from 'lodash/isNil';
+import { Theme } from 'services/ThemeHelper';
 
 export default class FastActions extends Component {
   constructor(props) {
@@ -71,6 +72,13 @@ export default class FastActions extends Component {
     }
   }
 
+  isFastActionDisable(action, type) {
+    if (type === 'startStop' && action === 'stop' && Theme && Theme.stopDisable && Theme.stopDisable.indexOf(this.props.entity.applicationId) !== -1) {
+      return true;
+    }
+    return false;
+  }
+
   render () {
     const fastActions = this.listOfFastActions();
     let className = this.props.className || 'text-xs-center';
@@ -86,6 +94,7 @@ export default class FastActions extends Component {
                   entity={this.props.entity}
                   opened={true}
                   onSuccess={this.onSuccess.bind(this, action)}
+                  isActionDisable={this.isFastActionDisable.bind(this)}
                   argsToAction={isNil(objectQuery(this.props.argsToActions, action)) ? {} : this.props.argsToActions[action]}
                 />
               );
@@ -96,6 +105,7 @@ export default class FastActions extends Component {
                   key={action}
                   type={action}
                   entity={this.props.entity}
+                  isActionDisable={this.isFastActionDisable.bind(this)}
                   onSuccess={this.onSuccess.bind(this, action)}
                   argsToAction={isNil(objectQuery(this.props.argsToActions, action)) ? {} : this.props.argsToActions[action]}
                 />

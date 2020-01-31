@@ -58,7 +58,9 @@ export default class FastAction extends Component {
       case 'startStop':
         return (
           <StartStopAction
+            isActionDisable={this.props.isActionDisable}
             entity={this.props.entity}
+            type={type}
             onSuccess={this.props.onSuccess}
             argsToAction={objectQuery(this.props.argsToAction)}
           />
@@ -122,5 +124,6 @@ FastAction.propTypes = {
   entity: PropTypes.object,
   onSuccess: PropTypes.func,
   opened: PropTypes.bool,
-  argsToAction: PropTypes.object
+  argsToAction: PropTypes.object,
+  isActionDisable: PropTypes.func,
 };
