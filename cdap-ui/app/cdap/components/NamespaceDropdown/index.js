@@ -141,7 +141,7 @@ export default class NamespaceDropdown extends Component {
         defaultNamespace: clickedNamespace
       });
       localStorage.setItem('DefaultNamespace', clickedNamespace);
-      MyUserStoreApi.post(null, { selectedNamespace: clickedNamespace });
+      MyUserStoreApi.post(null, { favouriteNamespace: clickedNamespace });
     }
   }
   getNumMetrics() {

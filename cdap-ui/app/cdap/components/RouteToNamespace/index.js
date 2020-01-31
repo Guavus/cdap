@@ -20,6 +20,7 @@ import NamespaceStore from 'services/NamespaceStore';
 import {Redirect} from 'react-router-dom';
 import MyUserStoreApi from 'api/userstore';
 import {objectQuery} from 'services/helpers';
+import isEmpty from 'lodash/isEmpty';
 
 export default class RouteToNamespace extends Component {
   constructor(props) {
@@ -58,8 +59,11 @@ export default class RouteToNamespace extends Component {
 
     MyUserStoreApi.get()
     .subscribe((res) => {
-      const prop = objectQuery(res, 'property', 'selectedNamespace');
-      const namespace = prop === undefined ? 'default' : prop;
+      const prop = objectQuery(res, 'property', 'favouriteNamespace');
+      const namespace = isEmpty(prop) ? 'default' : prop;
+      if (isEmpty(prop)) {
+        MyUserStoreApi.post(null, { favouriteNamespace: '' });
+      }
       const isNamespaceExist = find(list, { name: namespace }) !== undefined;
       // Check #1
       if (!selectedNamespace) {
