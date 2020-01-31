@@ -73,6 +73,7 @@ $container-padding: 0 30px;
   .pipeline-modeless-content {
     display: flex;
     padding: $container-padding 30px;
+    max-height: 438px;
   }
   .cask-configurable-tab {
     height: 100%;
