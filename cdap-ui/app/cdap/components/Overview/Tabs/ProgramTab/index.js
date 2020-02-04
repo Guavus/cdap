@@ -22,7 +22,7 @@ import isNil from 'lodash/isNil';
 import T from 'i18n-react';
 import {MyProgramApi} from 'api/program';
 import NamespaceStore from 'services/NamespaceStore';
-import { convertProgramToApi, convertProgramToMetricParams } from 'services/program-api-converter';
+import { convertProgramToApi } from 'services/program-api-converter';
 import ViewSwitch from 'components/ViewSwitch';
 import ProgramCards from 'components/ProgramCards';
 import ProgramTable from 'components/ProgramTable';
@@ -71,7 +71,7 @@ export default class ProgramsTab extends Component {
       };
       let _pollRunsCount = pollRunsCount({
         appId: params.appId,
-        programType: convertProgramToMetricParams(params.programType),
+        programType: program.type,
         programName: params.programId,
         namespace: params.namespace
       });
