@@ -49,7 +49,8 @@ export default class RouteToNamespace extends Component {
     if (!list || list.length === 0) { return; }
 
     /**
-     * 1. Check if there is a selected namespace from backend, if not,
+     * 1. Check if there is a favouriteNamespace from backend, if not,
+     * 2. Set "default" as namesapce, if "default" namespace not present
      * 2. Check if localStorage has a 'DefaultNamespace' set by the user, if not,
      * 3. Take first one from the list of namespaces from backend.
      **/
@@ -61,10 +62,11 @@ export default class RouteToNamespace extends Component {
     .subscribe((res) => {
       const prop = objectQuery(res, 'property', 'favouriteNamespace');
       const namespace = isEmpty(prop) ? 'default' : prop;
-      if (isEmpty(prop)) {
+      const isNamespaceExist = find(list, { name: namespace }) !== undefined;
+
+      if (!isEmpty(prop) && !isNamespaceExist) {
         MyUserStoreApi.post(null, { favouriteNamespace: '' });
       }
-      const isNamespaceExist = find(list, { name: namespace }) !== undefined;
       // Check #1
       if (!selectedNamespace) {
         selectedNamespace = this.findNamespace(list,( isNamespaceExist ? namespace : 'default'));
