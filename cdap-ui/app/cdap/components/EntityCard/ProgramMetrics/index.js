@@ -19,11 +19,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {MyProgramApi} from 'api/program';
 import NamespaceStore from 'services/NamespaceStore';
-import {convertProgramToApi, convertProgramToMetricParams} from 'services/program-api-converter';
+import {convertProgramToApi} from 'services/program-api-converter';
 import StatusMapper from 'services/StatusMapper';
 import T from 'i18n-react';
 import { pollRunsCount } from 'components/PipelineDetails/store/ActionCreator';
 import PipelineDetailStore from 'components/PipelineDetails/store';
+import { GLOBALS } from 'services/global-constants';
 
 export default class ProgramMetrics extends Component {
   constructor(props) {
@@ -53,7 +54,7 @@ export default class ProgramMetrics extends Component {
     }
     let _pollRunsCount = pollRunsCount({
       appId: params.appId,
-      programType: convertProgramToMetricParams(params.programType),
+      programType: params.programType === GLOBALS.etlDataPipeline ? 'Workflow' : 'Spark',
       programName: params.programId,
       namespace: params.namespace
     });

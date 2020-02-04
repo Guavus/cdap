@@ -22,13 +22,14 @@ import isNil from 'lodash/isNil';
 import T from 'i18n-react';
 import {MyProgramApi} from 'api/program';
 import NamespaceStore from 'services/NamespaceStore';
-import { convertProgramToApi, convertProgramToMetricParams } from 'services/program-api-converter';
+import {convertProgramToApi} from 'services/program-api-converter';
 import ViewSwitch from 'components/ViewSwitch';
 import ProgramCards from 'components/ProgramCards';
 import ProgramTable from 'components/ProgramTable';
 import isEmpty from 'lodash/isEmpty';
 import { pollRunsCount } from 'components/PipelineDetails/store/ActionCreator';
 import PipelineDetailStore from 'components/PipelineDetails/store';
+import { GLOBALS } from 'services/global-constants';
 require('./ProgramTab.scss');
 
 export default class ProgramsTab extends Component {
@@ -71,7 +72,7 @@ export default class ProgramsTab extends Component {
       };
       let _pollRunsCount = pollRunsCount({
         appId: params.appId,
-        programType: convertProgramToMetricParams(params.programType),
+        programType: params.programType === GLOBALS.etlDataPipeline ? 'Workflow' : 'Spark',
         programName: params.programId,
         namespace: params.namespace
       });
