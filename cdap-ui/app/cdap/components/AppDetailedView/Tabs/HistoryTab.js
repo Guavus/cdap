@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 
 import React, { Component } from 'react';
 import {MyProgramApi} from 'api/program';
-import { convertProgramToApi, convertProgramToMetricParams } from 'services/program-api-converter';
+import { convertProgramToApi } from 'services/program-api-converter';
 import NamespaceStore from 'services/NamespaceStore';
 import {humanReadableDate} from 'services/helpers';
 import LogAction from 'components/FastAction/LogAction';
@@ -71,7 +71,7 @@ export default class HistoryTab extends Component {
           let namespace = NamespaceStore.getState().selectedNamespace;
           let _pollRunsCount = pollRunsCount({
             appId,
-            programType: convertProgramToMetricParams(programType),
+            programType: program.type,
             programName: programId,
             namespace
           });

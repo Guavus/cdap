@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import IconSVG from 'components/IconSVG';
 import {MyProgramApi} from 'api/program';
 import NamespaceStore from 'services/NamespaceStore';
-import { convertProgramToApi, convertProgramToMetricParams } from 'services/program-api-converter';
+import { convertProgramToApi } from 'services/program-api-converter';
 import {Tooltip} from 'reactstrap';
 import T from 'i18n-react';
 import { pollRunsCount } from 'components/PipelineDetails/store/ActionCreator';
@@ -44,7 +44,7 @@ export default class LogAction extends Component {
 
     let _pollRunsCount = pollRunsCount({
       appId: this.props.entity.applicationId,
-      programType: convertProgramToMetricParams(convertProgramToApi(this.props.entity.programType)),
+      programType: this.props.entity.programType,
       programName: this.props.entity.id,
       namespace: namespace
     });
