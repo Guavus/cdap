@@ -65,7 +65,8 @@ public final class LocalStreamFileJanitorService extends AbstractService impleme
         LOG.debug("Execute stream file cleanup.");
 
         try {
-          janitor.cleanAll();
+          // Commenting out cleanup of stream as streams are depreceated and cleanup was generating exceptions
+          //janitor.cleanAll();
           LOG.debug("Completed stream file cleanup.");
         } catch (Throwable e) {
           LOG.warn("Failed to cleanup stream files.", e);

@@ -114,32 +114,39 @@ public class SparkCredentialsUpdater extends AbstractIdleService implements Runn
       // Write to the next generation file. It's ok to skip some generation if the write failed.
       generation++;
 
-      Location credentialsFile = credentialsDir.append(fileNamePrefix + SPARK_YARN_CREDS_COUNTER_DELIM + generation);
+      Credentials credentials = credentialsSupplier.get();
+      // Use the same logic as the Spark executor to calculate the update time.
+      nextUpdateTime = getNextUpdateDelay(credentials);
+      long now = System.currentTimeMillis();
+      // Adding 1 minute delay for Spark credential updater to pick up new tokens
+      long timeOfNextUpdate = now + nextUpdateTime + TimeUnit.MINUTES.toMillis(1);
+
+      Location credentialsFile = credentialsDir.append(
+          fileNamePrefix + SPARK_YARN_CREDS_COUNTER_DELIM + timeOfNextUpdate + 
+          SPARK_YARN_CREDS_COUNTER_DELIM + generation);
+     
+      //Location credentialsFile = credentialsDir.append(fileNamePrefix + SPARK_YARN_CREDS_COUNTER_DELIM + generation);
       Location tempFile = credentialsDir.append(credentialsFile.getName() + SPARK_YARN_CREDS_TEMP_EXTENSION);
 
       // Writes the credentials to temp location, then rename to the final one
-      Credentials credentials = credentialsSupplier.get();
       try (DataOutputStream os = new DataOutputStream(tempFile.getOutputStream("600"))) {
         credentials.writeTokenStorageToStream(os);
       }
 
-      if (!credentialsFile.equals(tempFile.renameTo(credentialsFile))) {
+      if (tempFile.renameTo(credentialsFile) == null) {
         throw new IOException("Failed to rename from " + tempFile + " to " + credentialsFile);
       }
 
       LOG.debug("Credentials written to {}", credentialsFile);
 
       // Schedule the next update.
-      // Use the same logic as the Spark executor to calculate the update time.
-      nextUpdateTime = getNextUpdateDelay(credentials);
-
       LOG.debug("Next credentials refresh at {}ms later", nextUpdateTime);
       scheduler.schedule(this, nextUpdateTime, TimeUnit.MILLISECONDS);
       cleanup();
 
     } catch (Exception e) {
       // Retry time is the min(1 minute, update interval)
-      long retryDelay = Math.min(60000, nextUpdateTime);
+      long retryDelay = Math.min(TimeUnit.MINUTES.toMillis(1), nextUpdateTime);
       LOG.warn("Exception raised when saving credentials. Retry in {}ms", retryDelay, e);
       scheduler.schedule(this, retryDelay, TimeUnit.MILLISECONDS);
     }
@@ -157,7 +164,8 @@ public class SparkCredentialsUpdater extends AbstractIdleService implements Runn
           identifier.readFields(input);
 
           // speed up by 2 seconds to account for any time race between driver and executor
-          return Math.max(0L, (long) (identifier.getIssueDate() + 0.8 * updateIntervalMs) - now - 2000);
+          return Math.max(TimeUnit.MINUTES.toMillis(1),
+              (long) (identifier.getIssueDate() + 0.8 * updateIntervalMs) - now - 2000);
         }
       }
     }
