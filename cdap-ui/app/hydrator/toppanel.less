@@ -326,8 +326,8 @@
 
       @media (max-width: 1095px) {
         .pipeline-type-button {
-          min-width: 165px !important;
-          max-width: 165px;
+          min-width: 135px !important;
+          max-width: 135px;
           .button-text {
             white-space: nowrap;
             overflow: hidden;
@@ -335,19 +335,31 @@
           }
         }
       }
-      @media (max-width: 1095px) {
-        .pipeline-type-button {
-          min-width: 135px !important;
-          max-width: 135px;
-        }
-      }
       @media (max-width: 940px) {
-        .pipeline-actions {
-          overflow-x: scroll;
-        }
         .pipeline-icons {
           float: none !important;
           display: flex;
+        }
+      }
+      @media (max-width: 900px) {
+        .pipeline-status-button {
+          min-width: 100px !important;
+          max-width: 100px;
+          .button-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+      @media (max-width: 800px) {
+        .pipeline-icons {
+          padding: 16px 10px !important;
+          .delete-all-button,
+          .export-btn,
+          .refresh-pipeline {
+            padding: 7px !important;
+          }
         }
       }
      }
