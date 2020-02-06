@@ -300,6 +300,47 @@
           }
         }
       }
+      @media (max-width: 1268px) {
+        .pipeline-actions {
+          padding: 0px;
+          width: 57%;
+          .pipeline-status-dropdown,
+          .pipeline-limit-Dropdown,
+          .pipeline-type-dropdown {
+            display: block;
+            height: 60px;
+            line-height: 0;
+            padding: 0px 0px 5px 5px;
+            .filter-label {
+              font-size: 10px;
+            }
+            .button-text {
+              padding-bottom: 6px;
+            }
+          }
+          .pipeline-icons{
+            padding: 10px 10px;
+          }
+        }
+      }
+
+      @media (max-width: 1095px) {
+        .pipeline-type-button {
+          min-width: 165px !important;
+          max-width: 165px;
+          .button-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+      @media (max-width: 1095px) {
+        .pipeline-type-button {
+          min-width: 135px !important;
+          max-width: 135px;
+        }
+      }
      }
      .toppanel-tooltip {
        &.in { opacity: 1; }
