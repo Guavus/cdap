@@ -935,7 +935,7 @@ features:
               sheetNameInputPlaceholder: Sheet name
               sheetNameLabel: Sheet name
               sheetNumberLabel: Sheet number
-              strictDatatype: Set strict datatype
+              useExcelDatatypes: Use Excel Datatypes
           FIXEDLENGTH:
             fieldLabel: Column widths
             label: Fixed length
