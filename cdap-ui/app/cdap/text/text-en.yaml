@@ -935,6 +935,7 @@ features:
               sheetNameInputPlaceholder: Sheet name
               sheetNameLabel: Sheet name
               sheetNumberLabel: Sheet number
+              strictDatatype: Set strict datatype
           FIXEDLENGTH:
             fieldLabel: Column widths
             label: Fixed length

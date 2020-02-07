@@ -32,13 +32,15 @@ export default class ExcelModal extends Component {
       sheetSource: 'sheetnumber',
       sheetName: null,
       sheetNumber: 0,
-      firstRowHeader: false
+      firstRowHeader: false,
+      strictDatatype: false
     };
     this.numberTextBox = null;
     this.onSheetNumberChange = this.onSheetNumberChange.bind(this);
     this.onSheetNameChange = this.onSheetNameChange.bind(this);
     this.onSheetSourceChange = this.onSheetSourceChange.bind(this);
     this.toggleSetFirstRow = this.toggleSetFirstRow.bind(this);
+    this.toggleStrictDatatype = this.toggleStrictDatatype.bind(this);
     this.isApplyDisabled = this.isApplyDisabled.bind(this);
     this.applyDirective = this.applyDirective.bind(this);
   }
@@ -90,17 +92,21 @@ export default class ExcelModal extends Component {
     this.setState({firstRowHeader: !this.state.firstRowHeader});
   }
 
+  toggleStrictDatatype() {
+    this.setState({strictDatatype: !this.state.strictDatatype});
+  }
+
   applyDirective() {
     if (this.isApplyDisabled()) {
       return;
     }
     if (this.state.sheetSource === 'sheetnumber') {
-      this.props.onApply(`'${this.state.sheetNumber.toString()}' ${this.state.firstRowHeader}`);
+      this.props.onApply(`'${this.state.sheetNumber.toString()}' ${this.state.firstRowHeader} ${this.state.strictDatatype}`);
       this.props.toggle();
       return;
     }
     if (this.state.sheetSource === 'sheetname') {
-      this.props.onApply(`'${this.state.sheetName}' ${this.state.firstRowHeader}`);
+      this.props.onApply(`'${this.state.sheetName}' ${this.state.firstRowHeader} ${this.state.strictDatatype}`);
       this.props.toggle();
       return;
     }
@@ -199,6 +205,21 @@ export default class ExcelModal extends Component {
               />
               <span>
                 {T.translate(`${PREFIX}.modal.firstRowHeader`)}
+              </span>
+            </span>
+          </div>
+          <div className="optional-config">
+            <span
+              onClick={this.toggleStrictDatatype}
+            >
+              <span
+                className={classnames('fa', {
+                  'fa-square-o': !this.state.strictDatatype,
+                  'fa-check-square': this.state.strictDatatype
+                })}
+              />
+              <span>
+                {T.translate(`${PREFIX}.modal.strictDatatype`)}
               </span>
             </span>
           </div>
