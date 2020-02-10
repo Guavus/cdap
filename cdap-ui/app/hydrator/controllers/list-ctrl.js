@@ -452,7 +452,7 @@ angular.module(PKG.name + '.feature.hydrator')
           const dummyElement = document.createElement('a');
           dummyElement.style.display = 'none';
           dummyElement.href = url;
-          dummyElement.download = 'piplines.zip';
+          dummyElement.download = 'pipelines.zip';
           document.body.appendChild(dummyElement);
           dummyElement.click();
           document.body.removeChild(dummyElement);
