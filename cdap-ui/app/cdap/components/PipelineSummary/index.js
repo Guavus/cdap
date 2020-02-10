@@ -213,7 +213,7 @@ export default class PipelineSummary extends Component {
         const getStartAndEnd = () => {
           let start, end;
           // Will happen if chosen 'Since Inception' as UI doesn't know a start and end beforehand.
-          if (isNil(this.state.start) || isNil(this.state.end)) {
+          if ((isNil(this.state.start) || isNil(this.state.end)) && runs.length > 0) {
             end = runs[0].starting;
             start = runs[runs.length - 1].starting;
           }
