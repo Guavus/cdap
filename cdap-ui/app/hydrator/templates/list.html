@@ -94,11 +94,15 @@
 
       <!-- delete pipeline icons -->
       <i ng-disabled="ListController.isPipelineActionsDisable"
-          ng-click="ListController.deleteAll()"
           class="fa fa-trash-o delete-all-button"
           aria-hidden="true"
           title="Delete Pipeline(s)"
-          ng-class="{'disabled': ListController.isPipelineActionsDisable}"></i>
+          ng-class="{'disabled': ListController.isPipelineActionsDisable}"
+
+          ng-click="caskConfirm(); $event.stopPropagation();"
+          cask-confirmable="ListController.deleteAll()"
+          confirmable-modal-class="hydrator-modal center"
+          data-confirmable-content="Are you sure you want to delete '<strong>{{ ListController.selectedPipeline().totalSelectedPipeline }}</strong>' pipelines?"></i>
     </div>
   </div>
   <cask-resource-center-button></cask-resource-center-button>
