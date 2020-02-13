@@ -87,7 +87,7 @@ export default class DirectivesTab extends Component {
     let workspaceId = state.workspaceId,
         directives = state.directives;
 
-    let data = directives.join('\n'),
+    let data = directives.join('\r\n'),
         filename = `${workspaceId}-directives.txt`;
 
     fileDownload(data, filename);
