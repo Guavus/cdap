@@ -87,7 +87,8 @@ interface IOnePoint0SpecJSON extends IThemeJSON {
     "batch-pipeline-connection"?: string[];
     "realtime-pipeline-connection"?: string[];
     "auto-save-timer"?: number;
-    "stop-disable"?: string[]
+    "stop-disable"?: string[];
+    "dataprep-insights"?: boolean;
   };
 }
 
@@ -184,6 +185,7 @@ interface IThemeObj {
   realtimePipelineConnection?: string[];
   autoSaveTimer?: number;
   stopDisable?: string[];
+  showDataprepInsight?: boolean;
 }
 
 function getTheme(): IThemeObj {
@@ -356,6 +358,7 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
       realtimePipelineConnection: [],
       autoSaveTimer: 10000,
       stopDisable: [],
+      showDataprepInsight: true,
     };
     if (isNilOrEmpty(featuresJson)) {
       return features;
@@ -411,6 +414,9 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
     }
     if ('stop-disable' in featuresJson) {
       features.stopDisable = featuresJson['stop-disable'];
+    }
+    if ('dataprep-insights' in featuresJson) {
+      features.showDataprepInsight = featuresJson['dataprep-insights'];
     }
     return features;
   }

@@ -29,6 +29,9 @@ import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import DataPrepSidePanel from 'components/DataPrep/DataPrepSidePanel';
 import classnames from 'classnames';
 import T from 'i18n-react';
+import { Theme } from 'services/ThemeHelper';
+import If from 'components/If';
+
 require('./DataPrepContentWrapper.scss');
 
 const DataPrepVisualization = Loadable({
@@ -66,14 +69,16 @@ function ContentSwitch({onSwitchChange, activeTab}) {
       >
         {T.translate(`${PREFIX}.Tabs.dataprep`)}
       </div>
-      <div
-        className={classnames("switch", {
-          'active': activeTab === 'viz'
-        })}
-        onClick={onSwitchChange.bind(null, 'viz')}
-      >
-      {T.translate(`${PREFIX}.Tabs.dataviz`)}
-      </div>
+      <If condition={Theme.showDataprepInsight === true}>
+        <div
+          className={classnames("switch", {
+            'active': activeTab === 'viz'
+          })}
+          onClick={onSwitchChange.bind(null, 'viz')}
+        >
+        {T.translate(`${PREFIX}.Tabs.dataviz`)}
+        </div>
+      </If>
     </div>
   );
 }
