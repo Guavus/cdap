@@ -415,7 +415,7 @@ function parse1Point0Spec(themeJSON: IOnePoint0SpecJSON): IThemeObj {
     if ('stop-disable' in featuresJson) {
       features.stopDisable = featuresJson['stop-disable'];
     }
-    if ('dataprep-insights' in featuresJson) {
+    if ('dataprep-insights' in featuresJson && isBoolean(featuresJson['dataprep-insights'])) {
       features.showDataprepInsight = featuresJson['dataprep-insights'];
     }
     return features;
