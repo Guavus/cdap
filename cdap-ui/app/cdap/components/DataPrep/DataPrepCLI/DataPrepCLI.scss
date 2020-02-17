@@ -21,10 +21,11 @@ $cli-font: "Courier New", Courier, monospace;
 
 .dataprep-container {
   .dataprep-cli {
-    bottom: 54px;
+    bottom: 0px;
     height: 30px;
     width: 100%;
     border-top: 1px solid #cccccc;
+    position: relative;
 
     .error-bar {
       background-color: $alert-danger-bg;
