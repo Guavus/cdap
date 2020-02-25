@@ -23,7 +23,6 @@ angular.module(PKG.name + '.feature.hydrator')
     $interval, moment, MyPipelineStatusMapper,
     myPipelineCommonApi, PROGRAM_STATUSES) {
     var vm = this;
-    vm.filteredPipeline = [];
     vm.$interval = $interval;
     vm.moment = moment;
     vm.pipelineList = [];
