@@ -76,6 +76,8 @@ angular.module(PKG.name + '.commons')
 
       displayName = displayName || myRemoveCamelCase(plugin.name);
 
+      plugin.displayName = displayName;
+
       return displayName;
     };
 

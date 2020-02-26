@@ -52,7 +52,7 @@
 
           <!-- ICON VIEW -->
           <div ng-if="MySidePanel.view === 'icon'"
-               ng-repeat="plugin in group.filtered = (group.plugins | myMultiKeySearch: ['name', 'label']: MySidePanel.searchText | orderBy: 'pluginTemplate || name') track by $index"
+               ng-repeat="plugin in group.filtered = (group.plugins | myMultiKeySearch: ['name', 'label', 'displayName']: MySidePanel.searchText | orderBy: 'pluginTemplate || name') track by $index"
                class="plugin-item {{plugin.nodeClass}}"
                ng-class="{'hovered': plugin.hovering}"
                my-popover
@@ -86,7 +86,7 @@
 
           <!-- LIST VIEW -->
           <div ng-if="MySidePanel.view === 'list'"
-               ng-repeat="plugin in group.filtered = (group.plugins | myMultiKeySearch: ['name', 'label']: MySidePanel.searchText | orderBy: 'pluginTemplate || name') track by $index"
+               ng-repeat="plugin in group.filtered = (group.plugins | myMultiKeySearch: ['name', 'label', 'displayName']: MySidePanel.searchText | orderBy: 'pluginTemplate || name') track by $index"
                class="plugin-item {{plugin.nodeClass}}"
                ng-click="MySidePanel.onItemClicked($event, plugin)">
             <div class="text-center fa {{plugin.icon}}"></div>
