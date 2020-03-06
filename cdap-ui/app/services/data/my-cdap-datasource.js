@@ -14,7 +14,7 @@
  * the License.
  */
 angular.module(PKG.name + '.services')
-  .factory('MyCDAPDataSource', function(MyDataSource, $rootScope, myCdapUrl) {
+  .factory('MyCDAPDataSource', function(MyDataSource, $rootScope, myCdapUrl, MyAuthUser, $cookies) {
     function MyCDAPDataSource(scope) {
       scope = scope || $rootScope.$new();
 
@@ -25,10 +25,33 @@ angular.module(PKG.name + '.services')
       this.MyDataSource = new MyDataSource(scope);
     }
 
+    MyCDAPDataSource.prototype.validateToken = function() {
+    if ($rootScope.currentUser && $rootScope.currentUser.token) {
+      var currentToken =  $cookies.get('CDAP_Auth_Token');
+      if (currentToken !== $rootScope.currentUser.token) {
+        this.updateCredentialsFromCookie();
+      }
+    }
+   };
+
+   MyCDAPDataSource.prototype.updateCredentialsFromCookie = function() {
+    if ($cookies.get('CDAP_Auth_Token') && $cookies.get('CDAP_Auth_User')) {
+      var user = new MyAuthUser({
+        access_token: $cookies.get('CDAP_Auth_Token'),
+        username: $cookies.get('CDAP_Auth_User')
+      });
+
+
+      $rootScope.currentUser = user;
+    }
+  };
+
+
     MyCDAPDataSource.prototype.poll = function (resource, cb, errorCb) {
 
       // FIXME: There is a circular dependency and that is why
       // myAuth.isAuthenticated is not used. There should be a better way to do this.
+      this.validateToken();
       if ($rootScope.currentUser && $rootScope.currentUser.token) {
         resource.headers = {
           Authorization: 'Bearer '+ $rootScope.currentUser.token
@@ -52,6 +75,7 @@ angular.module(PKG.name + '.services')
     };
 
     MyCDAPDataSource.prototype.request = function(resource, cb, errorCb) {
+      this.validateToken();
       if ($rootScope.currentUser && $rootScope.currentUser.token) {
         resource.headers = {
           Authorization: 'Bearer '+ $rootScope.currentUser.token

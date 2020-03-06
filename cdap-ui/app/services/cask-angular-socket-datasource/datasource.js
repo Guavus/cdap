@@ -58,7 +58,7 @@ var socketDataSource = angular.module(PKG.name+'.services');
 
     this.defaultPollInterval = 10;
 
-    this.$get = function($rootScope, caskWindowManager, mySocket, MYSOCKET_EVENT, $q, MyPromise, uuid, EventPipe) {
+    this.$get = function($rootScope, caskWindowManager, mySocket, MYSOCKET_EVENT, $q, MyPromise, uuid, EventPipe, $cookies) {
 
       var instances = {}; // keyed by scopeid
 
@@ -66,7 +66,7 @@ var socketDataSource = angular.module(PKG.name+'.services');
        * Start polling of the resource - sends the action 'poll-start' to
        * the node backend.
        */
-      function _pollStart (resource) {
+      function _pollStart (resource, isupdate=false) {
         var re = {};
         if (!resource.url) {
           re = resource;
@@ -86,14 +86,17 @@ var socketDataSource = angular.module(PKG.name+'.services');
           }
         }
 
+        var actionType = isupdate ? 'poll-update' : 'poll-start';
         if (resource.headers) {
           re.headers = resource.headers;
         }
 
         mySocket.send({
-          action: 'poll-start',
+          action: actionType,
           resource: re
         });
+
+
       }
 
       /**
@@ -147,16 +150,38 @@ var socketDataSource = angular.module(PKG.name+'.services');
           var hash;
           var isPoll;
           hash = data.resource.id;
+          isPoll = self.bindings[hash] ? self.bindings[hash].poll : undefined;
 
           if(data.statusCode>299 || data.warning) {
             if (self.bindings[hash]) {
-              if(self.bindings[hash].errorCallback) {
-                $rootScope.$apply(self.bindings[hash].errorCallback.bind(null, data.error || data.response));
-              } else if (self.bindings[hash].reject) {
-                $rootScope.$apply(self.bindings[hash].reject.bind(null, {data: data.error || data.response, statusCode: data.statusCode }));
+              // handle the keycloak retry call in case the call has old token
+              // NB:- it seems it doesn't remove api call which fails, it might be a memory leak
+              var keycloakEnable = window.keycloakEnable !== undefined ? window.keycloakEnable : false ;
+              if( keycloakEnable && data.statusCode === 401 && self.bindings[hash].count < 2) {
+                //update token in resource and increase counter
+                self.bindings[hash].count = ++self.bindings[hash].count;
+                if(self.bindings[hash].resource.headers) {
+                  self.bindings[hash].resource.headers['Authorization'] = 'Bearer '+$cookies.get('CDAP_Auth_Token');
+                }
+
+                if(isPoll) {
+                  _pollStart(self.bindings[hash].resource, true);
+                } else {
+                  mySocket.send({
+                    action: 'request',
+                    resource: self.bindings[hash].resource
+                  });
+                }
+              } else {
+                if(self.bindings[hash].errorCallback) {
+                  $rootScope.$apply(self.bindings[hash].errorCallback.bind(null, data.error || data.response));
+                } else if (self.bindings[hash].reject) {
+                  $rootScope.$apply(self.bindings[hash].reject.bind(null, {data: data.error || data.response, statusCode: data.statusCode }));
+                }
               }
             }
           } else if (self.bindings[hash]) {
+            self.bindings[hash].count = 0;
             if (self.bindings[hash].callback) {
               data.response = data.response || {};
               data.response.__pollId__ = hash;
@@ -175,7 +200,6 @@ var socketDataSource = angular.module(PKG.name+'.services');
             if (!self.bindings[hash]) {
               return;
             }
-            isPoll = self.bindings[hash].poll;
             if (!isPoll) {
               // We can remove the entry from the self bindings if its not a poll.
               // Is not going to be used for anything else.
@@ -243,7 +267,8 @@ var socketDataSource = angular.module(PKG.name+'.services');
             resource: generatedResource,
             errorCallback: errorCb,
             resolve: resolve,
-            reject: reject
+            reject: reject,
+            count: 0
           };
 
           _pollStart(generatedResource);
@@ -356,7 +381,8 @@ var socketDataSource = angular.module(PKG.name+'.services');
             errorCallback: errorCb,
             resource: generatedResource,
             resolve: resolve,
-            reject: reject
+            reject: reject,
+            count: 0
           };
 
           mySocket.send({

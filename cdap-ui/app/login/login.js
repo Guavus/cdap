@@ -14,7 +14,7 @@
  * the License.
  */
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import 'whatwg-fetch';
 import cookie from 'react-cookie';
@@ -26,6 +26,8 @@ import * as util from './utils';
 import Footer from '../cdap/components/Footer';
 import ValidatedInput from '../cdap/components/ValidatedInput';
 import types from '../cdap/services/inputValidationTemplates';
+import keycloakService from '../cdap/services/CDAPKeycloakService';
+
 
 require('./styles/lib-styles.scss');
 require('./login.scss');
@@ -35,13 +37,17 @@ T.setTexts(require('./text/text-en.yaml'));
 class Login extends Component {
   constructor(props) {
     super(props);
+    console.log('is login intiate :: ' + window['loginInitiate']);
     this.state = {
       username: localStorage.getItem('login_username') || '',
       password: '',
       message: '',
       formState: false,
       rememberUser: false,
-      inputs: this.getValidationState()
+      inputs: this.getValidationState(),
+      keycloakEnable: true,
+      keycloak: null,
+      authenticated: false
     };
   }
 
@@ -69,7 +75,7 @@ class Login extends Component {
     }
     fetch('/login', {
       method: 'POST',
-      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: this.state.username,
         password: this.state.password
@@ -86,17 +92,17 @@ class Login extends Component {
         }
       })
       .then((res) => {
-        cookie.save('CDAP_Auth_Token', res.access_token, { path: '/'});
-        cookie.save('CDAP_Auth_User', this.state.username, { path: '/'});
+        cookie.save('CDAP_Auth_Token', res.access_token, { path: '/' });
+        cookie.save('CDAP_Auth_User', this.state.username, { path: '/' });
         var queryObj = util.getQueryParams(location.search);
-        queryObj.redirectUrl = queryObj.redirectUrl || (location.pathname.endsWith('/login') ? '/': location.pathname);
+        queryObj.redirectUrl = queryObj.redirectUrl || (location.pathname.endsWith('/login') ? '/' : location.pathname);
         window.location.href = queryObj.redirectUrl;
       });
   }
 
   onUsernameUpdate(e) {
 
-    let inputsValue = {...this.state.inputs};
+    let inputsValue = { ...this.state.inputs };
     const isValid = types[this.state.inputs.name.template].validate(e.target.value);
     let errorMsg = '';
     if (e.target.value && !isValid) {
@@ -113,7 +119,7 @@ class Login extends Component {
   }
 
   onPasswordUpdate(e) {
-    let inputsValue = {...this.state.inputs};
+    let inputsValue = { ...this.state.inputs };
     const isValid = types[this.state.inputs.password.template].validate(e.target.value);
     let errorMsg = '';
     if (e.target.value && !isValid) {
@@ -135,6 +141,40 @@ class Login extends Component {
     });
   }
 
+  componentDidMount() {
+    if (!window['loginInitiate']) {
+      window['loginInitiate'] = true;
+      let keycloakEnable = keycloakService.keycloakEnable();
+      keycloakEnable.then(
+        (response) => {
+          let isEnable = response ? response.enable : false;
+          window['keycloakEnable'] = isEnable;
+          this.setState({ keycloakEnable: isEnable });
+          if (isEnable) {
+            let keycloakInstance = keycloakService.keycloakInstance(true);
+            keycloakInstance.then(
+              (instance) => {
+                // redirect to dashboard page
+                if (instance) {
+                  var queryObj = util.getQueryParams(location.search);
+                  queryObj.redirectUrl = queryObj.redirectUrl || (location.pathname.endsWith('/login') ? '/' : location.pathname);
+                  window.location.href = queryObj.redirectUrl;
+                }
+              },
+              (error) => {
+                console.log(`ERROR -> ${error.message}`);
+              }
+            );
+          }
+        },
+        (error) => {
+          console.log(`ERROR -> ${error.message}`);
+        }
+      );
+    }
+  }
+
+
   render() {
     let footer;
     if (this.state.message) {
@@ -146,7 +186,7 @@ class Login extends Component {
       );
     }
 
-    return (
+    return (!this.state.keycloakEnable ?
       <div>
         <Card footer={footer}>
           <div className="cdap-logo"></div>
@@ -156,22 +196,22 @@ class Login extends Component {
           >
             <div className="form-group">
               <ValidatedInput
-                  type="text"
-                  label={this.state.inputs.name.label}
-                  placeholder={T.translate('login.placeholders.username')}
-                  validationError={this.state.inputs.name.error}
-                  value={this.state.username}
-                  onChange={this.onUsernameUpdate.bind(this)}
-                />
+                type="text"
+                label={this.state.inputs.name.label}
+                placeholder={T.translate('login.placeholders.username')}
+                validationError={this.state.inputs.name.error}
+                value={this.state.username}
+                onChange={this.onUsernameUpdate.bind(this)}
+              />
             </div>
             <div className="form-group">
               <ValidatedInput
-                    type="password"
-                    label={this.state.inputs.password.label}
-                    placeholder={T.translate('login.placeholders.password')}
-                    validationError={this.state.inputs.password.error}
-                    onChange={this.onPasswordUpdate.bind(this)}
-                  />
+                type="password"
+                label={this.state.inputs.password.label}
+                placeholder={T.translate('login.placeholders.password')}
+                validationError={this.state.inputs.password.error}
+                onChange={this.onPasswordUpdate.bind(this)}
+              />
             </div>
             <div className="form-group">
               <div className="clearfix">
@@ -184,7 +224,7 @@ class Login extends Component {
                         value={this.state.rememberUser}
                         onClick={this.rememberUser.bind(this)}
                       />
-                    {T.translate('login.labels.rememberme')}
+                      {T.translate('login.labels.rememberme')}
                     </label>
                   </div>
                 </div>
@@ -203,7 +243,8 @@ class Login extends Component {
             </div>
           </form>
         </Card>
-      </div>
+      </div> :
+      <div>Checking for secured connection...</div>
     );
   }
 }

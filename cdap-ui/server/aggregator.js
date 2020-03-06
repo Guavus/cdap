@@ -340,6 +340,10 @@ function onSocketData (message) {
         log.debug ('[POLL-START]: (method: ' + r.method + ', id: ' + r.id + ', url: ' + r.url + ')');
         this.startPolling(r);
         break;
+      case 'poll-update':
+          log.info('[POLL-UPDATE]: (method: ' + r.method + ', id: ' + r.id + ', url: ' + r.url + ')');
+          this.polledResources[r.id].resource.Authorization = r.headers.Authorization;
+          break;
       case 'request':
         r.startTs = Date.now();
         log.debug ('[REQUEST]: (method: ' + r.method + ', id: ' + r.id + ', url: ' + r.url + ')');

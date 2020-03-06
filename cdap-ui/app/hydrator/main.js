@@ -271,6 +271,28 @@ angular
    */
   .controller('BodyCtrl', function ($scope, $cookies, $cookieStore, caskTheme, CASK_THEME_EVENT, $rootScope, $state, $log, MYSOCKET_EVENT, MyCDAPDataSource, MY_CONFIG, MYAUTH_EVENT, EventPipe, myAuth, $window, myAlertOnValium, myLoadingService) {
 
+    let keycloakEnable = window.CaskCommon.CDAPKeycloakService.keycloakEnable();
+    keycloakEnable.then(
+      (response) => {
+        let isEnable = response ? response.enable : false;
+        window['keycloakEnable'] = isEnable;
+        if (isEnable) {
+          let keycloakInstance = window.CaskCommon.CDAPKeycloakService.keycloakInstance();
+          keycloakInstance.then(
+            (instance) => {
+              console.log('created keycloak', instance);
+            },
+            (error) => {
+              console.log(`ERROR -> ${error.message}`);
+            }
+          );
+        }
+      },
+      (error) => {
+        console.log(`ERROR -> ${error.message}`);
+      }
+    );
+
     var activeThemeClass = caskTheme.getClassName();
     var dataSource = new MyCDAPDataSource($scope);
     getVersion();

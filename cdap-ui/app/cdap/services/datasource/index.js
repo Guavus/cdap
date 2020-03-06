@@ -16,8 +16,8 @@
 
 import Socket from '../socket';
 import uuidV4 from 'uuid/v4';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/observable/combineLatest';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/observable/of';
@@ -31,6 +31,8 @@ import 'rxjs/add/operator/combineLatest';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/debounceTime';
+import cookie from 'react-cookie';
+import RedirectToLogin from '../redirect-to-login';
 
 export default class Datasource {
   constructor(genericResponseHandlers = [() => true]) {
@@ -43,8 +45,12 @@ export default class Datasource {
         if (!this.bindings[hash]) { return; }
 
         genericResponseHandlers.forEach(handler => handler(data));
+        let req = this.bindings[hash].resource;
+        let isTokenInvalid = false;
+        console.log(`${this.bindings[hash].count} :: ${this.bindings[hash].type} :: ${hash} :: ${req.url}`);
 
         if (data.statusCode > 299 || data.warning) {
+
           /*
             There is an issue here. When backend goes down we stop all the poll
             and inspite of stopping all polling calls and unsubscribing all subscribers
@@ -52,20 +58,44 @@ export default class Datasource {
             and errors out. This doesn't harm us today as when system comes up we refresh
             the UI and everything loads.
           */
-          this.bindings[hash].rx.error({
-            statusCode: data.statusCode,
-            response: data.response || data.body || data.error
-          });
+
+        let keycloakEnable = window.keycloakEnable != undefined ? window.keycloakEnable : false;
+         let retryCount = this.bindings[hash].count;
+          if (data.statusCode === 401 ) {
+            if (keycloakEnable && retryCount < 2) {
+              isTokenInvalid = true;
+            } else {
+              RedirectToLogin({statusCode: 401});
+            }
+          } else {
+            this.bindings[hash].rx.error({
+              statusCode: data.statusCode,
+              response: data.response || data.body || data.error
+            });
+          }
         } else {
+          this.bindings[hash].count = 0;
           this.bindings[hash].rx.next(data.response);
         }
 
         // Adding check if bindings[hash] exist because if a Poll that gets cancelled
         // within 1 tick, the bindings[hash] will already be deleted
-        if (this.bindings[hash] && this.bindings[hash].type === 'REQUEST') {
-          this.bindings[hash].rx.complete();
-          this.bindings[hash].rx.unsubscribe();
-          delete this.bindings[hash];
+
+
+        if (isTokenInvalid) {
+          console.log("Retry socket call  :: ", req.url);
+          this.bindings[hash].count = ++this.bindings[hash].count;
+          this.bindings[hash].resource.headers['Authorization']  = `Bearer ${cookie.load('CDAP_Auth_Token')}`;
+          Socket.send({
+            action: this.bindings[hash].type === 'REQUEST' ? 'request' : 'poll-update',
+            resource: this.bindings[hash].resource
+          });
+        } else {
+          if (this.bindings[hash] && this.bindings[hash].type === 'REQUEST') {
+            this.bindings[hash].rx.complete();
+            this.bindings[hash].rx.unsubscribe();
+            delete this.bindings[hash];
+          }
         }
       }
     );
@@ -76,7 +106,7 @@ export default class Datasource {
       id: uuidV4(),
       json: resource.json === false ? false : true,
       method: resource.method || 'GET',
-      suppressErrors: resource.suppressErrors || false
+      suppressErrors: resource.suppressErrors || false,
     };
 
     if (resource.body) {
@@ -102,7 +132,8 @@ export default class Datasource {
     this.bindings[generatedResource.id] = {
       rx: subject,
       resource: generatedResource,
-      type: 'REQUEST'
+      type: 'REQUEST',
+      count:0
     };
 
     Socket.send({
@@ -159,7 +190,8 @@ export default class Datasource {
     this.bindings[generatedResource.id] = {
       rx: subject,
       resource: generatedResource,
-      type: 'POLL'
+      type: 'POLL',
+      count:0
     };
 
     Socket.send({
@@ -239,15 +271,15 @@ export default class Datasource {
 
     function encodeUriQuery(val, pctEncodeSpaces) {
       return encodeURIComponent(val).
-             replace(/%40/gi, '@').
-             replace(/%3A/gi, ':').
-             replace(/%24/g, '$').
-             replace(/%2C/gi, ',').
-             replace(/%3B/gi, ';').
-             replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
+        replace(/%40/gi, '@').
+        replace(/%3A/gi, ':').
+        replace(/%24/g, '$').
+        replace(/%2C/gi, ',').
+        replace(/%3B/gi, ';').
+        replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
     }
 
-    forEachSorted(params, function(value, key) {
+    forEachSorted(params, function (value, key) {
       if (value === null || typeof value === 'undefined') {
         return;
       }

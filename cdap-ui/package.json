@@ -133,6 +133,8 @@
     "js-file-download": "0.4.1",
     "jsdom": "^15.2.0",
     "jszip": "^3.2.2",
+    "keycloak-js": "6.0.1",
+    "jwt-decode": "2.2.0",
     "lodash": "4.17.10",
     "log4js": "0.6.30",
     "modclean": "^2.1.2",

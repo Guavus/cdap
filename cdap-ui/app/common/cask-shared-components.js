@@ -63,6 +63,7 @@ var IconSVG = require('../cdap/components/IconSVG').default;
 var PipelineConfigConstants = require('../cdap/components/PipelineConfigurations/PipelineConfigConstants');
 var AuthRefresher = require('../cdap/components/AuthRefresher').default;
 var Util = require('../cdap/components/FeatureUI/util');
+var CDAPKeycloakService = require('../cdap/services/CDAPKeycloakService').default;
 
 export {
   Store,
@@ -111,5 +112,6 @@ export {
   IconSVG,
   PipelineConfigConstants,
   AuthRefresher,
-  Util
+  Util,
+  CDAPKeycloakService
 };

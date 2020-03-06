@@ -54,6 +54,7 @@ import OverlayFocus from 'components/OverlayFocus';
 import {Theme} from 'services/ThemeHelper';
 import AuthRefresher from 'components/AuthRefresher';
 import { getClassNameForHeaderFooter } from 'components/FeatureUI/util';
+import keycloakService from '../cdap/services/CDAPKeycloakService';
 
 const SampleTSXComponent = Loadable({
   loader: () => import (/* webpackChunkName: "SampleTSXComponent" */ 'components/SampleTSXComponent'),
@@ -87,6 +88,28 @@ class CDAP extends Component {
         }
       });
     }
+    // check keycloak enablement if true then Initialize KeyCloak if not present
+    let keycloakEnable = keycloakService.keycloakEnable();
+    keycloakEnable.then(
+      (response) => {
+        let isEnable = response ? response.enable : false;
+        window['keycloakEnable'] = isEnable;
+        if (isEnable) {
+          let keycloakInstance = keycloakService.keycloakInstance();
+          keycloakInstance.then(
+            (instance) => {
+              console.log('created keycloak', instance);
+            },
+            (error) => {
+              console.log(`ERROR -> ${error.message}`);
+            }
+          );
+        }
+      },
+      (error) => {
+        console.log(`ERROR -> ${error.message}`);
+      }
+    );
 
     StatusFactory.startPollingForBackendStatus();
     this.eventEmitter.on(globalEvents.NONAMESPACE, () => {

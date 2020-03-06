@@ -14,5 +14,13 @@
   "local.market.base.url": "http://artifacts.ggn.in.guavus.com/ggn-archive/marketplace/v2",
   "ui.theme.file": "cdap-ui/server/config/themes/jio-prod.json",
   "default.white.list.ips": "http://market.cask.co,http://artifacts.ggn.in.guavus.com",
-  "white.list.ips": ""
+  "white.list.ips": "",
+  "security.auth.server.bind.port": "10009",
+  "security.auth.server.ssl.bind.port": "10010",
+  "security.authorization.extension.config.keycloakauthserveraddress": "192.168.154.194",
+  "security.authorization.extension.config.keycloakauthserverport": "8180",
+  "security.authorization.extension.config.client_id": "backend-client",
+  "security.authorization.extension.config.client_secret": "d0c0dd65-28fe-4bae-a35e-010651bce3f2",
+  "security.authorization.extension.config.realm": "dev",
+  "keyclock.enable": true
 }

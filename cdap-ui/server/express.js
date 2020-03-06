@@ -17,43 +17,45 @@
 /* global require, module, process, __dirname */
 var UrlValidator = require('./urlValidator.js');
 var JSZip = require('jszip');
+var jwtDecode = require('jwt-decode');
+
 
 module.exports = {
   getApp: function () {
     return require('q').all([
-        // router check also fetches the auth server address if security is enabled
-        require('./config/router-check.js').ping(),
-        require('./config/parser.js').extractConfig('cdap'),
-        require('./config/parser.js').extractUISettings()
-      ])
+      // router check also fetches the auth server address if security is enabled
+      require('./config/router-check.js').ping(),
+      require('./config/parser.js').extractConfig('cdap'),
+      require('./config/parser.js').extractUISettings()
+    ])
       .spread(makeApp);
   }
 };
 var pkg = require('../package.json');
 var path = require('path');
 var express = require('express'),
-    cookieParser = require('cookie-parser'),
-    compression = require('compression'),
-    finalhandler = require('finalhandler'),
-    serveFavicon = require('serve-favicon'),
-    request = require('request'),
-    uuidV4 = require('uuid/v4'),
-    log4js = require('log4js'),
-    bodyParser = require('body-parser'),
-    DLL_PATH = path.normalize(__dirname + '/../dll'),
-    DIST_PATH = path.normalize(__dirname + '/../dist'),
-    OLD_DIST_PATH = path.normalize(__dirname + '/../old_dist'),
-    LOGIN_DIST_PATH= path.normalize(__dirname + '/../login_dist'),
-    CDAP_DIST_PATH= path.normalize(__dirname + '/../cdap_dist'),
-    MARKET_DIST_PATH= path.normalize(__dirname + '/../common_dist'),
-    fs = require('fs'),
-    objectQuery = require('lodash/get');
+  cookieParser = require('cookie-parser'),
+  compression = require('compression'),
+  finalhandler = require('finalhandler'),
+  serveFavicon = require('serve-favicon'),
+  request = require('request'),
+  uuidV4 = require('uuid/v4'),
+  log4js = require('log4js'),
+  bodyParser = require('body-parser'),
+  DLL_PATH = path.normalize(__dirname + '/../dll'),
+  DIST_PATH = path.normalize(__dirname + '/../dist'),
+  OLD_DIST_PATH = path.normalize(__dirname + '/../old_dist'),
+  LOGIN_DIST_PATH = path.normalize(__dirname + '/../login_dist'),
+  CDAP_DIST_PATH = path.normalize(__dirname + '/../cdap_dist'),
+  MARKET_DIST_PATH = path.normalize(__dirname + '/../common_dist'),
+  fs = require('fs'),
+  objectQuery = require('lodash/get');
 
 var log = log4js.getLogger('default');
 
 const isModeDevelopment = () => process.env.NODE_ENV === 'development';
 const isModeProduction = () => process.env.NODE_ENV === 'production';
-const _headers = function(res) {
+const _headers = function (res) {
   res.set('Connection', 'close');
 };
 
@@ -117,7 +119,7 @@ function extractUITheme(cdapConfig) {
   return uiThemeConfig;
 }
 
-function makeApp (authAddress, cdapConfig, uiSettings) {
+function makeApp(authAddress, cdapConfig, uiSettings) {
   var app = express();
   const urlValidator = new UrlValidator(cdapConfig);
   const uiThemeConfig = extractUITheme(cdapConfig);
@@ -138,32 +140,32 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
 
   app.use('/old_assets', [
     express.static(OLD_DIST_PATH + '/assets', getExpressStaticConfig()),
-    function(req, res) {
+    function (req, res) {
       finalhandler(req, res)(false); // 404
     }
   ]);
   // serve static assets
   app.use('/assets', [
-    express.static(DIST_PATH + '/assets',{setHeaders: _headers}),
-    function(req, res) {
+    express.static(DIST_PATH + '/assets', { setHeaders: _headers }),
+    function (req, res) {
       finalhandler(req, res)(false); // 404
     }
   ]);
   app.use('/cdap_assets', [
     express.static(CDAP_DIST_PATH + '/cdap_assets', getExpressStaticConfig()),
-    function(req, res) {
+    function (req, res) {
       finalhandler(req, res)(false); // 404
     }
   ]);
   app.use('/dll_assets', [
     express.static(DLL_PATH, getExpressStaticConfig()),
-    function(req, res) {
+    function (req, res) {
       finalhandler(req, res)(false);
     }
   ]);
   app.use('/login_assets', [
     express.static(LOGIN_DIST_PATH + '/login_assets', getExpressStaticConfig()),
-    function(req, res) {
+    function (req, res) {
       finalhandler(req, res)(false); // 404
     }
   ]);
@@ -172,7 +174,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       index: false,
       setHeaders: _headers
     }),
-    function(req, res) {
+    function (req, res) {
       finalhandler(req, res)(false); // 404
     }
   ]);
@@ -209,7 +211,8 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       securityEnabled: authAddress.enabled,
       isEnterprise: isModeProduction(),
       sandboxMode: process.env.NODE_ENV,
-      authRefreshURL: cdapConfig['dashboard.auth.refresh.path'] || false
+      authRefreshURL: cdapConfig['dashboard.auth.refresh.path'] || false,
+
     });
 
     res.header({
@@ -220,6 +223,29 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     res.send('window.CDAP_CONFIG = '+data+';');
   });
 
+
+  app.get('/keycloak-enable', function (req, res) {
+    res.json({enable: cdapConfig['keyclock.enable']});
+  });
+
+  app.get('/keycloak-config', function (req, res) {
+    var keycloakAuthURL = [
+      cdapConfig['ssl.external.enabled'] === 'true' ? 'https://' : 'http://',
+      cdapConfig['security.authorization.extension.config.keycloakauthserveraddress'],
+      ':',
+      cdapConfig['security.authorization.extension.config.keycloakauthserverport'] ,
+      '/auth'
+    ].join('');
+    var config = {
+      'realm': cdapConfig['security.authorization.extension.config.realm'],
+      'url': keycloakAuthURL,
+      'clientId': cdapConfig['security.authorization.extension.config.client_id'],
+      'credentials': {
+        'secret': cdapConfig['security.authorization.extension.config.client_secret']
+      }
+    };
+    res.json(config);
+  });
 
   app.get('/ui-config.js', function (req, res) {
     var path = __dirname + '/config/cdap-ui-config.json';
@@ -232,7 +258,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       'Cache-Control': 'no-store, must-revalidate',
       'Connection': 'close'
     });
-    res.send('window.CDAP_UI_CONFIG = ' + fileConfig+ ';');
+    res.send('window.CDAP_UI_CONFIG = ' + fileConfig + ';');
   });
 
   app.get('/ui-theme.js', function (req, res) {
@@ -244,7 +270,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     res.send(`window.CDAP_UI_THEME = ${JSON.stringify(uiThemeConfig)};`);
   });
 
-  app.post('/downloadQuery', function(req, res) {
+  app.post('/downloadQuery', function (req, res) {
     var url = req.body.backendUrl;
     res.header({
       'Connection': 'close'
@@ -267,13 +293,13 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       agent: false,
       headers: req.headers
     })
-    .on('error', function (e) {
-      log.error('Error request: ', e);
-    })
-    .pipe(res)
-    .on('error', function (e) {
-      log.error('Error downloading query: ', e);
-    });
+      .on('error', function (e) {
+        log.error('Error request: ', e);
+      })
+      .pipe(res)
+      .on('error', function (e) {
+        log.error('Error downloading query: ', e);
+      });
 
   });
 
@@ -287,11 +313,11 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
    *    target: CDAP API
    *    targetMethod: HTTP method for the CDAP API (default to POST)
    **/
-  app.get('/forwardMarketToCdap', function(req, res) {
+  app.get('/forwardMarketToCdap', function (req, res) {
     var sourceLink = req.query.source,
-        targetLink = req.query.target,
-        sourceMethod = req.query.sourceMethod || 'GET',
-        targetMethod = req.query.targetMethod || 'POST';
+      targetLink = req.query.target,
+      sourceMethod = req.query.sourceMethod || 'GET',
+      targetMethod = req.query.targetMethod || 'POST';
 
     var forwardRequestObject = {
       url: targetLink,
@@ -305,17 +331,17 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       url: sourceLink,
       method: sourceMethod
     })
-    .on('error', function (e) {
-      log.error('Error', e);
-    })
-    .pipe(request(forwardRequestObject))
-    .on('error', function (e) {
-      log.error('Error', e);
-    })
-    .pipe(res);
+      .on('error', function (e) {
+        log.error('Error', e);
+      })
+      .pipe(request(forwardRequestObject))
+      .on('error', function (e) {
+        log.error('Error', e);
+      })
+      .pipe(res);
   });
 
-  app.get('/downloadLogs', function(req, res) {
+  app.get('/downloadLogs', function (req, res) {
     console.log('download logs :: ');
     var url = decodeURIComponent(req.query.backendUrl);
     var method = (req.query.method || 'GET');
@@ -368,7 +394,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
             if (response.statusCode === 200) {
               if (type === 'download') {
                 var filename = req.query.filename;
-                responseHeaders['Content-Disposition'] = 'attachment; filename='+filename;
+                responseHeaders['Content-Disposition'] = 'attachment; filename=' + filename;
               } else {
                 responseHeaders['Content-Type'] = 'text/plain';
               }
@@ -402,7 +428,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
   */
   app.post('/namespaces/:namespace/:path(*)', function (req, res) {
     var protocol,
-        port;
+      port;
     if (cdapConfig['ssl.external.enabled'] === 'true') {
       protocol = 'https://';
     } else {
@@ -444,13 +470,13 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         log.error(e);
       })
       .pipe(request.post(opts))
-        .on('error', function (e) {
-          log.error(e);
-        })
+      .on('error', function (e) {
+        log.error(e);
+      })
       .pipe(res)
-        .on('error', function (e) {
-          log.error(e);
-        });
+      .on('error', function (e) {
+        log.error(e);
+      });
   });
 
 
@@ -488,8 +514,62 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     }
   ]);
 
+  app.get('/cdapToken', function (req, res) {
+    // Invalid Knox Token Handler
+    res.header({
+      'Connection': 'close'
+    });
+
+    const errorHandler = function(code, message, errObj) {
+      log.error('Error handler .............................', message);
+          var err = {
+            error: errObj,
+            message: message ? message :'INVALID KEYCLOAK TOKEN',
+          };
+          res.status(code).send(err);
+    };
+    var keycloakToken = req.headers['keycloak_token'];
+    if (!keycloakToken) {
+      errorHandler( 402, 'Token not found');
+      return;
+    }
+
+    var userName = jwtDecode(keycloakToken)['user_name'];
+    if (!userName ) {
+      errorHandler( 402, 'Username not found');
+      return;
+    }
+
+    var keycloakURL = [
+      cdapConfig['ssl.external.enabled'] === 'true' ? 'https://' : 'http://',
+      cdapConfig['router.server.address'],
+      ':',
+      cdapConfig['ssl.external.enabled'] === 'true' ? cdapConfig['security.auth.server.ssl.bind.port'] : cdapConfig['security.auth.server.bind.port'],
+      '/keycloakToken'
+    ].join('');
+    var options = {
+      url: keycloakURL,
+      headers: {
+        'keycloakToken': keycloakToken
+      }
+    };
+    request(options, (error, response, body) => {
+
+      var respObj = body ? JSON.parse(body) : {};
+      respObj['userName'] = userName;
+
+      if (error || response.statusCode !== 200) {
+        var statusCode = (response ? response.statusCode : 402) || 402;
+        errorHandler( statusCode, 'INVALID KEYCLOAK TOKEN', error ? error : respObj);
+      } else {
+        res.status(200).send(respObj);
+      }
+    });
+  });
+
+
   // CDAP-678, CDAP-8260 This is added for health check on node proxy.
-  app.get('/status', function(req, res) {
+  app.get('/status', function (req, res) {
     res.header({
       'Connection': 'close'
     });
@@ -497,14 +577,14 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
   });
 
   app.get('/login', [
-    function(req, res) {
+    function (req, res) {
       res.header({
         'Connection': 'close'
       });
-      if (!authAddress.get() || req.cookies.CDAP_Auth_Token) {
-          res.redirect('/');
-        return;
-      }
+      // if (!authAddress.get() || req.cookies.CDAP_Auth_Token) {
+      //   res.redirect('/');
+      //   return;
+      // }
       sendLoginPage(res);
     }
   ]);
@@ -561,35 +641,35 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
   ]);
 
   app.get('/predefinedapps/:apptype', [
-      function (req, res) {
-        var apptype = req.params.apptype;
-        var config = {};
-        var fileConfig = {};
-        var filesToMetadataMap = [];
-        var filePath = __dirname + '/../templates/apps/predefined/config.json';
-        res.header({
-          'Connection': 'close'
-        });
-        try {
-          fileConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-          filesToMetadataMap = fileConfig[apptype] || [];
-          if (filesToMetadataMap.length === 0) {
-            throw {code: 404};
-          }
-          filesToMetadataMap = filesToMetadataMap.map(function(metadata) {
-            return {
-              name: metadata.name,
-              description: metadata.description
-            };
-          });
-          res.send(filesToMetadataMap);
-        } catch (e) {
-          config.error = e.code;
-          config.message = 'Error reading template - '+ apptype;
-          log.debug(config.message);
-          res.status(404).send(config);
+    function (req, res) {
+      var apptype = req.params.apptype;
+      var config = {};
+      var fileConfig = {};
+      var filesToMetadataMap = [];
+      var filePath = __dirname + '/../templates/apps/predefined/config.json';
+      res.header({
+        'Connection': 'close'
+      });
+      try {
+        fileConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        filesToMetadataMap = fileConfig[apptype] || [];
+        if (filesToMetadataMap.length === 0) {
+          throw { code: 404 };
         }
+        filesToMetadataMap = filesToMetadataMap.map(function (metadata) {
+          return {
+            name: metadata.name,
+            description: metadata.description
+          };
+        });
+        res.send(filesToMetadataMap);
+      } catch (e) {
+        config.error = e.code;
+        config.message = 'Error reading template - ' + apptype;
+        log.debug(config.message);
+        res.status(404).send(config);
       }
+    }
   ]);
 
   app.get('/predefinedapps/:apptype/:appname', [
@@ -609,13 +689,13 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       try {
         fileConfig = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         filesToMetadataMap = fileConfig[apptype] || [];
-        filesToMetadataMap = filesToMetadataMap.filter(function(metadata) {
+        filesToMetadataMap = filesToMetadataMap.filter(function (metadata) {
           if (metadata.name === appname) {
             return metadata.file;
           }
         });
         if (filesToMetadataMap.length === 0) {
-          throw {code: 404};
+          throw { code: 404 };
         }
         appConfig = JSON.parse(
           fs.readFileSync(dirPath + '/' + filesToMetadataMap[0].file)
@@ -738,7 +818,7 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
     ].join('');
   }
   function isAuthenticated(req) {
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
       if (!authAddress.enabled) {
         return resolve(true);
       } else {
@@ -771,19 +851,19 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
   }
 
   app.all(['/', '/cdap', '/cdap*'], [
-    function(req, res) {
-      isAuthenticated(req,res)
+    function (req, res) {
+      isAuthenticated(req, res)
         .then(function (authFlag) {
           if (authFlag) {
-              res.header({
-                'Connection': 'close'
-              });
-              res.sendFile(CDAP_DIST_PATH + '/cdap_assets/cdap.html');
-            } else {
-              sendLoginPage(res);
-            }
-          });
-      }
+            res.header({
+              'Connection': 'close'
+            });
+            res.sendFile(CDAP_DIST_PATH + '/cdap_assets/cdap.html');
+          } else {
+            sendLoginPage(res);
+          }
+        });
+    }
   ]);
 
   app.get('/ui-config-old.js', function (req, res) {
@@ -797,8 +877,8 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       'Cache-Control': 'no-store, must-revalidate',
       'Connection': 'close'
     });
-    res.send('angular.module("'+pkg.name+'.config")' +
-              '.constant("UI_CONFIG",'+fileConfig+');');
+    res.send('angular.module("' + pkg.name + '.config")' +
+      '.constant("UI_CONFIG",' + fileConfig + ');');
   });
   app.get('/config-old.js', function (req, res) {
     var data = JSON.stringify({
@@ -823,8 +903,8 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       'Cache-Control': 'no-store, must-revalidate',
       'Connection': 'close'
     });
-    res.send('angular.module("'+pkg.name+'.config", [])' +
-              '.constant("MY_CONFIG",'+data+');');
+    res.send('angular.module("' + pkg.name + '.config", [])' +
+      '.constant("MY_CONFIG",' + data + ');');
   });
 
   app.post('/:namespace/apps/export', function (req, res) {

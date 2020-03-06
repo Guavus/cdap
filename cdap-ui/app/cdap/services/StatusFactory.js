@@ -20,8 +20,9 @@ import LoadingIndicatorStore, {
 import StatusAlertMessageStore from 'components/StatusAlertMessage/StatusAlertMessageStore';
 import cookie from 'react-cookie';
 import isNil from 'lodash/isNil';
-import {Observable} from 'rxjs/Observable';
-import SystemServicesStore, {pollSystemServices} from 'services/SystemServicesStore';
+import { Observable } from 'rxjs/Observable';
+import SystemServicesStore, { pollSystemServices } from 'services/SystemServicesStore';
+import keycloakService from './CDAPKeycloakService';
 
 let pollingObservable;
 let systemServiceSubscription;
@@ -38,6 +39,7 @@ const parseAndDispatchBackendStatus = response => {
     retries += 1;
     return;
   }
+  updateKeyCloak();
   let loadingState = LoadingIndicatorStore.getState().loading;
   if (response.status <= 399) {
     if ([BACKENDSTATUS.NODESERVERDOWN].indexOf(loadingState.status) !== -1) {
@@ -106,7 +108,7 @@ const startServicePolling = () => {
   systemServiceSubscription = SystemServicesStore
     .subscribe(
       () => {
-        let {list: services} = SystemServicesStore.getState().services;
+        let { list: services } = SystemServicesStore.getState().services;
         services = services.filter(service => service.status === 'NOTOK');
         if (services.length) {
           LoadingIndicatorStore.dispatch({
@@ -151,7 +153,16 @@ const stopPolling = () => {
   }
 };
 
+
+const updateKeyCloak = () => {
+  let keycloakInstance = window['keycloakInstance'];
+  if (keycloakInstance) {
+    keycloakService.updateKeycloak();
+  }
+};
+
 export default {
   startPollingForBackendStatus: startPolling,
-  stopPollingForBackendStatus: stopPolling
+  stopPollingForBackendStatus: stopPolling,
+  updateKeyCloak: updateKeyCloak,
 };

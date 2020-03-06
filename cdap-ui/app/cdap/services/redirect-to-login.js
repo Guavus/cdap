@@ -14,7 +14,7 @@
  * the License.
  */
 
-import cookie from 'react-cookie';
+ import cookie from 'react-cookie';
 export default function RedirectToLogin(data) {
   let {statusCode} = data;
   let {url} = data.resource || {};
@@ -23,13 +23,25 @@ export default function RedirectToLogin(data) {
     (statusCode === 401 && namespaceAPIRegex.test(url)) ||
     (statusCode === 401 && !url)
   ) {
+
     cookie.remove('CDAP_Auth_Token', { path: '/' });
     cookie.remove('CDAP_Auth_User', { path: '/' });
-    window.location.href = window.getAbsUIUrl({
+
+    cookie.remove('Keycloak_Refresh_Token', { path: '/' });
+    cookie.remove('Keycloak_Token', { path: '/' });
+    cookie.remove('Keycloak_Id_Token', { path: '/' });
+
+    var redirectUri = window.getAbsUIUrl({
       uiApp: 'login',
       redirectUrl: location.href,
       clientId: 'cdap'
     });
+
+    if (window.keycloakInstance) {
+      window.keycloakInstance.logout({redirectUri});
+    } else {
+      window.location.href =redirectUri;
+    }
   }
   return true;
 }
