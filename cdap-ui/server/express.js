@@ -860,7 +860,8 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
       var zip = new JSZip();
       values.map(value => {
         if (value && value.name) {
-          zip.file(`${value.name}.json`, JSON.stringify(value, null, 4));
+          var name = value.draftId ? `${value.name}_Draft` : value.name;
+          zip.file(`${name}.json`, JSON.stringify(value, null, 4));
         }
       });
 
