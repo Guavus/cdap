@@ -110,7 +110,7 @@ function caskSortableDirective ($log, $stateParams, $state) {
         $state.go($state.$current.name, {
           sortBy:  predicate,
           reverse: scope.sortable.reverse ? 'reverse' : ''
-        });
+        }, {notify: false});
       });
 
     }
