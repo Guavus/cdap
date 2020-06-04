@@ -22,7 +22,7 @@
 
   <groupId>co.cask.cdap</groupId>
   <artifactId>cdap</artifactId>
-  <version>5.1.217</version>
+  <version>5.1.2171</version>
   <packaging>pom</packaging>
   <name>Cask Data Application Platform (CDAP)</name>
   <description>Data Application Platform for Hadoop</description>
@@ -1696,6 +1696,33 @@
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.2.3</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <artifactSet>
+                            <includes>
+                                <include>com.google.guava:*</include>
+                            </includes>
+                        </artifactSet>
+                        <minimizeJar>false</minimizeJar>
+                        <relocations>
+                            <relocation>
+                                <pattern>com.google.common</pattern>
+                                <shadedPattern>repackaged.com.google.common</shadedPattern>
+                            </relocation>
+                        </relocations>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
