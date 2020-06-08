@@ -160,12 +160,15 @@ public final class MetricDataQuery {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("startTs", startTs)
-      .add("endTs", endTs)
-      .add("resolution", resolution)
-      .add("metrics", metrics)
-      .add("sliceByTags", Joiner.on(",").withKeyValueSeparator(":").useForNull("null").join(sliceByTagValues))
-      .add("groupByTags", Joiner.on(",").join(groupByTags)).toString();
+    return "MetricDataQuery{" +
+            "startTs=" + startTs +
+            ", endTs=" + endTs +
+            ", resolution=" + resolution +
+            ", limit=" + limit +
+            ", metrics=" + metrics +
+            ", sliceByTagValues=" + sliceByTagValues +
+            ", groupByTags=" + groupByTags +
+            ", interpolator=" + interpolator +
+            '}';
   }
 }

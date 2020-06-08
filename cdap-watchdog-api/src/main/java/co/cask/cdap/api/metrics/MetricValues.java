@@ -62,10 +62,10 @@ public class MetricValues {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("metrics", Joiner.on(",").withKeyValueSeparator(":").join(tags))
-      .add("metrics", Joiner.on(",").join(metrics))
-      .add("timestamp", timestamp)
-      .toString();
+    return "MetricValues{" +
+            "tags=" + tags +
+            ", metrics=" + metrics +
+            ", timestamp=" + timestamp +
+            '}';
   }
 }

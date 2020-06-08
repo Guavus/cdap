@@ -46,10 +46,10 @@ public class MetricValue {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("name", name)
-      .add("type", type)
-      .add("value", value)
-      .toString();
+    return "MetricValue{" +
+            "name='" + name + '\'' +
+            ", type=" + type +
+            ", value=" + value +
+            '}';
   }
 }

@@ -70,10 +70,12 @@ public class MetricSearchQuery {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("startTs", startTs)
-      .add("endTs", endTs)
-      .add("resolution", resolution)
-      .add("tagValues", Joiner.on(",").join(tagValues)).toString();
+    return "MetricSearchQuery{" +
+            "startTs=" + startTs +
+            ", endTs=" + endTs +
+            ", resolution=" + resolution +
+            ", limit=" + limit +
+            ", tagValues=" + tagValues +
+            '}';
   }
 }

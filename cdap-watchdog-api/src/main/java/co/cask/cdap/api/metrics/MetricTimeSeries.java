@@ -75,9 +75,10 @@ public final class MetricTimeSeries {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("metricName", metricName)
-      .add("tagValues", Joiner.on(",").withKeyValueSeparator(":").useForNull("null").join(tagValues))
-      .add("timeValues", Joiner.on(",").join(timeValues)).toString();
+    return "MetricTimeSeries{" +
+            "metricName='" + metricName + '\'' +
+            ", tagValues=" + tagValues +
+            ", timeValues=" + timeValues +
+            '}';
   }
 }
