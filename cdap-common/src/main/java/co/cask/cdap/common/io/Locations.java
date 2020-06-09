@@ -19,9 +19,9 @@ import co.cask.cdap.common.lang.FunctionWithException;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
+import com.google.common.io.ByteSink;
+import com.google.common.io.ByteSource;
 import com.google.common.io.Closeables;
-import com.google.common.io.InputSupplier;
-import com.google.common.io.OutputSupplier;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileContext;
@@ -90,16 +90,16 @@ public final class Locations {
   };
 
   /**
-   * Creates a new {@link InputSupplier} that can provides {@link SeekableInputStream} of the given path.
+   * Creates a new {@link ByteSource} that can provides {@link SeekableInputStream} of the given path.
    *
    * @param fs The {@link org.apache.hadoop.fs.FileSystem} for the given path.
    * @param path The path to create {@link co.cask.cdap.common.io.SeekableInputStream} when requested.
-   * @return A {@link InputSupplier}.
+   * @return A {@link ByteSource}.
    */
-  public static InputSupplier<? extends SeekableInputStream> newInputSupplier(final FileSystem fs, final Path path) {
-    return new InputSupplier<SeekableInputStream>() {
+  public static ByteSource newInputSupplier(final FileSystem fs, final Path path) {
+    return new ByteSource() {
       @Override
-      public SeekableInputStream getInput() throws IOException {
+      public InputStream openStream() throws IOException {
         FSDataInputStream input = fs.open(path);
         try {
           return new DFSSeekableInputStream(input, createDFSStreamSizeProvider(fs, false, path, input));
@@ -113,15 +113,15 @@ public final class Locations {
   }
 
   /**
-   * Creates a new {@link InputSupplier} that can provides {@link SeekableInputStream} from the given location.
+   * Creates a new {@link ByteSource} that can provides {@link SeekableInputStream} from the given location.
    *
    * @param location Location for the input stream.
-   * @return A {@link InputSupplier}.
+   * @return A {@link ByteSource}.
    */
-  public static InputSupplier<? extends SeekableInputStream> newInputSupplier(final Location location) {
-    return new InputSupplier<SeekableInputStream>() {
+  public static ByteSource newInputSupplier(final Location location) {
+    return new ByteSource() {
       @Override
-      public SeekableInputStream getInput() throws IOException {
+      public InputStream openStream() throws IOException {
         InputStream input = location.getInputStream();
         try {
           if (input instanceof FileInputStream) {
@@ -293,15 +293,15 @@ public final class Locations {
   }
 
   /**
-   * Creates a new {@link OutputSupplier} that can provides {@link OutputStream} for the given location.
+   * Creates a new {@link ByteSink} that can provides {@link OutputStream} for the given location.
    *
    * @param location Location for the output.
-   * @return A {@link OutputSupplier}.
+   * @return A {@link ByteSink}.
    */
-  public static OutputSupplier<? extends OutputStream> newOutputSupplier(final Location location) {
-    return new OutputSupplier<OutputStream>() {
+  public static ByteSink newOutputSupplier(final Location location) {
+    return new ByteSink() {
       @Override
-      public OutputStream getOutput() throws IOException {
+      public OutputStream openStream() throws IOException {
         return location.getOutputStream();
       }
     };

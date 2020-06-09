@@ -70,11 +70,13 @@ public class RetryOnStartFailureService extends AbstractService {
 
         while (delay >= 0 && !stopped) {
           try {
-            currentDelegate.start().get();
+//            currentDelegate.start().get();
+            currentDelegate.startAsync();
+            currentDelegate.awaitRunning();
             // Only assigned the delegate if and only if the delegate service started successfully
             startedService = currentDelegate;
             break;
-          } catch (InterruptedException e) {
+//          } catch (InterruptedException e) {
             // This thread will be interrupted from the doStop() method. Don't reset the interrupt flag.
           } catch (Throwable t) {
             LOG.debug("Exception raised when starting service {}", delegateServiceName, t);

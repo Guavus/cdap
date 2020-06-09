@@ -40,7 +40,7 @@ public final class Debugs {
     writer.println(file);
     writer.flush();
     try {
-      ByteStreams.write(classDefinition.getBytecode(), Files.newOutputStreamSupplier(file));
+      Files.asByteSink(file).write(classDefinition.getBytecode());
     } catch (IOException e) {
       e.printStackTrace();
     }

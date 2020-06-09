@@ -16,6 +16,7 @@
 
 package co.cask.cdap.common.stream.notification;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -62,7 +63,7 @@ public class StreamSizeNotification {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("timestamp", timestamp)
       .add("size", size)
       .toString();

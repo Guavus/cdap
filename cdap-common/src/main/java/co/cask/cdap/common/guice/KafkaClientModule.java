@@ -131,7 +131,7 @@ public class KafkaClientModule extends PrivateModule {
         @Override
         public ListenableFuture<State> start() {
           if (startedCount.getAndIncrement() == 0) {
-            return super.start();
+            return super.star;
           }
           return Futures.immediateFuture(State.RUNNING);
         }
@@ -139,7 +139,7 @@ public class KafkaClientModule extends PrivateModule {
         @Override
         public ListenableFuture<State> stop() {
           if (startedCount.decrementAndGet() == 0) {
-            return super.stop();
+            return super.stop;
           }
           return Futures.immediateFuture(State.TERMINATED);
         }
@@ -163,12 +163,15 @@ public class KafkaClientModule extends PrivateModule {
 
     @Override
     protected final void startUp() throws Exception {
-      zkClientService.startAndWait();
+      zkClientService.startAsync();
+      zkClientService.awaitRunning();
       try {
-        delegate.startAndWait();
+        delegate.startAsync();
+        delegate.awaitRunning();
       } catch (Exception e) {
         try {
-          zkClientService.stopAndWait();
+          zkClientService.stopAsync();
+          zkClientService.awaitTerminated();
         } catch (Exception se) {
           e.addSuppressed(se);
         }
@@ -179,16 +182,19 @@ public class KafkaClientModule extends PrivateModule {
     @Override
     protected final void shutDown() throws Exception {
       try {
-        delegate.stopAndWait();
+        delegate.stopAsync();
+        delegate.awaitTerminated();
       } catch (Exception e) {
         try {
-          zkClientService.stopAndWait();
+          zkClientService.stopAsync();
+          zkClientService.awaitTerminated();
         } catch (Exception se) {
           e.addSuppressed(se);
         }
         throw e;
       }
-      zkClientService.stopAndWait();
+      zkClientService.stopAsync();
+      zkClientService.awaitTerminated();
     }
 
     protected T getDelegate() {
