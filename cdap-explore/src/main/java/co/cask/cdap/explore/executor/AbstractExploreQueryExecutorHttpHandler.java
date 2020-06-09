@@ -71,7 +71,7 @@ public class AbstractExploreQueryExecutorHttpHandler extends AbstractHttpHandler
         }
       })
       .limit(limit)
-      .toSortedImmutableList(new Comparator<QueryInfo>() {
+      .toSortedList(new Comparator<QueryInfo>() {
         @Override
         public int compare(QueryInfo first, QueryInfo second) {
           //sort descending.

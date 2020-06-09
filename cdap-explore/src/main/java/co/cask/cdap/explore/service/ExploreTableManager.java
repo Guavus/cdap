@@ -203,7 +203,11 @@ public class ExploreTableManager {
         return generateEnableStatement(dataset, spec, datasetId,
                                        tableNaming.getTableName(datasetId, spec.getProperties()), truncating);
       } finally {
-        Closeables.closeQuietly(dataset);
+        try {
+          dataset.close();
+        } catch (Exception ex) {
+          // Ignore
+        }
       }
     } catch (IOException e) {
       throw new ExploreException("Exception while trying to instantiate dataset " + datasetId, e);
@@ -261,7 +265,11 @@ public class ExploreTableManager {
         try {
           alterStatements = generateAlterStatements(datasetId, tableName, dataset, spec, oldSpec);
         } finally {
-          Closeables.closeQuietly(dataset);
+          try {
+            dataset.close();
+          } catch (Exception e) {
+            // Ignore
+          }
         }
       } catch (IOException e) {
         LOG.error("Exception instantiating dataset {}.", datasetId, e);
@@ -324,7 +332,11 @@ public class ExploreTableManager {
         }
         return generateDeleteStatement(dataset, databaseName, tableName);
       } finally {
-        Closeables.closeQuietly(dataset);
+        try {
+          dataset.close();
+        } catch (Exception e) {
+          // Ignore
+        }
       }
     } catch (IOException e) {
       LOG.error("Exception creating dataset classLoaderProvider for dataset {}.", datasetId, e);

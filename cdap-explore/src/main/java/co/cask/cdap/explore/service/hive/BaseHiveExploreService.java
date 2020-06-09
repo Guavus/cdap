@@ -401,7 +401,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @Override
   public QueryHandle getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern)
     throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       SessionHandle sessionHandle = null;
@@ -432,7 +433,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public QueryHandle getCatalogs() throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       SessionHandle sessionHandle = null;
@@ -460,8 +462,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public QueryHandle getSchemas(String catalog, String schemaPattern) throws ExploreException, SQLException {
-    startAndWait();
-
+    startAsync();
+    awaitRunning();
     try {
       SessionHandle sessionHandle = null;
       OperationHandle operationHandle = null;
@@ -489,7 +491,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @Override
   public QueryHandle getFunctions(String catalog, String schemaPattern, String functionNamePattern)
     throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       SessionHandle sessionHandle = null;
@@ -519,7 +522,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public MetaDataInfo getInfo(MetaDataInfo.InfoType infoType) throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       MetaDataInfo ret = infoType.getDefaultValue();
@@ -560,7 +564,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @Override
   public QueryHandle getTables(String catalog, String schemaPattern, String tableNamePattern,
                                List<String> tableTypes) throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       SessionHandle sessionHandle = null;
@@ -590,7 +595,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public List<TableNameInfo> getTables(final String namespace) throws ExploreException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     // TODO check if the database user is allowed to access if security is enabled
     try {
@@ -615,7 +621,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @Override
   public TableInfo getTableInfo(String namespace, @Nullable String databaseName, String table)
     throws ExploreException, TableNotFoundException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     // TODO check if the database user is allowed to access if security is enabled
     try {
@@ -679,7 +686,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public QueryHandle getTableTypes() throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       SessionHandle sessionHandle = null;
@@ -706,7 +714,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public QueryHandle getTypeInfo() throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       SessionHandle sessionHandle = null;
@@ -733,7 +742,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public QueryHandle createNamespace(NamespaceMeta namespaceMeta) throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
     try {
       // Even with the "IF NOT EXISTS" in the create command, Hive still logs a non-fatal warning internally
       // when attempting to create the "default" namespace (since it already exists in Hive).
@@ -807,7 +817,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public QueryHandle deleteNamespace(NamespaceId namespace) throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
     String customHiveDatabase;
     try {
       customHiveDatabase = namespaceQueryAdmin.get(namespace).getConfig().getHiveDatabase();
@@ -849,7 +860,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @Override
   public QueryHandle execute(NamespaceId namespace, String[] statements) throws ExploreException, SQLException {
     Preconditions.checkArgument(statements.length > 0, "There must be at least one statement");
-    startAndWait();
+    startAsync();
+    awaitRunning();
     try {
       SessionHandle sessionHandle = null;
       OperationHandle operationHandle = null;
@@ -902,7 +914,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
                              @Nullable Map<String, String> additionalSessionConf)
     throws ExploreException, SQLException {
 
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       SessionHandle sessionHandle = null;
@@ -934,7 +947,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public QueryStatus getStatus(QueryHandle handle) throws ExploreException, HandleNotFoundException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     InactiveOperationInfo inactiveOperationInfo = inactiveHandleCache.getIfPresent(handle);
     if (inactiveOperationInfo != null) {
@@ -966,7 +980,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @Override
   public List<QueryResult> nextResults(QueryHandle handle, int size)
     throws ExploreException, HandleNotFoundException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     InactiveOperationInfo inactiveOperationInfo = inactiveHandleCache.getIfPresent(handle);
     if (inactiveOperationInfo != null) {
@@ -995,7 +1010,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @SuppressWarnings("unchecked")
   private List<QueryResult> fetchNextResults(QueryHandle handle, int size)
     throws HiveSQLException, ExploreException, HandleNotFoundException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     Lock nextLock = getActiveOperationInfo(handle).getNextLock();
     nextLock.lock();
@@ -1018,7 +1034,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @Override
   public List<QueryResult> previewResults(QueryHandle handle)
     throws ExploreException, HandleNotFoundException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     if (inactiveHandleCache.getIfPresent(handle) != null) {
       throw new HandleNotFoundException("Query is inactive.", true);
@@ -1065,7 +1082,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
   @Override
   public List<ColumnDesc> getResultSchema(QueryHandle handle)
     throws ExploreException, HandleNotFoundException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     try {
       InactiveOperationInfo inactiveOperationInfo = inactiveHandleCache.getIfPresent(handle);
@@ -1127,14 +1145,16 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public void close(QueryHandle handle) throws ExploreException, HandleNotFoundException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
     inactiveHandleCache.invalidate(handle);
     activeHandleCache.invalidate(handle);
   }
 
   @Override
   public List<QueryInfo> getQueries(NamespaceId namespace) throws ExploreException, SQLException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     List<QueryInfo> result = new ArrayList<>();
     String namespaceHiveDb = getHiveDatabase(namespace.getNamespace());
@@ -1174,7 +1194,8 @@ public abstract class BaseHiveExploreService extends AbstractIdleService impleme
 
   @Override
   public int getActiveQueryCount(NamespaceId namespace) throws ExploreException {
-    startAndWait();
+    startAsync();
+    awaitRunning();
 
     int count = 0;
     String namespaceHiveDb = getHiveDatabase(namespace.getNamespace());
