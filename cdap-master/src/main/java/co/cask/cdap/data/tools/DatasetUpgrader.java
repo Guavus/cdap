@@ -187,7 +187,11 @@ public class DatasetUpgrader extends AbstractUpgrader {
       }
     } finally {
       for (Closeable closeable : toClose) {
-        Closeables.closeQuietly(closeable);
+        try {
+          closeable.close();
+        } catch (Exception e) {
+          // Ignore
+        }
       }
     }
   }

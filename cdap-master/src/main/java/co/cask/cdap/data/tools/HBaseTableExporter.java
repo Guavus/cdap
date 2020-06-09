@@ -176,8 +176,10 @@ public class HBaseTableExporter {
   }
 
   private void startUp() throws Exception {
-    zkClientService.startAndWait();
-    txService.startAndWait();
+    zkClientService.startAsync();
+    zkClientService.awaitRunning();
+    txService.startAsync();
+    txService.awaitRunning();
   }
 
   /**
@@ -185,7 +187,8 @@ public class HBaseTableExporter {
    */
   private void stopQuietly(Service service) {
     try {
-      service.stopAndWait();
+      service.stopAsync();
+      service.awaitTerminated();
     } catch (Exception e) {
       LOG.warn("Exception when stopping service {}", service, e);
     }
