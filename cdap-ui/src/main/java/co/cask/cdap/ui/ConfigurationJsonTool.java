@@ -21,7 +21,7 @@ import co.cask.cdap.common.conf.Configuration;
 import co.cask.cdap.common.conf.SConfiguration;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.io.NullOutputStream;
+import com.google.common.io.ByteStreams;
 import com.google.gson.GsonBuilder;
 
 import java.io.PrintStream;
@@ -69,7 +69,7 @@ public class ConfigurationJsonTool {
     PrintStream stdout = System.out;
 
     // Redirect the stdout to null to suppress any log outputs generated during the json generation
-    System.setOut(new PrintStream(new NullOutputStream()));
+    System.setOut(new PrintStream(ByteStreams.nullOutputStream()));
     StringBuilder output = new StringBuilder();
     exportToJson(args[0], output);
 
