@@ -285,7 +285,8 @@ public class UpgradeTool {
                                           "verify that the ZooKeeper quorum settings are correct in cdap-site.xml. " +
                                           "Currently configured as: %s", cConf.get(Constants.Zookeeper.QUORUM)));
     LOG.info("Starting Transaction Service...");
-    txService.startAndWait();
+    txService.startAsync();
+    txService.awaitRunning();
     LOG.info("Initializing Dataset Framework...");
     initializeDSFramework(cConf, dsFramework, includeNewDatasets);
     LOG.info("Building and uploading new HBase coprocessors...");
@@ -297,8 +298,11 @@ public class UpgradeTool {
    */
   private void stop() {
     try {
-      txService.stopAndWait();
-      zkClientService.stopAndWait();
+      txService.stopAsync();
+      txService.awaitTerminated();
+
+      zkClientService.stopAsync();
+      zkClientService.awaitTerminated();
     } catch (Throwable e) {
       LOG.error("Exception while trying to stop upgrade process", e);
       Runtime.getRuntime().halt(1);
