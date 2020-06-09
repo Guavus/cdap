@@ -25,7 +25,7 @@ import co.cask.cdap.explore.service.hive.Hive14ExploreService;
 import co.cask.cdap.explore.service.hive.Hive31ExploreService;
 import co.cask.cdap.hive.ExploreUtils;
 import co.cask.cdap.internal.asm.Classes;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
@@ -146,7 +146,7 @@ public class ExploreServiceUtils {
   }
 
   private static String getHiveVersion(@Nullable ClassLoader hiveClassLoader) {
-    ClassLoader usingCL = Objects.firstNonNull(hiveClassLoader, ExploreServiceUtils.class.getClassLoader());
+    ClassLoader usingCL = MoreObjects.firstNonNull(hiveClassLoader, ExploreServiceUtils.class.getClassLoader());
     try {
       Class<?> hiveVersionInfoClass = usingCL.loadClass("org.apache.hive.common.util.HiveVersionInfo");
       return (String) hiveVersionInfoClass.getDeclaredMethod("getVersion").invoke(null);
