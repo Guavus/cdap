@@ -19,17 +19,11 @@ package co.cask.cdap.common.lang.jar;
 import co.cask.cdap.common.io.Locations;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closeables;
-import com.google.common.io.InputSupplier;
-import com.google.common.io.OutputSupplier;
 import org.apache.twill.filesystem.Location;
+import com.google.common.io.ByteSource;
+import com.google.common.io.ByteSink;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
@@ -70,13 +64,13 @@ public class BundleJarUtil {
    * Gets the manifest inside the jar located by the given URI.
    *
    * @param uri Location of the jar file.
-   * @param inputSupplier a {@link InputSupplier} to provide an {@link InputStream} for the given URI to read the
+   * @param inputSupplier a {@link ByteSource} to provide an {@link InputStream} for the given URI to read the
    *                      jar file content.
    * @return The manifest inside the jar file or {@code null} if no manifest inside the jar file.
    * @throws IOException if failed to load the manifest.
    */
   @Nullable
-  public static Manifest getManifest(URI uri, InputSupplier<? extends InputStream> inputSupplier) throws IOException {
+  public static Manifest getManifest(URI uri, ByteSource inputSupplier) throws IOException {
     // Small optimization if the location is local
     if ("file".equals(uri.getScheme())) {
       try (JarFile jarFile = new JarFile(new File(uri))) {
@@ -85,7 +79,7 @@ public class BundleJarUtil {
     }
 
     // Otherwise, need to search it with JarInputStream
-    try (JarInputStream is = new JarInputStream(new BufferedInputStream(inputSupplier.getInput()))) {
+    try (JarInputStream is = new JarInputStream(new BufferedInputStream(inputSupplier.openStream()))) {
       // This only looks at the first entry, which if is created with jar util, then it'll be there.
       Manifest manifest = is.getManifest();
       if (manifest != null) {
@@ -105,15 +99,15 @@ public class BundleJarUtil {
   }
 
   /**
-   * Returns an {@link InputSupplier} for a given entry. This avoids unjar the whole file to just get one entry.
+   * Returns an {@link ByteSource} for a given entry. This avoids unjar the whole file to just get one entry.
    * However, to get many entries, unjar would be more efficient. Also, the jar file is scanned every time the
-   * {@link InputSupplier#getInput()} is invoked.
+   * {@link ByteSource#openStream()} is invoked.
    *
    * @param jarLocation Location of the jar file.
    * @param entryName Name of the entry to fetch
-   * @return An {@link InputSupplier}.
+   * @return An {@link ByteSource}.
    */
-  public static InputSupplier<InputStream> getEntry(final Location jarLocation,
+  public static ByteSource getEntry(final Location jarLocation,
                                                     final String entryName) throws IOException {
     Preconditions.checkArgument(jarLocation != null);
     Preconditions.checkArgument(entryName != null);
@@ -121,10 +115,10 @@ public class BundleJarUtil {
 
     // Small optimization if the location is local
     if ("file".equals(uri.getScheme())) {
-      return new InputSupplier<InputStream>() {
+      return new ByteSource() {
 
         @Override
-        public InputStream getInput() throws IOException {
+        public InputStream openStream() throws IOException {
           final JarFile jarFile = new JarFile(new File(uri));
           ZipEntry entry = jarFile.getEntry(entryName);
           if (entry == null) {
@@ -145,9 +139,9 @@ public class BundleJarUtil {
     }
 
     // Otherwise, use JarInputStream
-    return new InputSupplier<InputStream>() {
+    return new ByteSource() {
       @Override
-      public InputStream getInput() throws IOException {
+      public InputStream openStream() throws IOException {
         JarInputStream is = new JarInputStream(jarLocation.getInputStream());
         JarEntry entry = is.getNextJarEntry();
         while (entry != null) {
@@ -164,12 +158,12 @@ public class BundleJarUtil {
 
   /**
    * Creates an JAR including all the files present in the given input. Same as calling
-   * {@link #createArchive(File, OutputSupplier)} with a {@link JarOutputStream} created in the {@link OutputSupplier}.
+   * {@link #createArchive(File, ByteSink)} with a {@link JarOutputStream} created in the {@link ByteSink}.
    */
   public static void createJar(File input, final File output) throws IOException {
-    createArchive(input, new OutputSupplier<JarOutputStream>() {
+    createArchive(input, new ByteSink() {
       @Override
-      public JarOutputStream getOutput() throws IOException {
+      public OutputStream openStream() throws IOException {
         return new JarOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
       }
     });
@@ -180,12 +174,12 @@ public class BundleJarUtil {
    * is included in the archive.
    *
    * @param input input directory (or file) whose contents needs to be archived
-   * @param outputSupplier An {@link OutputSupplier} for the archive content to be written to.
+   * @param outputSupplier An {@link ByteSink} for the archive content to be written to.
    * @throws IOException if there is failure in the archive creation
    */
   public static void createArchive(File input,
-                                   OutputSupplier<? extends ZipOutputStream> outputSupplier) throws IOException {
-    try (ZipOutputStream output = outputSupplier.getOutput()) {
+                                   ByteSink outputSupplier) throws IOException {
+    try (ZipOutputStream output = (ZipOutputStream)outputSupplier.openStream()) {
       addToArchive(input, output);
     }
   }
@@ -265,7 +259,7 @@ public class BundleJarUtil {
    * @return The {@code destinationFolder}
    * @throws IOException If failed to expand the jar
    */
-  public static File unJar(InputSupplier<? extends InputStream> inputSupplier,
+  public static File unJar(ByteSource inputSupplier,
                            File destinationFolder) throws IOException {
     Preconditions.checkArgument(inputSupplier != null);
     Preconditions.checkArgument(destinationFolder != null);
@@ -273,7 +267,7 @@ public class BundleJarUtil {
     Path destinationPath = destinationFolder.toPath();
     Files.createDirectories(destinationPath);
 
-    try (ZipInputStream input = new ZipInputStream(inputSupplier.getInput())) {
+    try (ZipInputStream input = new ZipInputStream(inputSupplier.openStream())) {
       unJar(input, destinationPath);
       return destinationPath.toFile();
     }

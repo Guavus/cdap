@@ -75,7 +75,11 @@ public abstract class AbstractBodyConsumer extends BodyConsumer {
     try {
       LOG.error("Failed to handle upload", cause);
       if (output != null) {
-        Closeables.closeQuietly(output);
+        try {
+          output.close();
+        } catch (Exception e) {
+          // Ignore
+        }
       }
       onError(cause);
       // The netty-http framework will response with 500, no need to response in here.

@@ -17,6 +17,7 @@
 package co.cask.cdap.common.stream.notification;
 
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * Notification sent by the stream service when a stream has ingested a certain amount of data,
@@ -62,7 +63,7 @@ public class StreamSizeNotification {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("timestamp", timestamp)
       .add("size", size)
       .toString();

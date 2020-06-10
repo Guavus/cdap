@@ -16,7 +16,7 @@
 
 package co.cask.cdap.common.io;
 
-import com.google.common.io.InputSupplier;
+import com.google.common.io.ByteSource;
 import org.apache.hadoop.fs.Syncable;
 import org.apache.twill.filesystem.Location;
 import org.apache.twill.filesystem.LocationFactory;
@@ -49,13 +49,13 @@ public abstract class SeekableInputStreamTestBase {
     }
 
     // Writes 1024 bytes to the output, and close the stream
-    OutputStream output = Locations.newOutputSupplier(location).getOutput();
+    OutputStream output = Locations.newOutputSupplier(location).openStream();
     output.write(bytes);
     output.close();
 
     // Create a SeekableInputStream for the location
-    InputSupplier<? extends SeekableInputStream> inputSupplier = Locations.newInputSupplier(location);
-    SeekableInputStream input = inputSupplier.getInput();
+    ByteSource inputSupplier = Locations.newInputSupplier(location);
+    SeekableInputStream input = (SeekableInputStream) inputSupplier.openStream();
 
     // The stream size should be 1024
     Assert.assertEquals(bytes.length, input.size());
@@ -80,13 +80,13 @@ public abstract class SeekableInputStreamTestBase {
     }
 
     // Writes 1024 bytes to the output, and keep the output stream open
-    OutputStream output = Locations.newOutputSupplier(location).getOutput();
+    OutputStream output = Locations.newOutputSupplier(location).openStream();
     output.write(bytes);
     sync(output);
 
     // Create a SeekableInputStream for the location
-    InputSupplier<? extends SeekableInputStream> inputSupplier = Locations.newInputSupplier(location);
-    SeekableInputStream input = inputSupplier.getInput();
+    ByteSource inputSupplier = Locations.newInputSupplier(location);
+    SeekableInputStream input = (SeekableInputStream) inputSupplier.openStream();
 
     // The stream size should be 1024
     Assert.assertEquals(bytes.length, input.size());
@@ -106,7 +106,7 @@ public abstract class SeekableInputStreamTestBase {
     sync(output);
 
     // Reopen the input stream
-    input = inputSupplier.getInput();
+    input = (SeekableInputStream) inputSupplier.openStream();
 
     // The stream size should be 2048
     Assert.assertEquals(bytes.length * 2, input.size());

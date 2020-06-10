@@ -20,7 +20,7 @@ import co.cask.cdap.api.common.HttpErrorStatusProvider;
 import co.cask.cdap.security.spi.authentication.SecurityRequestContext;
 import co.cask.http.ExceptionHandler;
 import co.cask.http.HttpResponder;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -68,12 +68,12 @@ public class HttpExceptionHandler extends ExceptionHandler {
 
     // If it is not some known exception type, response with 500.
     LOG.error("Unexpected error: request={} {} user={}:", request.method().name(), request.getUri(),
-              Objects.firstNonNull(SecurityRequestContext.getUserId(), "<null>"), t);
+              MoreObjects.firstNonNull(SecurityRequestContext.getUserId(), "<null>"), t);
     responder.sendString(HttpResponseStatus.INTERNAL_SERVER_ERROR, Throwables.getRootCause(t).getMessage());
   }
 
   private void logWithTrace(HttpRequest request, Throwable t) {
     LOG.trace("Error in handling request={} {} for user={}:", request.method().name(), request.getUri(),
-              Objects.firstNonNull(SecurityRequestContext.getUserId(), "<null>"), t);
+              MoreObjects.firstNonNull(SecurityRequestContext.getUserId(), "<null>"), t);
   }
 }

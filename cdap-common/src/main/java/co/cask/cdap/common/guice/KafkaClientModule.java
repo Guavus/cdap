@@ -129,6 +129,28 @@ public class KafkaClientModule extends PrivateModule {
       // made to the start/stop methods.
       return new ForwardingZKClientService(zkClientService) {
         @Override
+        public Service startAsync() {
+          return super.startAsync();
+        }
+
+        @Override
+        public Service stopAsync() {
+          return super.stopAsync();
+        }
+
+        @Override
+        public void awaitRunning() {
+          super.awaitRunning();
+        }
+
+        @Override
+        public void awaitTerminated() {
+          super.awaitTerminated();
+        }
+
+
+
+        /*@Override
         public ListenableFuture<State> start() {
           if (startedCount.getAndIncrement() == 0) {
             return super.start();
@@ -142,7 +164,7 @@ public class KafkaClientModule extends PrivateModule {
             return super.stop();
           }
           return Futures.immediateFuture(State.TERMINATED);
-        }
+        }*/
       };
     }
   }
@@ -163,12 +185,12 @@ public class KafkaClientModule extends PrivateModule {
 
     @Override
     protected final void startUp() throws Exception {
-      zkClientService.startAndWait();
+      zkClientService.startAsync().awaitRunning();
       try {
-        delegate.startAndWait();
+        delegate.startAsync().awaitRunning();
       } catch (Exception e) {
         try {
-          zkClientService.stopAndWait();
+          zkClientService.stopAsync().awaitTerminated();
         } catch (Exception se) {
           e.addSuppressed(se);
         }
@@ -179,16 +201,16 @@ public class KafkaClientModule extends PrivateModule {
     @Override
     protected final void shutDown() throws Exception {
       try {
-        delegate.stopAndWait();
+        delegate.stopAsync().awaitTerminated();
       } catch (Exception e) {
         try {
-          zkClientService.stopAndWait();
+          zkClientService.stopAsync().awaitTerminated();
         } catch (Exception se) {
           e.addSuppressed(se);
         }
         throw e;
       }
-      zkClientService.stopAndWait();
+      zkClientService.stopAsync().awaitTerminated();
     }
 
     protected T getDelegate() {
