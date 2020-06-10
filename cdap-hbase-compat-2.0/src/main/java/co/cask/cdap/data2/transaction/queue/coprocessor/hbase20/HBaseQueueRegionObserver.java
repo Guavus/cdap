@@ -15,7 +15,7 @@
  */
 package co.cask.cdap.data2.transaction.queue.coprocessor.hbase20;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import com.google.common.io.ByteSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -56,7 +57,6 @@ import org.apache.tephra.persist.TransactionVisibilityState;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
-import com.google.common.io.InputSupplier;
 
 import co.cask.cdap.common.conf.CConfiguration;
 import co.cask.cdap.common.conf.Constants;
@@ -288,13 +288,28 @@ public final class HBaseQueueRegionObserver implements RegionCoprocessor, Region
 
   private ConsumerConfigCacheSupplier createConfigCache(final CoprocessorEnvironment env) {
     return TableNameAwareCacheSupplier.getSupplier(configTableName, cConfReader,
-                                                   txSnapshotSupplier, new InputSupplier<Table>() {
+                                                   txSnapshotSupplier, new ByteSource() {
         @Override
-        public Table getInput() throws IOException {
+        public InputStream openStream() throws IOException {
         	Connection connection = ConnectionFactory.createConnection(env.getConfiguration());
-          return connection.getTable(configTableName);
+          return getInputStreamFromObject(connection.getTable(configTableName));
         }
       });
+  }
+
+  private InputStream getInputStreamFromObject(Table hBaseTableObj) throws IOException {
+    ByteArrayOutputStream baOutputStream = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baOutputStream);
+
+
+    oos.writeObject(hBaseTableObj);
+
+    oos.flush();
+    oos.close();
+
+    InputStream is = new ByteArrayInputStream(baOutputStream.toByteArray());
+
+    return is;
   }
 
   // need for queue unit-test
