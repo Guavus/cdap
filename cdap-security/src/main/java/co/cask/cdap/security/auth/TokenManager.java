@@ -40,12 +40,12 @@ public class TokenManager extends AbstractIdleService {
 
   @Override
   public void startUp() {
-    this.keyManager.startAndWait();
+    this.keyManager.startAsync().awaitRunning();
   }
 
   @Override
   public void shutDown() {
-    this.keyManager.stopAndWait();
+    this.keyManager.stopAsync().awaitTerminated();
   }
 
   /**

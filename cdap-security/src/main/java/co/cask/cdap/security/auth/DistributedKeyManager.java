@@ -111,13 +111,13 @@ public class DistributedKeyManager extends AbstractKeyManager implements Resourc
         LOG.debug("Transitioned to follower");
       }
     });
-    this.leaderElection.start();
+    this.leaderElection.startAsync();
     startExpirationThread();
   }
 
   @Override
   public void shutDown() {
-    leaderElection.stopAndWait();
+    leaderElection.stopAsync().awaitTerminated();;
   }
 
   @Override
