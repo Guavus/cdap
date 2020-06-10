@@ -195,7 +195,7 @@ public final class StreamFetchHandler extends AbstractHttpHandler {
             // No need to copy the last chunk, since the buffer will not be reused
             chunkResponder.sendChunk(buffer);
           }
-          Closeables.closeQuietly(chunkResponder);
+          chunkResponder.close();
         }
         return null;
       }

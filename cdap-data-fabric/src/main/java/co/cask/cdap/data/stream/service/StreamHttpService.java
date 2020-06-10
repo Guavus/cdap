@@ -26,6 +26,7 @@ import co.cask.cdap.common.metrics.MetricsReporterHook;
 import co.cask.cdap.proto.id.NamespaceId;
 import co.cask.http.HttpHandler;
 import co.cask.http.NettyHttpService;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
@@ -93,7 +94,7 @@ public final class StreamHttpService extends AbstractIdleService implements Supp
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("bindAddress", httpService.getBindAddress())
       .toString();
   }

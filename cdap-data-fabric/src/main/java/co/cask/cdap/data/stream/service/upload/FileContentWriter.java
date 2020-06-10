@@ -92,7 +92,11 @@ final class FileContentWriter implements ContentWriter {
 
   @Override
   public void cancel() {
-    Closeables.closeQuietly(writer);
+    try {
+      writer.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     Locations.deleteQuietly(Locations.getParent(eventFile), true);
   }
 

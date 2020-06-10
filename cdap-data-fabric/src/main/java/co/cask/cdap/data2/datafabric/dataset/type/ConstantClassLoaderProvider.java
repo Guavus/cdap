@@ -17,6 +17,7 @@
 package co.cask.cdap.data2.datafabric.dataset.type;
 
 import co.cask.cdap.proto.DatasetModuleMeta;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class ConstantClassLoaderProvider implements DatasetClassLoaderProvider {
 
   public ConstantClassLoaderProvider(@Nullable ClassLoader classLoader) {
     this.classLoader = classLoader == null ?
-      Objects.firstNonNull(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader()) :
+      MoreObjects.firstNonNull(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader()) :
       classLoader;
   }
 

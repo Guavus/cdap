@@ -22,7 +22,7 @@ import co.cask.cdap.data.file.PartitionedFileWriter;
 import co.cask.cdap.data.stream.TimePartitionedStreamFileWriter.TimePartition;
 import co.cask.cdap.proto.id.StreamId;
 import co.cask.cdap.security.impersonation.Impersonator;
-import com.google.common.io.OutputSupplier;
+import com.google.common.io.ByteSink;
 import com.google.common.primitives.Longs;
 import org.apache.twill.filesystem.Location;
 import org.slf4j.Logger;
@@ -186,10 +186,10 @@ public class TimePartitionedStreamFileWriter extends PartitionedFileWriter<Strea
       return new StreamDataFileWriter(createOutputSupplier(eventFile), createOutputSupplier(indexFile), indexInterval);
     }
 
-    private OutputSupplier<OutputStream> createOutputSupplier(final Location location) {
-      return new OutputSupplier<OutputStream>() {
+    private ByteSink createOutputSupplier(final Location location) {
+      return new ByteSink() {
         @Override
-        public OutputStream getOutput() throws IOException {
+        public OutputStream openStream() throws IOException {
           return location.getOutputStream();
         }
       };

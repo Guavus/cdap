@@ -172,7 +172,11 @@ public final class StreamHandler extends AbstractHttpHandler {
 
   @Override
   public void destroy(HandlerContext context) {
-    Closeables.closeQuietly(streamWriter);
+    try {
+      streamWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     asyncExecutor.shutdownNow();
   }
 

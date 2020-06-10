@@ -42,6 +42,7 @@ import co.cask.cdap.data2.util.hbase.PutBuilder;
 import co.cask.cdap.data2.util.hbase.ScanBuilder;
 import co.cask.cdap.proto.id.NamespaceId;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -141,7 +142,7 @@ public class HBaseTable extends BufferingTable {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
                   .add("hTable", hTable)
                   .add("hTableName", hTableName)
                   .add("nameAsTxChangePrefix", nameAsTxChangePrefix)

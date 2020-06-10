@@ -46,6 +46,7 @@ import co.cask.cdap.proto.id.EntityId;
 import co.cask.cdap.proto.id.KerberosPrincipalId;
 import co.cask.cdap.proto.id.NamespaceId;
 import co.cask.cdap.security.spi.authentication.AuthenticationContext;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
@@ -346,7 +347,7 @@ public class RemoteDatasetFramework implements DatasetFramework {
                                            DatasetClassLoaderProvider classLoaderProvider) {
 
     if (classLoader == null) {
-      classLoader = Objects.firstNonNull(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader());
+      classLoader = MoreObjects.firstNonNull(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader());
     }
 
     DatasetDefinitionRegistry registry = registryFactory.create();

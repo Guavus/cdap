@@ -308,7 +308,7 @@ public class HBaseQueueClientFactory implements QueueClientFactory, ProgramConte
     @Override
     public void close() throws IOException {
       for (HBaseQueueConsumer consumer : consumers) {
-        Closeables.closeQuietly(consumer);
+        consumer.close();
       }
     }
 

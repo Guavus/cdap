@@ -18,6 +18,7 @@ package co.cask.cdap.data2.transaction.queue.hbase;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.data2.queue.ConsumerGroupConfig;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -43,7 +44,7 @@ public final class QueueBarrier {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("group", groupConfig)
       .add("start", Bytes.toStringBinary(startRow))
       .toString();

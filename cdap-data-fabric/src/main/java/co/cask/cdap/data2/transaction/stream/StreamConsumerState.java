@@ -16,6 +16,7 @@
 package co.cask.cdap.data2.transaction.stream;
 
 import co.cask.cdap.data.stream.StreamFileOffset;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -86,7 +87,7 @@ public final class StreamConsumerState implements ConsumerState<Iterable<StreamF
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("groupId", groupId)
       .add("instanceId", instanceId)
       .add("states", state)

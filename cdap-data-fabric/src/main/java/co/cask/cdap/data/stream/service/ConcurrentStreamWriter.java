@@ -148,7 +148,7 @@ public final class ConcurrentStreamWriter implements Closeable {
         return Scheduler.newFixedDelaySchedule(5, 5, TimeUnit.MINUTES);
       }
     };
-    scheduledService.startAndWait();
+    scheduledService.startAsync().awaitRunning();
     return scheduledService;
   }
 
@@ -259,7 +259,7 @@ public final class ConcurrentStreamWriter implements Closeable {
       }
     }
 
-    eventQueueRefreshService.stopAndWait();
+    eventQueueRefreshService.stopAsync().awaitTerminated();
   }
 
   private EventQueue getEventQueue(StreamId streamId) throws IOException, NotFoundException {
@@ -637,9 +637,9 @@ public final class ConcurrentStreamWriter implements Closeable {
       }
     }
 
-    private void doClose() {
+    private void doClose() throws IOException {
       if (fileWriter != null) {
-        Closeables.closeQuietly(fileWriter);
+        fileWriter.close();
       }
 
       // Drain the queue with failure. This could happen when

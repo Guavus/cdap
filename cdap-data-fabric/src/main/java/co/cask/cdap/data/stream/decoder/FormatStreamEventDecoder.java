@@ -20,6 +20,7 @@ import co.cask.cdap.api.data.format.RecordFormat;
 import co.cask.cdap.api.flow.flowlet.StreamEvent;
 import co.cask.cdap.api.stream.GenericStreamEventData;
 import co.cask.cdap.api.stream.StreamEventDecoder;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import org.apache.hadoop.io.LongWritable;
@@ -52,7 +53,7 @@ public final class FormatStreamEventDecoder<T> implements StreamEventDecoder<Lon
     StreamEvent event, DecodeResult<LongWritable, GenericStreamEventData<T>> result) {
     key.set(event.getTimestamp());
     T body = bodyFormat.read(event);
-    Map<String, String> headers = Objects.firstNonNull(event.getHeaders(), ImmutableMap.<String, String>of());
+    Map<String, String> headers = MoreObjects.firstNonNull(event.getHeaders(), ImmutableMap.<String, String>of());
     return result.setKey(key).setValue(new GenericStreamEventData<>(headers, body));
   }
 }

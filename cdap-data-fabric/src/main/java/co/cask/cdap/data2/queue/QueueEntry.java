@@ -20,6 +20,7 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.common.io.BinaryDecoder;
 import co.cask.cdap.common.io.BinaryEncoder;
 import co.cask.cdap.common.io.Encoder;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -66,7 +67,7 @@ public class QueueEntry {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("data", Bytes.toStringBinary(this.data))
       .add("hashKeys", this.hashKeys)
       .toString();

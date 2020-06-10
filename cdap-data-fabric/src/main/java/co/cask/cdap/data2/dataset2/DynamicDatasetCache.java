@@ -27,6 +27,7 @@ import co.cask.cdap.data.dataset.SystemDatasetInstantiator;
 import co.cask.cdap.data2.metadata.lineage.AccessType;
 import co.cask.cdap.data2.transaction.TransactionContextFactory;
 import co.cask.cdap.proto.id.NamespaceId;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.io.Closeables;
 import org.apache.tephra.TransactionAware;
@@ -34,6 +35,7 @@ import org.apache.tephra.TransactionContext;
 import org.apache.tephra.TransactionFailureException;
 import org.apache.tephra.TransactionSystemClient;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -285,8 +287,8 @@ public abstract class DynamicDatasetCache implements DatasetContext, AutoCloseab
    * be closed.
    */
   @Override
-  public void close() {
-    Closeables.closeQuietly(instantiator);
+  public void close() throws IOException {
+    instantiator.close();
   }
 
   /**
@@ -361,7 +363,7 @@ public abstract class DynamicDatasetCache implements DatasetContext, AutoCloseab
 
     @Override
     public String toString() {
-      return Objects.toStringHelper(this)
+      return MoreObjects.toStringHelper(this)
         .add("namespace", namespace)
         .add("name", name)
         .add("arguments", arguments)

@@ -44,13 +44,13 @@ public class LocalDatasetOpExecutor extends RemoteDatasetOpExecutor {
 
   @Override
   protected void startUp() throws Exception {
-    executorServer.startAndWait();
+    executorServer.startAsync().awaitRunning();
     LOG.debug("Local dataset executor started");
   }
 
   @Override
   protected void shutDown() throws Exception {
-    executorServer.stopAndWait();
+    executorServer.stopAsync().awaitTerminated();
     LOG.debug("Local dataset executor stopped");
   }
 }

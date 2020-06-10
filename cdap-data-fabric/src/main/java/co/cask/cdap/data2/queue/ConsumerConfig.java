@@ -15,6 +15,7 @@
  */
 package co.cask.cdap.data2.queue;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
@@ -50,7 +51,7 @@ public final class ConsumerConfig extends ConsumerGroupConfig {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("groupId", getGroupId())
       .add("instanceId", instanceId)
       .add("groupSize", getGroupSize())

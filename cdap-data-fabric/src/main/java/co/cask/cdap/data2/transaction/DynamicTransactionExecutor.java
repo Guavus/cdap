@@ -25,6 +25,7 @@ import org.apache.tephra.TransactionContext;
 import org.apache.tephra.TransactionFailureException;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,7 +47,7 @@ public class DynamicTransactionExecutor extends AbstractTransactionExecutor {
   private final RetryStrategy retryStrategy;
 
   public DynamicTransactionExecutor(TransactionContextFactory txContextFactory, RetryStrategy retryStrategy) {
-    super(MoreExecutors.sameThreadExecutor());
+    super(MoreExecutors.getExitingExecutorService((ThreadPoolExecutor) MoreExecutors.directExecutor()));
     this.txContextFactory = txContextFactory;
     this.retryStrategy = retryStrategy;
   }

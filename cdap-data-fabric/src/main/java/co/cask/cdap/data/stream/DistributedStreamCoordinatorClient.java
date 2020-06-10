@@ -57,13 +57,13 @@ public final class DistributedStreamCoordinatorClient extends AbstractStreamCoor
 
   @Override
   protected void doStartUp() throws Exception {
-    resourceCoordinatorClient.startAndWait();
+    resourceCoordinatorClient.startAsync().awaitRunning();
   }
 
   @Override
   protected void doShutDown() throws Exception {
     if (resourceCoordinatorClient != null) {
-      resourceCoordinatorClient.stopAndWait();
+      resourceCoordinatorClient.stopAsync().awaitTerminated();
     }
   }
 
