@@ -17,6 +17,7 @@
 package co.cask.cdap.cli;
 
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * Represents a program information, such as the app id and program id.
@@ -60,7 +61,7 @@ public class ProgramIdArgument {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("appId", appId)
       .add("programId", programId)
       .toString();

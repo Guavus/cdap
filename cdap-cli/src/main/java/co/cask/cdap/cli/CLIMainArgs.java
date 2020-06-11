@@ -17,6 +17,7 @@
 package co.cask.cdap.cli;
 
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import org.apache.commons.cli.Options;
 
@@ -64,7 +65,7 @@ public class CLIMainArgs {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this).add("optionTokens", Arrays.toString(optionTokens))
+    return MoreObjects.toStringHelper(this).add("optionTokens", Arrays.toString(optionTokens))
       .add("commandTokens", Arrays.toString(commandTokens)).toString();
   }
 
