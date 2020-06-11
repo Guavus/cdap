@@ -340,7 +340,7 @@ public class DefaultDatasetTypeService extends AbstractIdleService implements Da
           Locations.mkdirsIfNotExists(archiveDir);
 
           LOG.debug("Copy from {} to {}", uploadedFile, tmpLocation);
-          Files.copy(uploadedFile, Locations.newOutputSupplier(tmpLocation));
+          Files.copy(uploadedFile, Locations.newOutputSupplier(tmpLocation).openStream());
 
           // Finally, move archive to final location
           LOG.debug("Storing module {} jar at {}", datasetModuleId, archive);

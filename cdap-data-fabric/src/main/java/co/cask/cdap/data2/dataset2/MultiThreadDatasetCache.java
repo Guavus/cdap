@@ -34,6 +34,7 @@ import org.apache.tephra.TransactionContext;
 import org.apache.tephra.TransactionFailureException;
 import org.apache.tephra.TransactionSystemClient;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -77,7 +78,11 @@ public class MultiThreadDatasetCache extends DynamicDatasetCache {
         public void onRemoval(RemovalNotification<Thread, DynamicDatasetCache> notification) {
           DynamicDatasetCache cache = notification.getValue();
           if (cache != null) {
-            cache.close();
+            try {
+              cache.close();
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
           }
         }
       })
@@ -103,7 +108,7 @@ public class MultiThreadDatasetCache extends DynamicDatasetCache {
   }
 
   @Override
-  public void close() {
+  public void close() throws IOException {
     super.close();
     perThreadMap.invalidateAll();
   }

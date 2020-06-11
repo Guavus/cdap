@@ -56,10 +56,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.common.util.concurrent.*;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.twill.api.ElectionHandler;
@@ -78,10 +75,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nullable;
@@ -195,7 +189,14 @@ public class DistributedStreamService extends AbstractStreamService {
     heartbeatPublisher.stopAsync().awaitTerminated();
 
     if (leaderElection != null) {
-      Uninterruptibles.getUninterruptibly(leaderElection.stop(), 5, TimeUnit.SECONDS);
+      ListenableFuture lf = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+        @Override
+        public State call() throws Exception {
+          return leaderElection.stopAsync().state();
+        }
+      });
+
+      Uninterruptibles.getUninterruptibly(lf, 5, TimeUnit.SECONDS);
     }
 
     if (coordinationSubscription != null) {
