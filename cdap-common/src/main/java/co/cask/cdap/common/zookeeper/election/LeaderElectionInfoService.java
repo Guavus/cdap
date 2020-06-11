@@ -77,7 +77,7 @@ public class LeaderElectionInfoService extends AbstractIdleService {
   public SortedMap<Integer, Participant> getParticipants(long timeout,
                                                          TimeUnit unit) throws InterruptedException, TimeoutException {
     try {
-      Stopwatch stopwatch = Stopwatch.createStarted();
+      Stopwatch stopwatch = Stopwatch.createUnstarted();
       CountDownLatch readyLatch = readyFuture.get(timeout, unit);
       long latchTimeout = Math.max(0, stopwatch.elapsed(unit) - timeout);
       readyLatch.await(latchTimeout, unit);

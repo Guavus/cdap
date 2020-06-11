@@ -209,7 +209,7 @@ public abstract class AbstractQueueConsumer implements QueueConsumer, Transactio
     }
 
     boolean isReachedDequeueTimeLimit = false;
-    Stopwatch stopwatch = Stopwatch.createStarted();
+    Stopwatch stopwatch = Stopwatch.createUnstarted();
     while (consumingEntries.size() < maxBatchSize && getEntries(consumingEntries, maxBatchSize, stopwatch)) {
 
       // ANDREAS: this while loop should stop once getEntries/populateCache reaches the end of the queue. Currently, it

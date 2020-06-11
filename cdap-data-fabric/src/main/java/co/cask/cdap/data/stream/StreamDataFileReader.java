@@ -176,7 +176,7 @@ public final class StreamDataFileReader implements FileReader<PositionStreamEven
     int eventCount = 0;
     long sleepNano = computeSleepNano(timeout, unit);
     try {
-      Stopwatch stopwatch = Stopwatch.createStarted();
+      Stopwatch stopwatch = Stopwatch.createUnstarted();
 
       // Keep reading events until max events.
       while (!eof && eventCount < maxEvents) {
