@@ -247,7 +247,6 @@ public abstract class AbstractStreamFileConsumer implements StreamConsumer {
 
     long timeoutNano = timeoutUnit.toNanos(timeout);
     Stopwatch stopwatch = Stopwatch.createStarted();
-    stopwatch.start();
 
     // Save the reader position.
     // It's a conservative approach to save the reader position before reading so that no

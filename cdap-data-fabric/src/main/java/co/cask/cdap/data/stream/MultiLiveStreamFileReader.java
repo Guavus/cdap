@@ -86,7 +86,6 @@ public final class MultiLiveStreamFileReader implements FileReader<StreamEventOf
     int eventsRead = 0;
 
     Stopwatch stopwatch = Stopwatch.createStarted();
-    stopwatch.start();
 
     while (eventsRead < maxEvents && !(emptySources.isEmpty() && eventSources.isEmpty())) {
       if (!emptySources.isEmpty()) {
