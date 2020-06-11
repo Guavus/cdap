@@ -538,7 +538,7 @@ public final class ConcurrentStreamWriter implements Closeable {
      *
      * @return true if become the writer leader and performed the write, false otherwise.
      */
-    boolean tryWrite() {
+    boolean tryWrite() throws IOException {
       int bytesWritten = 0;
       int eventsWritten = 0;
 

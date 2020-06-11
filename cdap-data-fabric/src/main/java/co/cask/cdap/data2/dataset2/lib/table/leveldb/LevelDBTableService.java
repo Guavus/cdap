@@ -107,7 +107,7 @@ public class LevelDBTableService implements AutoCloseable {
     Preconditions.checkState(!isClosed, "%s has already been closed.", getClass().getSimpleName());
   }
 
-  public void close() {
+  public void close() throws IOException {
     isClosed = true;
     clearTables();
   }
