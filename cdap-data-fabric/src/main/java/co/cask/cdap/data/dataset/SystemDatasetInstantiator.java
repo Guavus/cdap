@@ -29,6 +29,7 @@ import co.cask.cdap.data2.dataset2.DatasetFramework;
 import co.cask.cdap.data2.metadata.lineage.AccessType;
 import co.cask.cdap.proto.id.DatasetId;
 import co.cask.cdap.proto.id.EntityId;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Throwables;
 
@@ -73,7 +74,7 @@ public class SystemDatasetInstantiator implements Closeable {
     this.classLoaderProvider = classLoaderProvider;
     this.datasetFramework = datasetFramework;
     this.parentClassLoader = parentClassLoader == null ?
-      Objects.firstNonNull(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader()) :
+      MoreObjects.firstNonNull(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader()) :
       parentClassLoader;
   }
 

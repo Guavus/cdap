@@ -19,6 +19,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.Closeables;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -94,7 +95,7 @@ public abstract class LiveFileReader<T, P> implements FileReader<T, P> {
       if (eventCount <= 0) {
         // Only switch reader when nothing get read above as it guaranteed no more events can come from the
         // currentReader since new file is already available.
-        Closeables.closeQuietly(currentReader);
+        currentReader.close();
         currentReader = nextReader;
         nextReader = null;
 

@@ -82,7 +82,7 @@ public class AuthenticationServerMain extends DaemonMain {
                                                                           "ZooKeeper quorum settings are correct in " +
                                                                           "cdap-site.xml. Currently configured as: %s",
                                                                         configuration.get(Constants.Zookeeper.QUORUM)));
-        authServer.startAndWait();
+        authServer.startAsync().awaitRunning();
       } catch (Exception e) {
         Throwable rootCause = Throwables.getRootCause(e);
         if (rootCause instanceof ServiceBindException) {

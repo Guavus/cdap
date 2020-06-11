@@ -31,6 +31,7 @@ import co.cask.cdap.data2.transaction.queue.ConsumerEntryState;
 import co.cask.cdap.data2.transaction.queue.QueueEntryRow;
 import co.cask.cdap.proto.id.StreamId;
 import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
@@ -245,7 +246,7 @@ public abstract class AbstractStreamFileConsumer implements StreamConsumer {
     int maxRead = maxEvents * consumerConfig.getGroupSize();
 
     long timeoutNano = timeoutUnit.toNanos(timeout);
-    Stopwatch stopwatch = new Stopwatch();
+    Stopwatch stopwatch = Stopwatch.createStarted();
     stopwatch.start();
 
     // Save the reader position.
@@ -256,7 +257,7 @@ public abstract class AbstractStreamFileConsumer implements StreamConsumer {
     // Read from the underlying file reader
     while (polledEvents.size() < maxEvents) {
       int readCount = reader.read(eventCache, maxRead, timeoutNano, TimeUnit.NANOSECONDS, readFilter);
-      long elapsedNano = stopwatch.elapsedTime(TimeUnit.NANOSECONDS);
+      long elapsedNano = stopwatch.elapsed(TimeUnit.NANOSECONDS);
       timeoutNano -= elapsedNano;
 
       if (readCount > 0) {
@@ -405,7 +406,7 @@ public abstract class AbstractStreamFileConsumer implements StreamConsumer {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("stream", streamConfig)
       .add("consumer", consumerConfig)
       .toString();

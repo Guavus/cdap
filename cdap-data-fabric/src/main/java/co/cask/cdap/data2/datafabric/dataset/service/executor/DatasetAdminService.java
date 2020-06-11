@@ -129,7 +129,7 @@ public class DatasetAdminService {
             LOG.trace("Created dataset {} of type {}", datasetInstanceId.getDataset(), typeMeta.getName());
           }
         } finally {
-          Closeables.closeQuietly(admin);
+          admin.close();
         }
         return spec1;
       });
@@ -210,7 +210,7 @@ public class DatasetAdminService {
         try {
           admin.drop();
         } finally {
-          Closeables.closeQuietly(admin);
+          admin.close();
         }
         return null;
       });
@@ -251,7 +251,7 @@ public class DatasetAdminService {
       try {
         return operation.perform(admin);
       } finally {
-        Closeables.closeQuietly(admin);
+        admin.close();
       }
     }
   }

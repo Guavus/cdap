@@ -16,6 +16,7 @@
 
 package co.cask.cdap.explore.utils;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -52,7 +53,7 @@ public final class ColumnsArgs {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("catalog", catalog)
       .add("schemaPattern", schemaPattern)
       .add("tableNamePattern", tableNamePattern)

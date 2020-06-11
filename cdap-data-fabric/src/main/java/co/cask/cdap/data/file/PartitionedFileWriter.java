@@ -75,7 +75,7 @@ public abstract class PartitionedFileWriter<T, P> implements FileWriter<T> {
       getWriter(event).append(event);
     } catch (Throwable t) {
       LOG.error("Exception on append.", t);
-      Closeables.closeQuietly(this);
+      this.close();
       Throwables.propagateIfInstanceOf(t, IOException.class);
       throw Throwables.propagate(t);
     }

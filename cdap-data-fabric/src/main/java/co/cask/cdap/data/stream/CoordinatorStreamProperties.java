@@ -18,6 +18,7 @@ package co.cask.cdap.data.stream;
 
 import co.cask.cdap.api.data.format.FormatSpecification;
 import co.cask.cdap.proto.StreamProperties;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import javax.annotation.Nullable;
@@ -41,7 +42,7 @@ public class CoordinatorStreamProperties extends StreamProperties {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("ttl", getTTL())
       .add("format", getFormat())
       .add("notificationThresholdMB", getNotificationThresholdMB())

@@ -17,6 +17,7 @@ package co.cask.cdap.data2.transaction.queue.hbase;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.data2.queue.ConsumerConfig;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import javax.annotation.Nullable;
@@ -59,7 +60,7 @@ public final class HBaseConsumerState {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("config", consumerConfig)
       .add("start", Bytes.toStringBinary(startRow))
       .add("previousBarrier", Bytes.toStringBinary(previousBarrier))

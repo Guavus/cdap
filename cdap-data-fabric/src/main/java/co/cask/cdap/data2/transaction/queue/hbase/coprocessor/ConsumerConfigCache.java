@@ -24,14 +24,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-import com.google.common.io.InputSupplier;
+import com.google.common.io.ByteSource;
 import com.google.common.util.concurrent.AbstractIdleService;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.TableNotFoundException;
-import org.apache.hadoop.hbase.client.Table;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.tephra.Transaction;
 import org.apache.tephra.TransactionCodec;
@@ -42,7 +39,7 @@ import org.apache.tephra.util.TxUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -66,7 +63,7 @@ public class ConsumerConfigCache extends AbstractIdleService {
   private final TableName queueConfigTableName;
   private final CConfigurationReader cConfReader;
   private final Supplier<TransactionVisibilityState> transactionSnapshotSupplier;
-  private final InputSupplier<Table> hTableSupplier;
+  private final ByteSource hTableSupplier;
   private final TransactionCodec txCodec;
 
   private volatile Thread refreshThread;
@@ -89,7 +86,7 @@ public class ConsumerConfigCache extends AbstractIdleService {
    */
   ConsumerConfigCache(TableName queueConfigTableName, CConfigurationReader cConfReader,
                       Supplier<TransactionVisibilityState> transactionSnapshotSupplier,
-                      InputSupplier<Table> hTableSupplier) {
+                      ByteSource hTableSupplier) {
     this.queueConfigTableName = queueConfigTableName;
     this.cConfReader = cConfReader;
     this.transactionSnapshotSupplier = transactionSnapshotSupplier;
@@ -147,6 +144,17 @@ public class ConsumerConfigCache extends AbstractIdleService {
     }
   }
 
+  private Table getTableObjectFromInputStream(byte[] is) throws IOException {
+    ByteArrayInputStream bis = new ByteArrayInputStream(is);
+    ObjectInput in = new ObjectInputStream(bis);
+    try {
+      return (Table)in.readObject();
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+    final Table o = null;
+    return o;
+  }
   /**
    * This forces an immediate update of the config cache. It should only be called from the refresh thread or from
    * tests, to avoid having to add a sleep for the duration of the refresh interval.
@@ -166,7 +174,8 @@ public class ConsumerConfigCache extends AbstractIdleService {
       return;
     }
 
-    Table table = hTableSupplier.getInput();
+    Table table = getTableObjectFromInputStream(hTableSupplier.read());
+
     try {
       // Scan the table with the transaction snapshot
       Scan scan = new Scan();

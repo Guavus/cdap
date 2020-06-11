@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.EnumSet;
@@ -358,10 +359,10 @@ public class SingleThreadDatasetCache extends DynamicDatasetCache {
   }
 
   @Override
-  public void close() {
+  public void close() throws IOException {
     for (TransactionAware txAware : extraTxAwares) {
       if (txAware instanceof Closeable) {
-        Closeables.closeQuietly((Closeable) txAware);
+        ((Closeable) txAware).close();
       }
     }
     invalidate();

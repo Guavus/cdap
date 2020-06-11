@@ -17,6 +17,7 @@ package co.cask.cdap.data2.dataset2.lib.timeseries;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.data2.dataset2.lib.table.MetricsTable;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
@@ -269,7 +270,7 @@ public final class EntityTable implements Closeable {
 
     @Override
     public String toString() {
-      return Objects.toStringHelper(this)
+      return MoreObjects.toStringHelper(this)
                     .add("type", type)
                     .add("name", name)
                     .toString();

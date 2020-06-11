@@ -144,9 +144,10 @@ abstract class HBaseQueueConsumer extends AbstractQueueConsumer {
       return;
     }
     closed = true;
-    Closeables.closeQuietly(queueStrategy);
-    Closeables.closeQuietly(stateStore);
-    Closeables.closeQuietly(hTable);
+
+    queueStrategy.close();
+    stateStore.close();
+    hTable.close();
   }
 
   @Override
@@ -171,7 +172,11 @@ abstract class HBaseQueueConsumer extends AbstractQueueConsumer {
   public void postTxCommit() {
     stateStore.postTxCommit();
     if (completed) {
-      Closeables.closeQuietly(this);
+      try {
+        this.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 

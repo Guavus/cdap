@@ -18,8 +18,8 @@ package co.cask.cdap.data.stream;
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.common.io.BinaryDecoder;
 import com.google.common.collect.Maps;
+import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.InputSupplier;
 import com.google.common.primitives.Longs;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
@@ -50,16 +50,16 @@ final class StreamDataFileIndex {
   /**
    * Constructs with the given input.
    *
-   * @param indexInputSupplier Provides {@link InputStream} for reading the index.
+   * @param indexInputSupplier Provides {@link ByteSource} for reading the index.
    */
-  StreamDataFileIndex(InputSupplier<? extends InputStream> indexInputSupplier) {
+  StreamDataFileIndex(ByteSource indexInputSupplier) {
     LongList timestamps;
     LongList positions;
 
     // Load the whole index into memory.
     try {
       Map.Entry<LongList, LongList> index;
-      try (InputStream indexInput = indexInputSupplier.getInput()) {
+      try (InputStream indexInput = indexInputSupplier.openStream()) {
         index = loadIndex(indexInput);
       }
       timestamps = LongLists.unmodifiable(index.getKey());

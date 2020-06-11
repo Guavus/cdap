@@ -278,7 +278,7 @@ public class HBaseQueueAdmin extends AbstractQueueAdmin implements ProgramContex
       }
     } finally {
       for (Closeable closeable : toClose) {
-        Closeables.closeQuietly(closeable);
+        closeable.close();
       }
       // We'll have tasks pending in the executor only on an interrupt, when user wants to abort the upgrade.
       // Use shutdownNow() to interrupt the tasks and abort.

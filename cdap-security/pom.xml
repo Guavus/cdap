@@ -42,9 +42,9 @@
 			<artifactId>jetty-util-ajax</artifactId>
 		</exclusion>
 		<exclusion>
-                        <groupId>org.eclipse.jetty</groupId>
-                        <artifactId>jetty-servlet</artifactId>
-                </exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-servlet</artifactId>
+        </exclusion>
 	</exclusions>
     </dependency>
     <dependency>

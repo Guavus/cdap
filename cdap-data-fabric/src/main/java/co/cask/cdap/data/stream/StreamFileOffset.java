@@ -15,6 +15,7 @@
  */
 package co.cask.cdap.data.stream;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import org.apache.twill.filesystem.Location;
@@ -114,7 +115,7 @@ public final class StreamFileOffset {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("event", eventLocation)
       .add("offset", getOffset())
       .toString();
