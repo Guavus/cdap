@@ -18,6 +18,7 @@ package co.cask.cdap.internal.app.runtime.schedule.queue;
 
 import co.cask.cdap.internal.app.runtime.schedule.ProgramSchedule;
 import co.cask.cdap.proto.Notification;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 
@@ -104,7 +105,7 @@ public final class SimpleJob implements Job {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("schedule", schedule)
       .add("jobKey", jobKey)
       .add("notifications", notifications)

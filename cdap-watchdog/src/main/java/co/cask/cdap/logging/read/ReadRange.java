@@ -16,7 +16,7 @@
 
 package co.cask.cdap.logging.read;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * Boundary of a log read request.
@@ -62,7 +62,7 @@ public class ReadRange {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("fromMillis", fromMillis)
       .add("toMillis", toMillis)
       .add("kafkaOffset", kafkaOffset)

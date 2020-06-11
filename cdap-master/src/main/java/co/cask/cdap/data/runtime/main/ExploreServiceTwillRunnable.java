@@ -55,12 +55,7 @@ import co.cask.cdap.security.impersonation.RemoteUGIProvider;
 import co.cask.cdap.security.impersonation.UGIProvider;
 import co.cask.cdap.security.spi.authorization.PrivilegesManager;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
+import com.google.common.base.*;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
@@ -205,7 +200,7 @@ public class ExploreServiceTwillRunnable extends AbstractMasterTwillRunnable {
     LOG.info("Setting {} to {}", HiveConf.ConfVars.LOCALSCRATCHDIR.toString(),
              System.getProperty(HiveConf.ConfVars.LOCALSCRATCHDIR.toString()));
 
-    ClassLoader classLoader = Objects.firstNonNull(Thread.currentThread().getContextClassLoader(),
+    ClassLoader classLoader = MoreObjects.firstNonNull(Thread.currentThread().getContextClassLoader(),
                                                    getClass().getClassLoader());
 
     // The current classloader should be a URLClassLoader, otherwise, nothing much we can do

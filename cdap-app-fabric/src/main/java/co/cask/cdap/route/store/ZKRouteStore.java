@@ -31,6 +31,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
+import org.apache.twill.common.Threads;
 import org.apache.twill.zookeeper.NodeData;
 import org.apache.twill.zookeeper.OperationFuture;
 import org.apache.twill.zookeeper.ZKClient;
@@ -179,7 +180,8 @@ public class ZKRouteStore implements RouteStore {
           routeConfigMap.remove(serviceId, settableFuture);
         }
       }
-    });
+      // TODO: Suspicious code ahead - Neelesh.
+    }, Threads.SAME_THREAD_EXECUTOR);
     return settableFuture;
   }
 
@@ -211,7 +213,8 @@ public class ZKRouteStore implements RouteStore {
         routeConfigMap.remove(serviceId);
         LOG.debug("Failed to check exists for property data for {}", serviceId, t);
       }
-    });
+      // TODO: Suspicious code ahead - Neelesh.
+    }, Threads.SAME_THREAD_EXECUTOR);
   }
 
   @Override

@@ -51,8 +51,8 @@ import co.cask.cdap.proto.codec.WorkflowSpecificationCodec;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-import com.google.common.io.InputSupplier;
-import com.google.common.io.OutputSupplier;
+import com.google.common.io.CharSink;
+import com.google.common.io.CharSource;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
@@ -136,8 +136,8 @@ public final class ApplicationSpecificationAdapter {
   }
 
   public void toJson(ApplicationSpecification appSpec,
-                     OutputSupplier<? extends Writer> outputSupplier) throws IOException {
-    try (Writer writer = outputSupplier.getOutput()) {
+                     CharSink outputSupplier) throws IOException {
+    try (Writer writer = outputSupplier.openStream()) {
       toJson(appSpec, writer);
     }
   }
@@ -154,8 +154,8 @@ public final class ApplicationSpecificationAdapter {
     }
   }
 
-  public ApplicationSpecification fromJson(InputSupplier<? extends Reader> inputSupplier) throws IOException {
-    try (Reader reader = inputSupplier.getInput()) {
+  public ApplicationSpecification fromJson(CharSource inputSupplier) throws IOException {
+    try (Reader reader = inputSupplier.openStream()) {
       return fromJson(reader);
     }
   }

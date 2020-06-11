@@ -62,7 +62,7 @@
       <artifactId>guava</artifactId>
       <!-- required by com.google.auth:google-auth-library-oauth2-http,
            but set to 0.13.0 by google-cloud-dataproc for some reason -->
-      <version>20.0</version>
+      <version>${guava.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>

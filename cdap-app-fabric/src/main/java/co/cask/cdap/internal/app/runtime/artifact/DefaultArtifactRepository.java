@@ -266,7 +266,7 @@ public class DefaultArtifactRepository implements ArtifactRepository {
       ArtifactClasses artifactClasses = inspectArtifact(artifactId, artifactFile, additionalPlugins, parentClassLoader);
       ArtifactMeta meta = new ArtifactMeta(artifactClasses, parentArtifacts, properties);
       ArtifactDetail artifactDetail =
-        artifactStore.write(artifactId, meta, Files.newInputStreamSupplier(artifactFile), entityImpersonator);
+        artifactStore.write(artifactId, meta, Files.asByteSource(artifactFile), entityImpersonator);
       ArtifactDescriptor descriptor = artifactDetail.getDescriptor();
       // info hides some fields that are available in detail, such as the location of the artifact
       ArtifactInfo artifactInfo = new ArtifactInfo(descriptor.getArtifactId(), artifactDetail.getMeta().getClasses(),
@@ -275,7 +275,9 @@ public class DefaultArtifactRepository implements ArtifactRepository {
       writeSystemMetadata(artifactId.toEntityId(), artifactInfo);
       return artifactDetail;
     } finally {
-      Closeables.closeQuietly(parentClassLoader);
+      try {
+        parentClassLoader.close();
+      } catch (Exception e) {}
     }
   }
 

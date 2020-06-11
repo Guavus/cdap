@@ -427,7 +427,11 @@ public class ExploreExecutorHttpHandler extends AbstractHttpHandler {
         json.addProperty("handle", handle.getHandle());
         responder.sendJson(HttpResponseStatus.OK, json.toString());
       } finally {
-        Closeables.closeQuietly(dataset);
+        try {
+          dataset.close();
+        } catch (Exception e) {
+          // Ignore
+        }
       }
     } catch (Throwable e) {
       LOG.error("Got exception:", e);

@@ -54,7 +54,7 @@ public class DefaultMetadataAdmin implements MetadataAdmin {
     .or(CharMatcher.inRange('0', '9'))
     .or(CharMatcher.is('_'))
     .or(CharMatcher.is('-'))
-    .or(CharMatcher.WHITESPACE)
+    .or(CharMatcher.whitespace())
     .or(CharMatcher.is('.'));
 
   private final MetadataStore metadataStore;

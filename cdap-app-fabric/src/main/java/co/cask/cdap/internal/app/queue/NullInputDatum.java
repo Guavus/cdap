@@ -19,9 +19,10 @@ package co.cask.cdap.internal.app.queue;
 import co.cask.cdap.api.flow.flowlet.InputContext;
 import co.cask.cdap.app.queue.InputDatum;
 import co.cask.cdap.common.queue.QueueName;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Iterators;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -87,12 +88,12 @@ public final class NullInputDatum<T> implements InputDatum<T> {
 
   @Override
   public Iterator<T> iterator() {
-    return Iterators.emptyIterator();
+    return Collections.emptyIterator();
   }
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("retries", retries.get())
       .toString();
   }

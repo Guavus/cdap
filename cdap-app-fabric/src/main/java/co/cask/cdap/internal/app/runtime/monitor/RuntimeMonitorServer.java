@@ -183,7 +183,7 @@ public class RuntimeMonitorServer extends AbstractIdleService {
     public void shutdown(HttpRequest request, HttpResponder responder) {
       responder.sendString(HttpResponseStatus.OK, "Triggering shutdown down Runtime Http Server.");
       shutdownLatch.countDown();
-      stop();
+      stopAsync();
     }
 
     /**

@@ -69,13 +69,13 @@ public class FileMetadataCleaner {
         @Override
         public void run(DatasetContext context) throws Exception {
           int deletedRows = 0;
-          Stopwatch stopwatch = new Stopwatch().start();
+          Stopwatch stopwatch = Stopwatch.createStarted();
           Table table = LoggingStoreTableUtil.getMetadataTable(context, datasetManager);
           // create range with tillTime as endColumn
           Scan scan = new Scan(OLD_ROW_KEY_PREFIX, OLD_ROW_KEY_PREFIX_END, null);
           try (Scanner scanner = table.scan(scan)) {
             Row row;
-            while (stopwatch.elapsedTime(TimeUnit.SECONDS) < cutoffTransactionTime && (row = scanner.next()) != null) {
+            while (stopwatch.elapsed(TimeUnit.SECONDS) < cutoffTransactionTime && (row = scanner.next()) != null) {
               byte[] rowKey = row.getRow();
               // delete all columns for this row
               table.delete(rowKey);
@@ -108,13 +108,13 @@ public class FileMetadataCleaner {
         @Override
         public void run(DatasetContext context) throws Exception {
           Table table = LoggingStoreTableUtil.getMetadataTable(context, datasetManager);
-          Stopwatch stopwatch = new Stopwatch().start();
+          Stopwatch stopwatch = Stopwatch.createStarted();
           byte[] startRowKey = NEW_ROW_KEY_PREFIX;
           byte[] endRowKey = NEW_ROW_KEY_PREFIX_END;
           boolean reachedEnd = false;
           while (!reachedEnd) {
             try (Scanner scanner = table.scan(startRowKey, endRowKey)) {
-              while (stopwatch.elapsedTime(TimeUnit.SECONDS) < cutOffTransactionTime) {
+              while (stopwatch.elapsed(TimeUnit.SECONDS) < cutOffTransactionTime) {
                 Row row = scanner.next();
                 if (row == null) {
                   // if row is null, then scanner next returned null. so we have reached the end.
@@ -170,17 +170,17 @@ public class FileMetadataCleaner {
       transactional.execute(transactionTimeout, new TxRunnable() {
         @Override
         public void run(DatasetContext context) throws Exception {
-          Stopwatch stopwatch = new Stopwatch().start();
+          Stopwatch stopwatch = Stopwatch.createStarted();
           Table table = LoggingStoreTableUtil.getMetadataTable(context, datasetManager);
           for (DeletedEntry entry : toDeleteRows) {
-            if (stopwatch.elapsedTime(TimeUnit.SECONDS) >= cutOffTransactionTimeout) {
+            if (stopwatch.elapsed(TimeUnit.SECONDS) >= cutOffTransactionTimeout) {
               break;
             }
             table.delete(entry.getRowKey());
             deletedEntries.add(entry);
           }
           stopwatch.stop();
-          LOG.info("Deleted {} metadata entries in {} ms", deletedEntries.size(), stopwatch.elapsedMillis());
+          LOG.info("Deleted {} metadata entries in {} ms", deletedEntries.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
         }
       });
     } catch (TransactionFailureException e) {

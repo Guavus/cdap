@@ -192,25 +192,36 @@ public class AppFabricServer extends AbstractIdleService {
 
     cancelHttpService = startHttpService(httpServiceBuilder.build());
     if (runCountUpgradeService != null) {
-      runCountUpgradeService.startAndWait();
+      runCountUpgradeService.startAsync();
+      runCountUpgradeService.awaitRunning();
     }
   }
 
   @Override
   protected void shutDown() throws Exception {
-    coreSchedulerService.stopAndWait();
+    coreSchedulerService.stopAsync();
+    coreSchedulerService.awaitTerminated();
     routeStore.close();
-    bootstrapService.stopAndWait();
+    bootstrapService.stopAsync();
+    bootstrapService.awaitTerminated();
     cancelHttpService.cancel();
-    programRuntimeService.stopAndWait();
-    applicationLifecycleService.stopAndWait();
-    notificationService.stopAndWait();
-    programNotificationSubscriberService.stopAndWait();
-    runRecordCorrectorService.stopAndWait();
-    pluginService.stopAndWait();
-    provisioningService.stopAndWait();
+    programRuntimeService.stopAsync();
+    programRuntimeService.awaitTerminated();
+    applicationLifecycleService.stopAsync();
+    applicationLifecycleService.awaitTerminated();
+    notificationService.stopAsync();
+    notificationService.awaitTerminated();
+    programNotificationSubscriberService.stopAsync();
+    programNotificationSubscriberService.awaitTerminated();
+    runRecordCorrectorService.stopAsync();
+    runRecordCorrectorService.awaitTerminated();
+    pluginService.stopAsync();
+    pluginService.awaitTerminated();
+    provisioningService.stopAsync();
+    provisioningService.awaitTerminated();
     if (runCountUpgradeService != null && runCountUpgradeService.isRunning()) {
-      runCountUpgradeService.stopAndWait();
+      runCountUpgradeService.stopAsync();
+      runCountUpgradeService.awaitTerminated();
     }
   }
 

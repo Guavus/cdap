@@ -75,7 +75,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
@@ -216,7 +215,7 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
   }
 
   @Override
-  protected String getServiceName() {
+  protected String serviceName() {
     return "MapReduceRunner-" + specification.getName();
   }
 
@@ -470,7 +469,7 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
           }
         });
         t.setDaemon(true);
-        t.setName(getServiceName());
+        t.setName(serviceName());
         t.start();
       }
     };
@@ -1103,7 +1102,7 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
    */
   private Location copyFileToLocation(File file, Location targetDir) throws IOException {
     Location targetLocation = targetDir.append(file.getName()).getTempFile(".jar");
-    Files.copy(file, Locations.newOutputSupplier(targetLocation));
+    Files.copy(file, Locations.newOutputSupplier(targetLocation).openStream());
     return targetLocation;
   }
 
@@ -1115,7 +1114,7 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
   private Location copyProgramJar(Location targetDir) throws IOException {
     Location programJarCopy = targetDir.append("program.jar");
 
-    ByteStreams.copy(Locations.newInputSupplier(programJarLocation), Locations.newOutputSupplier(programJarCopy));
+    Locations.newInputSupplier(programJarLocation).copyTo(Locations.newOutputSupplier(programJarLocation));
     LOG.debug("Copied Program Jar to {}, source: {}", programJarCopy, programJarLocation);
     return programJarCopy;
   }
@@ -1339,7 +1338,7 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
     final File target = new File(tempDir, hbaseDDLExtensionJarName);
     BundleJarUtil.createJar(new File(ddlExecutorExtensionDir), target);
     Location targetLocation = tempLocation.append(hbaseDDLExtensionJarName);
-    Files.copy(target, Locations.newOutputSupplier(targetLocation));
+    Files.copy(target, Locations.newOutputSupplier(targetLocation).openStream());
     job.addCacheArchive(targetLocation.toURI());
     return target.getName();
   }

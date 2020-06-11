@@ -25,7 +25,7 @@ import co.cask.cdap.config.ConsoleSettingsStore;
 import co.cask.cdap.security.spi.authentication.SecurityRequestContext;
 import co.cask.http.AbstractHttpHandler;
 import co.cask.http.HttpResponder;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -63,7 +63,7 @@ public class ConsoleSettingsHttpHandler extends AbstractHttpHandler {
   @Path("/")
   @GET
   public void get(HttpRequest request, HttpResponder responder) throws Exception {
-    String userId = Objects.firstNonNull(SecurityRequestContext.getUserId(), "");
+    String userId = MoreObjects.firstNonNull(SecurityRequestContext.getUserId(), "");
     Config userConfig;
     try {
       userConfig = store.get(userId);
@@ -83,7 +83,7 @@ public class ConsoleSettingsHttpHandler extends AbstractHttpHandler {
   @Path("/")
   @DELETE
   public void delete(HttpRequest request, HttpResponder responder) throws Exception {
-    String userId = Objects.firstNonNull(SecurityRequestContext.getUserId(), "");
+    String userId = MoreObjects.firstNonNull(SecurityRequestContext.getUserId(), "");
     try {
       store.delete(userId);
     } catch (ConfigNotFoundException e) {
@@ -107,7 +107,7 @@ public class ConsoleSettingsHttpHandler extends AbstractHttpHandler {
     //Config Properties : Map (Key = CONFIG_PROPERTY, Value = Serialized JSON string of properties)
     //User Settings configurations are stored under empty NAMESPACE.
     Map<String, String> propMap = ImmutableMap.of(CONFIG_PROPERTY, data);
-    String userId = Objects.firstNonNull(SecurityRequestContext.getUserId(), "");
+    String userId = MoreObjects.firstNonNull(SecurityRequestContext.getUserId(), "");
     Config userConfig = new Config(userId, propMap);
     store.put(userConfig);
     responder.sendStatus(HttpResponseStatus.OK);

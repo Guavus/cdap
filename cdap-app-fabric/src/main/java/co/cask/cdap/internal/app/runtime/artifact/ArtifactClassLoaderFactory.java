@@ -97,9 +97,13 @@ final class ArtifactClassLoaderFactory {
     return new CloseableClassLoader(programClassLoader, new Closeable() {
       @Override
       public void close() {
-        Closeables.closeQuietly((Closeable) finalProgramClassLoader);
+        try {
+          ((Closeable) finalProgramClassLoader).close();
+        } catch (Exception e) {}
         if (finalProgramRunner instanceof Closeable) {
-          Closeables.closeQuietly((Closeable) finalProgramRunner);
+          try {
+            ((Closeable) finalProgramRunner).close();
+          } catch (Exception e) {}
         }
       }
     });
@@ -130,7 +134,9 @@ final class ArtifactClassLoaderFactory {
         @Override
         public void close() throws IOException {
           try {
-            Closeables.closeQuietly(classLoader);
+            try {
+              classLoader.close();
+            } catch (Exception e) {}
             if (unpackDir.exists()) {
               DirUtils.deleteDirectoryContents(unpackDir);
             }
@@ -178,7 +184,9 @@ final class ArtifactClassLoaderFactory {
         @Override
         public void close() throws IOException {
           try {
-            Closeables.closeQuietly(parentClassLoader);
+            try {
+              parentClassLoader.close();
+            } catch (Exception e) {}
             if (unpackDir.exists()) {
               DirUtils.deleteDirectoryContents(unpackDir);
             }

@@ -35,6 +35,7 @@ import com.google.common.hash.Hashing;
 import com.google.inject.Inject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,14 +60,16 @@ public final class TMSLogAppender extends LogAppender {
 
   @Override
   public void start() {
-    tmsLogPublisher.startAndWait();
+    tmsLogPublisher.startAsync();
+    tmsLogPublisher.awaitRunning();
     addInfo("Successfully started " + APPENDER_NAME);
     super.start();
   }
 
   @Override
   public void stop() {
-    tmsLogPublisher.stopAndWait();
+    tmsLogPublisher.stopAsync();
+    tmsLogPublisher.awaitTerminated();
     addInfo("Successfully stopped " + APPENDER_NAME);
     super.stop();
   }
@@ -87,7 +90,7 @@ public final class TMSLogAppender extends LogAppender {
   // in Standalone
   @VisibleForTesting
   static int partition(Object key, int numPartitions) {
-    return Math.abs(Hashing.md5().hashString(key.toString()).asInt()) % numPartitions;
+    return Math.abs(Hashing.md5().hashString(key.toString(), StandardCharsets.UTF_8).asInt()) % numPartitions;
   }
 
   /**

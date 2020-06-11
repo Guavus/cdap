@@ -20,7 +20,7 @@ import co.cask.cdap.app.queue.InputDatum;
 import co.cask.cdap.common.queue.QueueName;
 import co.cask.cdap.data2.queue.DequeueResult;
 import com.google.common.base.Function;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
@@ -61,7 +61,7 @@ final class BasicInputDatum<S, T> implements InputDatum<T> {
 
       @Override
       public String toString() {
-        return Objects.toStringHelper(InputContext.class)
+        return MoreObjects.toStringHelper(InputContext.class)
           .add("queue", queueName)
           .toString();
       }

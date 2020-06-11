@@ -127,8 +127,8 @@ public class CoreSchedulerService extends AbstractIdleService implements Schedul
     this.internalService = new RetryOnStartFailureService(() -> new AbstractIdleService() {
 
       @Override
-      protected Executor executor(final State state) {
-        return command -> new Thread(command, "core scheduler service " + state).start();
+      protected Executor executor() {
+        return command -> new Thread(command, "core scheduler service " + state()).start();
       }
 
       @Override
@@ -137,19 +137,25 @@ public class CoreSchedulerService extends AbstractIdleService implements Schedul
           datasetFramework.addInstance(Schedulers.STORE_TYPE_NAME,
                                        Schedulers.STORE_DATASET_ID, DatasetProperties.EMPTY);
         }
-        timeSchedulerService.startAndWait();
+        timeSchedulerService.startAsync();
+        timeSchedulerService.awaitRunning();
         cleanupJobs();
-        constraintCheckerService.startAndWait();
-        scheduleNotificationSubscriberService.startAndWait();
+        constraintCheckerService.startAsync();
+        constraintCheckerService.awaitRunning();
+        scheduleNotificationSubscriberService.startAsync();
+        scheduleNotificationSubscriberService.awaitRunning();
         startedLatch.countDown();
         LOG.info("Started core scheduler service.");
       }
 
       @Override
       protected void shutDown() {
-        scheduleNotificationSubscriberService.stopAndWait();
-        constraintCheckerService.stopAndWait();
-        timeSchedulerService.stopAndWait();
+        scheduleNotificationSubscriberService.stopAsync();
+        scheduleNotificationSubscriberService.awaitTerminated();
+        constraintCheckerService.stopAsync();
+        constraintCheckerService.awaitTerminated();
+        timeSchedulerService.stopAsync();
+        timeSchedulerService.awaitTerminated();
         LOG.info("Stopped core scheduler service.");
       }
     }, co.cask.cdap.common.service.RetryStrategies.exponentialDelay(200, 5000, TimeUnit.MILLISECONDS));
@@ -216,12 +222,14 @@ public class CoreSchedulerService extends AbstractIdleService implements Schedul
 
   @Override
   protected void startUp() throws Exception {
-    internalService.startAndWait();
+    internalService.startAsync();
+    internalService.awaitRunning();
   }
 
   @Override
   protected void shutDown() throws Exception {
-    internalService.stopAndWait();
+    internalService.stopAsync();
+    internalService.awaitTerminated();
   }
 
   @Override

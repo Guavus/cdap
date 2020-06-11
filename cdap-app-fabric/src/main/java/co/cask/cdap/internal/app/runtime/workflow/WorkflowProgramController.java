@@ -54,7 +54,8 @@ final class WorkflowProgramController extends AbstractProgramController {
 
   @Override
   protected void doStop() throws Exception {
-    driver.stopAndWait();
+    driver.stopAsync();
+    driver.awaitTerminated();
   }
 
   @Override

@@ -30,6 +30,7 @@ import co.cask.http.BodyConsumer;
 import co.cask.http.HttpHandler;
 import co.cask.http.HttpResponder;
 import com.google.common.base.Throwables;
+import com.google.common.base.Utf8;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -64,6 +65,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -158,7 +160,7 @@ final class HttpHandlerGenerator {
     ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
     String internalName = Type.getInternalName(rawType);
-    String className = internalName + Hashing.md5().hashString(internalName);
+    String className = internalName + Hashing.md5().hashString(internalName, StandardCharsets.UTF_8);
 
     // Generate the class
     Type classType = Type.getObjectType(className);

@@ -95,6 +95,7 @@ import org.apache.tephra.TransactionSystemClient;
 import org.apache.twill.zookeeper.ZKClientService;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /**
@@ -142,12 +143,14 @@ public class JobQueueDebugger extends AbstractIdleService {
 
   @Override
   protected void startUp() {
-    zkClientService.startAndWait();
+    zkClientService.startAsync();
+    zkClientService.awaitRunning();
   }
 
   @Override
   protected void shutDown() {
-    zkClientService.stopAndWait();
+    zkClientService.stopAsync();
+    zkClientService.awaitTerminated();
   }
 
   private JobQueueScanner getJobQueueScanner() {
@@ -235,8 +238,8 @@ public class JobQueueDebugger extends AbstractIdleService {
     // returns true if there are more Jobs in the partitions
     private boolean scanJobQueue(JobQueue jobQueue, int partition, JobStatistics jobStatistics) {
       try (CloseableIterator<Job> jobs = jobQueue.getJobs(partition, lastJobConsumed)) {
-        Stopwatch stopwatch = new Stopwatch().start();
-        while (stopwatch.elapsedMillis() < 1000) {
+        Stopwatch stopwatch = Stopwatch.createUnstarted().start();
+        while (stopwatch.elapsed(TimeUnit.MILLISECONDS) < 1000) {
           if (!jobs.hasNext()) {
             lastJobConsumed = null;
             return false;
@@ -424,7 +427,8 @@ public class JobQueueDebugger extends AbstractIdleService {
     }
 
     JobQueueDebugger debugger = createDebugger();
-    debugger.startAndWait();
+    debugger.startAsync();
+    debugger.awaitRunning();
 
     debugger.printTopicMessageIds();
 
@@ -433,6 +437,7 @@ public class JobQueueDebugger extends AbstractIdleService {
     } else {
       debugger.scanPartition(partition, trace);
     }
-    debugger.stopAndWait();
+    debugger.stopAsync();
+    debugger.awaitTerminated();
   }
 }

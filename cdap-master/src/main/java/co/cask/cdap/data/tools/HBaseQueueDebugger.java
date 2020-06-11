@@ -156,12 +156,14 @@ public class HBaseQueueDebugger extends AbstractIdleService {
 
   @Override
   protected void startUp() throws Exception {
-    zkClientService.startAndWait();
+    zkClientService.startAsync();
+    zkClientService.awaitRunning();
   }
 
   @Override
   protected void shutDown() throws Exception {
-    zkClientService.stopAndWait();
+    zkClientService.stopAsync();
+    zkClientService.awaitTerminated();
   }
 
   private void scanQueues(List<NamespaceMeta> namespaceMetas) throws Exception {
@@ -558,13 +560,14 @@ public class HBaseQueueDebugger extends AbstractIdleService {
     }
 
     final HBaseQueueDebugger debugger = createDebugger();
-    debugger.startAndWait();
-
+    debugger.startAsync();
+    debugger.awaitRunning();
     // CDAP-9005 We need to create the NamespaceQueryAdmin without authorization enabled, but create the
     // HBaseQueueDebugger with authorization enabled.
     Injector injector = createInjector(true);
     NoAuthService noAuthService = injector.getInstance(NoAuthService.class);
-    noAuthService.startAndWait();
+    noAuthService.startAsync();
+    noAuthService.awaitRunning();
     NamespaceQueryAdmin namespaceQueryAdmin = noAuthService.getNamespaceQueryAdmin();
     Impersonator impersonator = noAuthService.getImpersonator();
 
@@ -580,8 +583,10 @@ public class HBaseQueueDebugger extends AbstractIdleService {
     } else {
       debugger.scanQueues(namespaceQueryAdmin.list());
     }
-    noAuthService.stopAndWait();
-    debugger.stopAndWait();
+    noAuthService.stopAsync();
+    noAuthService.awaitTerminated();
+    debugger.stopAsync();
+    debugger.awaitTerminated();
   }
 
   /**
@@ -602,12 +607,14 @@ public class HBaseQueueDebugger extends AbstractIdleService {
 
     @Override
     protected void startUp() throws Exception {
-      zkClientService.startAndWait();
+      zkClientService.startAsync();
+      zkClientService.awaitRunning();
     }
 
     @Override
     protected void shutDown() throws Exception {
-      zkClientService.stopAndWait();
+      zkClientService.stopAsync();
+      zkClientService.awaitTerminated();
     }
 
     Impersonator getImpersonator() {
