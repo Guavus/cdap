@@ -171,7 +171,11 @@ public class PluginService extends AbstractIdleService {
 
     @Override
     public void onRemoval(RemovalNotification<ArtifactDescriptor, Instantiators> notification) {
-      Closeables.closeQuietly(notification.getValue());
+      try {
+        notification.getValue().close();
+      } catch (Exception e) {
+        // Ignore
+      }
     }
   }
 
@@ -225,9 +229,17 @@ public class PluginService extends AbstractIdleService {
     @Override
     public void close() throws IOException {
       for (InstantiatorInfo instantiatorInfo : instantiatorInfoMap.values()) {
-        Closeables.closeQuietly(instantiatorInfo.getPluginInstantiator());
+        try {
+          instantiatorInfo.getPluginInstantiator().close();
+        } catch (Exception e) {
+          // Ignore
+        }
       }
-      Closeables.closeQuietly(parentClassLoader);
+      try {
+        parentClassLoader.close();
+      } catch (Exception e) {
+        // Ignore
+      }
       DirUtils.deleteDirectoryContents(pluginDir);
     }
   }

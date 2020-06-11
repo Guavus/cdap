@@ -25,8 +25,10 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import org.apache.twill.common.Threads;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 /**
  * SandboxConfigurator spawns a seperate JVM to run configuration of an Application.
@@ -122,7 +124,7 @@ public final class SandboxConfigurator implements Configurator {
           }
           deleteOutput();
         }
-      }
+      }, Threads.SAME_THREAD_EXECUTOR
       );
     } catch (Exception e) {
       // Returns a {@code ListenableFuture} which has an exception set immediately
@@ -140,7 +142,7 @@ public final class SandboxConfigurator implements Configurator {
           process.waitFor();
           int exit = process.exitValue();
           if (exit == 0) {
-            result.set(new DefaultConfigResponse(0, Files.newReaderSupplier(outputFile, Charsets.UTF_8)));
+            result.set(new DefaultConfigResponse(0, Files.asCharSource(outputFile, StandardCharsets.UTF_8)));
           } else {
             result.set(new DefaultConfigResponse(exit, null));
           }

@@ -249,9 +249,11 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
   @Override
   protected void startUp() throws Exception {
     if (messagingService instanceof Service) {
-      ((Service) messagingService).startAndWait();
+      ((Service) messagingService).startAsync();
+      ((Service) messagingService).awaitRunning();
     }
-    datasetService.startAndWait();
+    datasetService.startAsync();
+    datasetService.awaitRunning();
 
     // It is recommended to initialize log appender after datasetService is started,
     // since log appender instantiates a dataset.
@@ -260,6 +262,8 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
     LoggingContextAccessor.setLoggingContext(new ServiceLoggingContext(NamespaceId.SYSTEM.getNamespace(),
                                                                        Constants.Logging.COMPONENT_NAME,
                                                                        Constants.Service.PREVIEW_HTTP));
+
+    applicationLifecycleService.addListener();
     Futures.allAsList(
       applicationLifecycleService.start(),
       programRuntimeService.start(),
@@ -271,9 +275,11 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
   @Override
   protected void shutDown() throws Exception {
     shutDownUnrequiredServices();
-    datasetService.stopAndWait();
+    datasetService.stopAsync();
+    datasetService.awaitTerminated();
     if (messagingService instanceof Service) {
-      ((Service) messagingService).stopAndWait();
+      ((Service) messagingService).stopAsync();
+      ((Service) messagingService).awaitTerminated();
     }
     levelDBTableService.close();
   }
@@ -282,10 +288,14 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
     if (timer != null) {
       timer.cancel();
     }
-    programRuntimeService.stopAndWait();
-    applicationLifecycleService.stopAndWait();
+    programRuntimeService.stopAsync();
+    programRuntimeService.awaitTerminated();
+    applicationLifecycleService.stopAsync();
+    applicationLifecycleService.awaitTerminated();
     logAppenderInitializer.close();
-    metricsCollectionService.stopAndWait();
-    programNotificationSubscriberService.stopAndWait();
+    metricsCollectionService.stopAsync();
+    metricsCollectionService.awaitTerminated();
+    programNotificationSubscriberService.stopAsync();
+    programNotificationSubscriberService.awaitTerminated();
   }
 }

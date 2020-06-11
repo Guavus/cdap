@@ -88,11 +88,14 @@ final class FlowletProgramController extends AbstractProgramController {
   protected void doStop() throws Exception {
     LOG.info("Stopping flowlet: " + flowletContext);
     try {
-      driver.stopAndWait();
+      driver.stopAsync();
+      driver.awaitTerminated();
     } finally {
       // Close all consumers
       for (ConsumerSupplier consumerSupplier : consumerSuppliers) {
-        Closeables.closeQuietly(consumerSupplier);
+        try {
+          consumerSupplier.close();
+        } catch (Exception e) {}
       }
       flowletContext.close();
     }
@@ -137,7 +140,9 @@ final class FlowletProgramController extends AbstractProgramController {
           LOG.warn("Flowlet terminated by itself");
           // Close all consumers
           for (ConsumerSupplier consumerSupplier : consumerSuppliers) {
-            Closeables.closeQuietly(consumerSupplier);
+            try {
+              consumerSupplier.close();
+            } catch (Exception e) {}
           }
         }
       }

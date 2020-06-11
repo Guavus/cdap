@@ -31,6 +31,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.twill.api.RunId;
@@ -45,6 +46,7 @@ import java.net.URL;
 import java.security.PrivilegedExceptionAction;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import javax.annotation.Nullable;
@@ -62,9 +64,18 @@ public final class ProgramRunners {
    */
   public static void startAsUser(String user, final Service service) throws IOException, InterruptedException {
     runAsUser(user, new Callable<ListenableFuture<Service.State>>() {
+      // TODO: Suspicious code ahead - Neelesh.
       @Override
       public ListenableFuture<Service.State> call() throws Exception {
-        return service.start();
+        ListenableFuture<Service.State> startFuture = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+          @Override
+          public Service.State call() throws Exception {
+            Service service1 = service.startAsync();
+            service.awaitRunning();
+            return service1.state();
+          }
+        });
+        return startFuture;
       }
     });
   }

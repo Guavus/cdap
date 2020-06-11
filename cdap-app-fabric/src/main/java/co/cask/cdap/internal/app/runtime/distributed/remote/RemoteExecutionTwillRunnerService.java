@@ -188,7 +188,8 @@ public class RemoteExecutionTwillRunnerService implements TwillRunnerService {
       throw new RuntimeException(e);
     }
 
-    monitorSocksProxy.startAndWait();
+    monitorSocksProxy.startAsync();
+    monitorSocksProxy.awaitRunning();
     monitorScheduler = Executors.newScheduledThreadPool(cConf.getInt(Constants.RuntimeMonitor.THREADS),
                                                         Threads.createDaemonThreadFactory("runtime-monitor-%d"));
     long startMillis = System.currentTimeMillis();
@@ -215,7 +216,8 @@ public class RemoteExecutionTwillRunnerService implements TwillRunnerService {
 
     try {
       try {
-        monitorSocksProxy.stopAndWait();
+        monitorSocksProxy.stopAsync();
+        monitorSocksProxy.awaitTerminated();
       } catch (Exception e) {
         LOG.warn("Exception raised when stopping runtime monitor socks proxy", e);
       }
@@ -455,7 +457,7 @@ public class RemoteExecutionTwillRunnerService implements TwillRunnerService {
             ClusterKeyInfo clusterKeyInfo = new ClusterKeyInfo(programOptions, locationFactory);
             RemoteExecutionTwillController controller = createControllerFactory(programRunId, programOptions,
                                                                                 clusterKeyInfo).create();
-            controller.getRuntimeMonitor().start();
+            controller.getRuntimeMonitor().startAsync();
           }
 
           return scanResult.isEmpty();

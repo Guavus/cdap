@@ -102,7 +102,7 @@ final class FlowletProcessDriver extends AbstractExecutionThreadService {
   }
 
   @Override
-  protected String getServiceName() {
+  protected String serviceName() {
     return getClass().getSimpleName() + "-" + flowletContext.getName() + "-" + flowletContext.getInstanceId();
   }
 
@@ -110,7 +110,7 @@ final class FlowletProcessDriver extends AbstractExecutionThreadService {
   protected void startUp() throws Exception {
     runThread = Thread.currentThread();
     processExecutor = Executors.newSingleThreadExecutor(
-      Threads.createDaemonThreadFactory(getServiceName() + "-executor"));
+      Threads.createDaemonThreadFactory(serviceName() + "-executor"));
   }
 
   @Override

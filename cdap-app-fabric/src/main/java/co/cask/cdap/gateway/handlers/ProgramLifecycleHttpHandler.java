@@ -88,11 +88,7 @@ import co.cask.cdap.proto.id.WorkflowId;
 import co.cask.cdap.scheduler.ProgramScheduleService;
 import co.cask.cdap.security.spi.authorization.UnauthorizedException;
 import co.cask.http.HttpResponder;
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
-import com.google.common.base.Throwables;
+import com.google.common.base.*;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -108,6 +104,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import org.apache.twill.common.Threads;
 import org.apache.twill.discovery.DiscoveryServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -809,11 +806,11 @@ public class ProgramLifecycleHttpHandler extends AbstractAppFabricHttpHandler {
       throw new NotFoundException(programId);
     }
 
-    String description = Objects.firstNonNull(scheduleFromRequest.getDescription(), "");
-    Map<String, String> properties = Objects.firstNonNull(scheduleFromRequest.getProperties(), Collections.emptyMap());
-    List<? extends Constraint> constraints = Objects.firstNonNull(scheduleFromRequest.getConstraints(), NO_CONSTRAINTS);
+    String description = MoreObjects.firstNonNull(scheduleFromRequest.getDescription(), "");
+    Map<String, String> properties = MoreObjects.firstNonNull(scheduleFromRequest.getProperties(), Collections.emptyMap());
+    List<? extends Constraint> constraints = MoreObjects.firstNonNull(scheduleFromRequest.getConstraints(), NO_CONSTRAINTS);
     long timeoutMillis =
-      Objects.firstNonNull(scheduleFromRequest.getTimeoutMillis(), Schedulers.JOB_QUEUE_TIMEOUT_MILLIS);
+      MoreObjects.firstNonNull(scheduleFromRequest.getTimeoutMillis(), Schedulers.JOB_QUEUE_TIMEOUT_MILLIS);
     ProgramSchedule schedule = new ProgramSchedule(scheduleName, description, programId, properties,
                                                    scheduleFromRequest.getTrigger(), constraints, timeoutMillis);
     programScheduleService.add(schedule);
@@ -1074,7 +1071,7 @@ public class ProgramLifecycleHttpHandler extends AbstractAppFabricHttpHandler {
         for (ListenableFuture<ProgramRunId> stop : stops) {
           ListenableFuture<BatchProgramResult> issuedStop =
             Futures.transform(stop, (Function<ProgramRunId, BatchProgramResult>) input ->
-              new BatchProgramResult(program, HttpResponseStatus.OK.code(), null, input.getRun()));
+              new BatchProgramResult(program, HttpResponseStatus.OK.code(), null, input.getRun()), Threads.SAME_THREAD_EXECUTOR);
           issuedStops.add(issuedStop);
         }
       } catch (NotFoundException e) {
