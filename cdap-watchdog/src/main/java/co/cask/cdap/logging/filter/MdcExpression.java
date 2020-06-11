@@ -17,7 +17,7 @@
 package co.cask.cdap.logging.filter;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * Represents an expression that can match a key,value in MDC.
@@ -47,7 +47,7 @@ public class MdcExpression implements Filter {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("key", key)
       .add("value", value)
       .toString();

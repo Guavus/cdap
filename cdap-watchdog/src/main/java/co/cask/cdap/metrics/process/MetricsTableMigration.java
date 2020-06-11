@@ -73,12 +73,11 @@ public class  MetricsTableMigration {
                v2MetricsTableName, v3MetricsTableName, sleepMillisBetweenRecords);
       Row row;
       int recordsScanned = 0;
-      Stopwatch stopwatch = new Stopwatch();
-      stopwatch.start();
+      Stopwatch stopwatch = Stopwatch.createStarted();
       while (!stopping && ((row = scanner.next()) != null)) {
         if (recordsScanned % 1000 == 0) {
           LOG.debug("Took {}s for transferring {} records in Metrics Data Migration",
-                    stopwatch.elapsedTime(TimeUnit.SECONDS), recordsScanned);
+                    stopwatch.elapsed(TimeUnit.SECONDS), recordsScanned);
         }
 
         byte[] rowKey = row.getRow();
@@ -133,7 +132,7 @@ public class  MetricsTableMigration {
       }
       stopwatch.stop();
       LOG.info("Finished migrating {} records from the metrics table {}. Took {}s",
-               recordsScanned, v2MetricsTableName, stopwatch.elapsedTime(TimeUnit.SECONDS));
+               recordsScanned, v2MetricsTableName, stopwatch.elapsed(TimeUnit.SECONDS));
     }
   }
 

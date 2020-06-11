@@ -109,7 +109,8 @@ public class LocalLogAppender extends LogAppender {
         new LogProcessorPipelineContext(cConf, spec.getName(), spec.getContext(),
                                         spec.getContext().getMetricsContext(), spec.getContext().getInstanceId());
       LocalLogProcessorPipeline pipeline = new LocalLogProcessorPipeline(context, syncIntervalMillis);
-      pipeline.startAndWait();
+      pipeline.startAsync();
+      pipeline.awaitRunning();
       pipelineThreads.add(pipeline.getAppenderThread());
       pipelines.add(pipeline);
     }
@@ -126,7 +127,8 @@ public class LocalLogAppender extends LogAppender {
     super.stop();
     for (LocalLogProcessorPipeline pipeline : pipelines) {
       try {
-        pipeline.stopAndWait();
+        pipeline.stopAsync();
+        pipeline.awaitTerminated();
       } catch (Throwable t) {
         addError("Exception raised when stopping log processing pipeline " + pipeline.getName(), t);
       }
