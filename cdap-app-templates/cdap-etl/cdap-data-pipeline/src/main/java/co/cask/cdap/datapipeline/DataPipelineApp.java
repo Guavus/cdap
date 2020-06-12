@@ -34,6 +34,7 @@ import co.cask.cdap.etl.api.condition.Condition;
 import co.cask.cdap.etl.common.Constants;
 import co.cask.cdap.etl.proto.v2.ETLBatchConfig;
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Set;
@@ -53,7 +54,7 @@ public class DataPipelineApp extends AbstractApplication<ETLBatchConfig> {
   @Override
   public void configure() {
     ETLBatchConfig config = getConfig();
-    setDescription(Objects.firstNonNull(config.getDescription(), DEFAULT_DESCRIPTION));
+    setDescription(MoreObjects.firstNonNull(config.getDescription(), DEFAULT_DESCRIPTION));
 
     addWorkflow(new SmartWorkflow(config, supportedPluginTypes, getConfigurer()));
 

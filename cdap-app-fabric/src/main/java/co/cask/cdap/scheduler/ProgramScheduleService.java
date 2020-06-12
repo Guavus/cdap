@@ -38,6 +38,7 @@ import co.cask.cdap.security.authorization.AuthorizationUtil;
 import co.cask.cdap.security.spi.authentication.AuthenticationContext;
 import co.cask.cdap.security.spi.authorization.AuthorizationEnforcer;
 import co.cask.cdap.security.spi.authorization.UnauthorizedException;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.inject.Inject;
 
@@ -100,23 +101,23 @@ public class ProgramScheduleService {
     authorizationEnforcer.enforce(scheduleId.getParent(), authenticationContext.getPrincipal(), Action.ADMIN);
     ProgramSchedule existing = scheduler.getSchedule(scheduleId);
 
-    String description = Objects.firstNonNull(scheduleDetail.getDescription(), existing.getDescription());
+    String description = MoreObjects.firstNonNull(scheduleDetail.getDescription(), existing.getDescription());
     ProgramId programId = scheduleDetail.getProgram() == null ? existing.getProgramId()
       : existing.getProgramId().getParent().program(
       scheduleDetail.getProgram().getProgramType() == null ? existing.getProgramId().getType()
         : ProgramType.valueOfSchedulableType(scheduleDetail.getProgram().getProgramType()),
-      Objects.firstNonNull(scheduleDetail.getProgram().getProgramName(), existing.getProgramId().getProgram()));
+      MoreObjects.firstNonNull(scheduleDetail.getProgram().getProgramName(), existing.getProgramId().getProgram()));
     if (!programId.equals(existing.getProgramId())) {
       throw new BadRequestException(
         String.format("Must update the schedule '%s' with the same program as '%s'. "
                         + "To change the program in a schedule, please delete the schedule and create a new one.",
                       existing.getName(), existing.getProgramId().toString()));
     }
-    Map<String, String> properties = Objects.firstNonNull(scheduleDetail.getProperties(), existing.getProperties());
-    Trigger trigger = Objects.firstNonNull(scheduleDetail.getTrigger(), existing.getTrigger());
+    Map<String, String> properties = MoreObjects.firstNonNull(scheduleDetail.getProperties(), existing.getProperties());
+    Trigger trigger = MoreObjects.firstNonNull(scheduleDetail.getTrigger(), existing.getTrigger());
     List<? extends Constraint> constraints =
-      Objects.firstNonNull(scheduleDetail.getConstraints(), existing.getConstraints());
-    Long timeoutMillis = Objects.firstNonNull(scheduleDetail.getTimeoutMillis(), existing.getTimeoutMillis());
+      MoreObjects.firstNonNull(scheduleDetail.getConstraints(), existing.getConstraints());
+    Long timeoutMillis = MoreObjects.firstNonNull(scheduleDetail.getTimeoutMillis(), existing.getTimeoutMillis());
     ProgramSchedule updatedSchedule = new ProgramSchedule(existing.getName(), description, programId, properties,
                                                           trigger, constraints, timeoutMillis);
     scheduler.updateSchedule(updatedSchedule);
