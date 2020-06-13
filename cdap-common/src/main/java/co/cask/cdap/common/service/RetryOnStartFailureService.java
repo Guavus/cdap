@@ -110,24 +110,48 @@ public class RetryOnStartFailureService extends AbstractService {
     // the setting of the startedService field. When that happens, the stop failure state is not propagated.
     // Nevertheless, there won't be any service left behind without stopping.
     if (startedService != null) {
-      Futures.addCallback(MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+
+//      try{
+//        startedService.awaitTerminated();
+//        notifyStopped();
+//      } catch (IllegalStateException e){
+//        LOG.warn("Service {} stop failed due to {}", startedService , e.getMessage());
+//        notifyFailed(e);
+//      }
+
+      startedService.addListener(new Listener() {
         @Override
-        public Service.State call() throws Exception {
-          Service service = startedService.stopAsync();
-          startedService.awaitTerminated();
-          return service.state();
-        }
-      }), new FutureCallback<State>() {
-        @Override
-        public void onSuccess(State result) {
+        public void terminated(State from) {
           notifyStopped();
         }
 
         @Override
-        public void onFailure(Throwable t) {
-          notifyFailed(t);
+        public void failed(State from, Throwable failure) {
+          LOG.warn("Service {} stop failed due to {}", startedService , failure.getMessage());
+          notifyFailed(failure);
         }
-      }, Threads.SAME_THREAD_EXECUTOR);
+      }, MoreExecutors.directExecutor());
+      startedService.stopAsync();
+
+
+//      Futures.addCallback(MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+//        @Override
+//        public Service.State call() throws Exception {
+//          Service service = startedService.stopAsync();
+//          startedService.awaitTerminated();
+//          return service.state();
+//        }
+//      }), new FutureCallback<State>() {
+//        @Override
+//        public void onSuccess(State result) {
+//          notifyStopped();
+//        }
+//
+//        @Override
+//        public void onFailure(Throwable t) {
+//          notifyFailed(t);
+//        }
+//      }, Threads.SAME_THREAD_EXECUTOR);
       return;
     }
 
@@ -135,20 +159,38 @@ public class RetryOnStartFailureService extends AbstractService {
     // because if the underlying service is not yet started due to failure, it shouldn't affect the stop state
     // of this retrying service.
     if (currentDelegate != null) {
-      // TODO: himanshu: not sure about this needs to be reviewed
-      MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+
+//      try{
+//        currentDelegate.awaitTerminated();
+//        notifyStopped();
+//      } catch (IllegalStateException e){
+//        LOG.warn("Service {} stop failed due to {}", currentDelegate , e.getMessage());
+//      }
+
+
+      currentDelegate.addListener(new Listener() {
         @Override
-        public Service.State call() throws Exception {
-          Service service = currentDelegate.stopAsync();
-          currentDelegate.awaitTerminated();
-          return service.state();
-        }
-      }).addListener(new Runnable() {
-        @Override
-        public void run() {
+        public void terminated(State from) {
           notifyStopped();
         }
-      }, Threads.SAME_THREAD_EXECUTOR);
+      }, MoreExecutors.directExecutor());
+      currentDelegate.stopAsync();
+
+
+//      // TODO: himanshu: not sure about this needs to be reviewed
+//      MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+//        @Override
+//        public Service.State call() throws Exception {
+//          Service service = currentDelegate.stopAsync();
+//          currentDelegate.awaitTerminated();
+//          return service.state();
+//        }
+//      }).addListener(new Runnable() {
+//        @Override
+//        public void run() {
+//          notifyStopped();
+//        }
+//      }, Threads.SAME_THREAD_EXECUTOR);
       return;
     }
 

@@ -43,10 +43,7 @@ import org.apache.twill.discovery.DiscoveryServiceClient;
 import org.apache.twill.kafka.client.BrokerService;
 import org.apache.twill.zookeeper.ZKClient;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -113,47 +110,86 @@ public class DistributedLogFramework extends ResourceBalancerService {
     return new AbstractIdleService() {
       @Override
       protected void startUp() throws Exception {
+        List<Service> serviceList = new LinkedList<>();
         // Starts all pipeline
-        validateAllFutures(Iterables.transform(pipelines, Service::start));
+        for(Service service: pipelines){
+          serviceList.add(service.startAsync());
+        }
+        validateAllService(serviceList, true);
       }
 
       @Override
       protected void shutDown() throws Exception {
+        List<Service> serviceList = new LinkedList<>();
         // Stops all pipeline
-        validateAllFutures(Iterables.transform(pipelines, Service::stop));
+        for(Service service: pipelines){
+          serviceList.add(service.stopAsync());
+        }
+        validateAllService(serviceList, false);
       }
     };
+  }
+
+  private void validateAllService(List<Service> serviceList , boolean isStarting) throws Exception {
+    Throwable outException = null;
+    for (Service service: serviceList) {
+      try{
+        boolean wait = true;
+        while(wait){
+          if (isStarting) {
+            service.awaitRunning();
+            wait=false;
+          } else{
+            service.awaitTerminated();
+            wait=false;
+          }
+        }
+      } catch (Exception e) {
+        if (outException == null) {
+          outException = e.getCause();
+        } else {
+          outException.addSuppressed(e.getCause());
+        }
+      }
+    }
+
+    if (outException != null) {
+      if (outException instanceof Exception) {
+        throw (Exception) outException;
+      }
+      throw new RuntimeException(outException);
+    }
   }
 
   /**
    * Blocks and validates all the given futures completed successfully.
    */
-  private void validateAllFutures(Iterable<? extends ListenableFuture<?>> futures) throws Exception {
-    // The get call shouldn't throw exception. It just block until all futures completed.
-    Futures.successfulAsList(futures).get();
-
-    // Iterates all futures to make sure all of them completed successfully
-    Throwable exception = null;
-    for (ListenableFuture<?> future : futures) {
-      try {
-        future.get();
-      } catch (ExecutionException e) {
-        if (exception == null) {
-          exception = e.getCause();
-        } else {
-          exception.addSuppressed(e.getCause());
-        }
-      }
-    }
-
-    // Throw exception if any of the future failed.
-    if (exception != null) {
-      if (exception instanceof Exception) {
-        throw (Exception) exception;
-      }
-      throw new RuntimeException(exception);
-    }
-  }
+//  private void validateAllFutures(Iterable<? extends ListenableFuture<?>> futures) throws Exception {
+//    // The get call shouldn't throw exception. It just block until all futures completed.
+//    Futures.successfulAsList(futures).get();
+//
+//    // Iterates all futures to make sure all of them completed successfully
+//    Throwable exception = null;
+//    for (ListenableFuture<?> future : futures) {
+//      try {
+//        future.get();
+//      } catch (ExecutionException e) {
+//        if (exception == null) {
+//          exception = e.getCause();
+//        } else {
+//          exception.addSuppressed(e.getCause());
+//        }
+//      }
+//    }
+//
+//    // Throw exception if any of the future failed.
+//    if (exception != null) {
+//      if (exception instanceof Exception) {
+//        throw (Exception) exception;
+//      }
+//      throw new RuntimeException(exception);
+//    }
+//  }
 
   /**
    * Determines the buffer size for one pipeline.
