@@ -101,7 +101,11 @@ final class DefaultProgramWorkflowRunner implements ProgramWorkflowRunner {
       Program program = Programs.create(cConf, workflowProgram, programId, programRunner);
       return getProgramRunnable(name, programRunner, program);
     } catch (Exception e) {
-      closeProgramRunner(programRunner);
+      try {
+        closeProgramRunner(programRunner);
+      } catch (IOException ioException) {
+        ioException.printStackTrace();
+      }
       throw Throwables.propagate(e);
     }
   }
@@ -162,7 +166,7 @@ final class DefaultProgramWorkflowRunner implements ProgramWorkflowRunner {
       // If there is any exception when running the program, close the program to release resources.
       // Otherwise it will be released when the execution completed.
       programStateWriter.error(program.getId().run(runId), t);
-      Closeables.closeQuietly(closeable);
+      closeable.close();
       throw t;
     }
     blockForCompletion(closeable, controller);
@@ -192,19 +196,23 @@ final class DefaultProgramWorkflowRunner implements ProgramWorkflowRunner {
         switch (currentState) {
           case COMPLETED:
             completed();
-          break;
+            break;
           case KILLED:
             killed();
-          break;
+            break;
           case ERROR:
             error(cause);
-          break;
+            break;
         }
       }
 
       @Override
       public void completed() {
-        Closeables.closeQuietly(closeable);
+        try {
+          closeable.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
         Set<Operation> fieldLineageOperations = new HashSet<>();
         if (controller instanceof WorkflowDataProvider) {
           fieldLineageOperations.addAll(((WorkflowDataProvider) controller).getFieldLineageOperations());
@@ -216,14 +224,22 @@ final class DefaultProgramWorkflowRunner implements ProgramWorkflowRunner {
 
       @Override
       public void killed() {
-        Closeables.closeQuietly(closeable);
+        try {
+          closeable.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
         nodeStates.put(nodeId, new WorkflowNodeState(nodeId, NodeStatus.KILLED, controller.getRunId().getId(), null));
         completion.set(null);
       }
 
       @Override
       public void error(Throwable cause) {
-        Closeables.closeQuietly(closeable);
+        try {
+          closeable.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
         nodeStates.put(nodeId, new WorkflowNodeState(nodeId, NodeStatus.FAILED, controller.getRunId().getId(), cause));
         completion.setException(cause);
       }
@@ -260,7 +276,7 @@ final class DefaultProgramWorkflowRunner implements ProgramWorkflowRunner {
     return new Closeable() {
       @Override
       public void close() throws IOException {
-        Closeables.closeQuietly(program);
+        program.close();
         closeProgramRunner(programRunner);
       }
     };
@@ -269,9 +285,9 @@ final class DefaultProgramWorkflowRunner implements ProgramWorkflowRunner {
   /**
    * Closes the given {@link ProgramRunner} if it implements {@link Closeable}.
    */
-  private void closeProgramRunner(ProgramRunner programRunner) {
+  private void closeProgramRunner(ProgramRunner programRunner) throws IOException {
     if (programRunner instanceof Closeable) {
-      Closeables.closeQuietly((Closeable) programRunner);
+      ((Closeable) programRunner).close();
     }
   }
 }

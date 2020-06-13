@@ -55,6 +55,7 @@ import org.apache.twill.common.Threads;
 import org.apache.twill.discovery.DiscoveryServiceClient;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collections;
 
 /**
@@ -97,7 +98,7 @@ public class ServiceProgramRunner extends AbstractProgramRunnerWithPlugin {
   }
 
   @Override
-  public ProgramController run(Program program, ProgramOptions options) {
+  public ProgramController run(Program program, ProgramOptions options) throws IOException {
     int instanceId = Integer.parseInt(options.getArguments().getOption(ProgramOptionConstants.INSTANCE_ID, "-1"));
     Preconditions.checkArgument(instanceId >= 0, "Missing instance Id");
 
@@ -143,10 +144,10 @@ public class ServiceProgramRunner extends AbstractProgramRunnerWithPlugin {
 
       ProgramController controller = new ServiceProgramControllerAdapter(component, program.getId().run(runId),
                                                                          spec.getName() + "-" + instanceId);
-      component.start();
+      component.startAsync();
       return controller;
     } catch (Throwable t) {
-      Closeables.closeQuietly(pluginInstantiator);
+      pluginInstantiator.close();
       throw t;
     }
   }

@@ -99,7 +99,7 @@ public abstract class AbstractArtifactManager implements ArtifactManager {
     @Override
     public void close() throws IOException {
       try {
-        Closeables.closeQuietly(directoryClassLoader);
+        directoryClassLoader.close();
         DirUtils.deleteDirectoryContents(directory);
       } catch (IOException e) {
         LOG.warn("Failed to delete directory {}", directory, e);

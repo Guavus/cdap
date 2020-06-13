@@ -200,7 +200,7 @@ public abstract class AbstractProgramRuntimeService extends AbstractIdleService 
     try {
       File programJar = Locations.linkOrCopy(programJarLocation, new File(tempDir, "program.jar"));
       // Unpack the JAR file
-      BundleJarUtil.unJar(() -> Files.newInputStream(programJar.toPath()), unpackedDir);
+      BundleJarUtil.unJar(Locations.newInputSupplier(Locations.toLocation(programJar)), unpackedDir);
     } catch (IOException ioe) {
       throw ioe;
     } catch (Exception e) {
@@ -228,7 +228,7 @@ public abstract class AbstractProgramRuntimeService extends AbstractIdleService 
               file.delete();
             }
           } else if (resource instanceof Closeable) {
-            Closeables.closeQuietly((Closeable) resource);
+            ((Closeable) resource).close();
           } else if (resource instanceof Runnable) {
             ((Runnable) resource).run();
           }

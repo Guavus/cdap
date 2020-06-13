@@ -457,7 +457,11 @@ public abstract class AbstractContext extends AbstractServiceDiscoverer
    */
   @Override
   public void close() {
-    datasetCache.close();
+    try {
+      datasetCache.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**

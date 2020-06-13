@@ -35,8 +35,8 @@ public abstract class TimeTrackingQueueReader<T> implements QueueReader<T> {
   @Override
   public final InputDatum<T> dequeue(long timeout,
                                      TimeUnit timeoutUnit) throws IOException, InterruptedException {
-    Stopwatch stopwatch = new Stopwatch();
-    stopwatch.start();
+    Stopwatch stopwatch = Stopwatch.createStarted();
+
     long sleepNano = computeSleepNano(timeout, timeoutUnit);
     long timeoutNano = timeoutUnit.toNanos(timeout);
 
@@ -46,7 +46,7 @@ public abstract class TimeTrackingQueueReader<T> implements QueueReader<T> {
         break;
       }
 
-      long elapsedNano = stopwatch.elapsedTime(TimeUnit.NANOSECONDS);
+      long elapsedNano = stopwatch.elapsed(TimeUnit.NANOSECONDS);
       if (elapsedNano + sleepNano >= timeoutNano) {
         break;
       }

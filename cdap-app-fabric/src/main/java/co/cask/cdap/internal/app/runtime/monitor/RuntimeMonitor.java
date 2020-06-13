@@ -127,7 +127,7 @@ public class RuntimeMonitor extends AbstractRetryableScheduledService {
   protected void doStartUp() {
     LOG.debug("Start monitoring program run {}", programRunId);
     try {
-      metricScheduledService.startAndWait();
+      metricScheduledService.startAsync().awaitRunning();
     } catch (Exception e) {
       LOG.warn("Failed to start metrics service for program run {}, node minute metrics will not be updated.",
                programRunId);
@@ -137,7 +137,7 @@ public class RuntimeMonitor extends AbstractRetryableScheduledService {
   @Override
   protected void doShutdown() {
     try {
-      metricScheduledService.stopAndWait();
+      metricScheduledService.stopAsync().awaitTerminated();
     } catch (Exception e) {
       LOG.warn("Failed to stop metrics service for program run {}", programRunId);
     }
@@ -189,7 +189,7 @@ public class RuntimeMonitor extends AbstractRetryableScheduledService {
                                new IllegalStateException("Program runtime terminated abnormally. " +
                                                            "Please inspect logs for root cause.", e));
       clearStates();
-      stop();
+      stopAsync();
       return 0;
     }
 
@@ -217,7 +217,7 @@ public class RuntimeMonitor extends AbstractRetryableScheduledService {
       if ((latestPublishTime < 0 && now - (gracefulShutdownMillis >> 1) > programFinishTime)
         || (now - gracefulShutdownMillis > programFinishTime)) {
         triggerRuntimeShutdown();
-        stop();
+        stopAsync();
       }
     }
 

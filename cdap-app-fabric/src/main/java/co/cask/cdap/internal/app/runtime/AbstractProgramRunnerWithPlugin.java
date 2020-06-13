@@ -20,12 +20,12 @@ import co.cask.cdap.app.runtime.ProgramOptions;
 import co.cask.cdap.app.runtime.ProgramRunner;
 import co.cask.cdap.common.conf.CConfiguration;
 import co.cask.cdap.internal.app.runtime.plugin.PluginInstantiator;
-import com.google.common.io.Closeables;
 import com.google.common.util.concurrent.Service;
 import org.apache.twill.internal.ServiceListenerAdapter;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import javax.annotation.Nullable;
 
 /**
@@ -73,9 +73,13 @@ public abstract class AbstractProgramRunnerWithPlugin implements ProgramRunner {
     };
   }
 
-  protected void closeAllQuietly(Iterable<Closeable> closeables) {
+  protected void closeAllQuietly(Iterable<Closeable> closeables){
     for (Closeable c : closeables) {
-      Closeables.closeQuietly(c);
+      try {
+        c.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 }

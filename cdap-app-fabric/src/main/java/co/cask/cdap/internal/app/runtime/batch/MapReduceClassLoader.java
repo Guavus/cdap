@@ -147,7 +147,7 @@ public class MapReduceClassLoader extends CombineClassLoader implements AutoClos
     synchronized (this) {
       taskContextProvider = Optional.fromNullable(taskContextProvider).or(taskContextProviderSupplier);
     }
-    taskContextProvider.startAndWait();
+    taskContextProvider.startAsync().awaitRunning();
     return taskContextProvider;
   }
 
@@ -197,7 +197,7 @@ public class MapReduceClassLoader extends CombineClassLoader implements AutoClos
       if (provider != null) {
         Service.State state = provider.state();
         if (state == Service.State.STARTING || state == Service.State.RUNNING) {
-          provider.stopAndWait();
+          provider.stopAsync().awaitTerminated();
         }
       }
     } catch (Exception e) {

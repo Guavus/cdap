@@ -91,10 +91,7 @@ import co.cask.cdap.proto.id.ProgramId;
 import co.cask.cdap.proto.id.ProgramRunId;
 import co.cask.cdap.proto.id.StreamId;
 import co.cask.common.io.ByteBufferInputStream;
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
+import com.google.common.base.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -292,7 +289,7 @@ public final class FlowletProgramRunner implements ProgramRunner {
       controllerRef.set(controller);
 
       LOG.info("Starting flowlet: {}", flowletContext);
-      driver.start();
+      driver.startAsync();
       LOG.info("Flowlet started: {}", flowletContext);
 
       return controller;
@@ -650,7 +647,7 @@ public final class FlowletProgramRunner implements ProgramRunner {
 
       @Override
       public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
           .add("dataType", dataType)
           .add("schema", schema)
           .toString();

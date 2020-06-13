@@ -76,7 +76,7 @@ public final class DistributedMapReduceTaskContextProvider extends MapReduceTask
     super.startUp();
     try {
       for (Service service : coreServices) {
-        service.startAndWait();
+        service.startAsync().awaitRunning();
       }
       logAppenderInitializer.initialize();
       ProgramOptions programOptions = mapReduceContextConfig.getProgramOptions();
@@ -103,7 +103,7 @@ public final class DistributedMapReduceTaskContextProvider extends MapReduceTask
     }
     for (Service service : (Iterable<Service>) coreServices::descendingIterator) {
       try {
-        service.stopAndWait();
+        service.stopAsync().awaitTerminated();
       } catch (Exception e) {
         if (failure != null) {
           failure.addSuppressed(e);

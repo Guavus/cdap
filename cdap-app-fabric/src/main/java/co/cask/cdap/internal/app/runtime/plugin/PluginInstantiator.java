@@ -131,7 +131,7 @@ public class PluginInstantiator implements Closeable {
   public void addArtifact(Location artifactLocation, ArtifactId destArtifact) throws IOException {
     File destFile = new File(pluginDir, Artifacts.getFileName(destArtifact));
     if (!destFile.exists()) {
-      Files.copy(Locations.newInputSupplier(artifactLocation), destFile);
+      Locations.linkOrCopy(artifactLocation, destFile);
     }
   }
 
@@ -388,7 +388,7 @@ public class PluginInstantiator implements Closeable {
     // Cleanup the ClassLoader cache and the temporary directory for the expanded plugin jar.
     classLoaders.invalidateAll();
     if (ownedParentClassLoader) {
-      Closeables.closeQuietly((Closeable) parentClassLoader);
+      ((Closeable) parentClassLoader).close();
     }
     try {
       DirUtils.deleteDirectoryContents(tmpDir);
@@ -483,7 +483,11 @@ public class PluginInstantiator implements Closeable {
 
     @Override
     public void onRemoval(RemovalNotification<ClassLoaderKey, PluginClassLoader> notification) {
-      Closeables.closeQuietly(notification.getValue());
+      try {
+        notification.getValue().close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 
