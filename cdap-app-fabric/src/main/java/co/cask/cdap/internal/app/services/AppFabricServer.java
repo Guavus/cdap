@@ -43,6 +43,7 @@ import co.cask.http.NettyHttpService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.Service;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.twill.common.Cancellable;
@@ -55,6 +56,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -137,6 +139,38 @@ public class AppFabricServer extends AbstractIdleService {
     this.runCountUpgradeService = runCountUpgradeService;
   }
 
+
+  private void validateAllService(List<Service> serviceList , boolean isStarting) throws Exception {
+    Throwable outException = null;
+    for (Service service: serviceList) {
+      try{
+        boolean wait = true;
+        while(wait){
+          if (isStarting) {
+            service.awaitRunning();
+            wait=false;
+          } else{
+            service.awaitTerminated();
+            wait=false;
+          }
+        }
+      } catch (Exception e) {
+        if (outException == null) {
+          outException = e.getCause();
+        } else {
+          outException.addSuppressed(e.getCause());
+        }
+      }
+    }
+
+    if (outException != null) {
+      if (outException instanceof Exception) {
+        throw (Exception) outException;
+      }
+      throw new RuntimeException(outException);
+    }
+  }
+
   /**
    * Configures the AppFabricService pre-start.
    */
@@ -145,20 +179,35 @@ public class AppFabricServer extends AbstractIdleService {
     LoggingContextAccessor.setLoggingContext(new ServiceLoggingContext(NamespaceId.SYSTEM.getNamespace(),
                                                                        Constants.Logging.COMPONENT_NAME,
                                                                        Constants.Service.APP_FABRIC_HTTP));
-    Futures.allAsList(
-      ImmutableList.of(
-        notificationService.start(),
-        provisioningService.start(),
-        applicationLifecycleService.start(),
-        bootstrapService.start(),
-        programRuntimeService.start(),
-        streamCoordinatorClient.start(),
-        programNotificationSubscriberService.start(),
-        runRecordCorrectorService.start(),
-        pluginService.start(),
-        coreSchedulerService.start()
-      )
-    ).get();
+//    Futures.allAsList(
+//      ImmutableList.of(
+//        notificationService.start(),
+//        provisioningService.start(),
+//        applicationLifecycleService.start(),
+//        bootstrapService.start(),
+//        programRuntimeService.start(),
+//        streamCoordinatorClient.start(),
+//        programNotificationSubscriberService.start(),
+//        runRecordCorrectorService.start(),
+//        pluginService.start(),
+//        coreSchedulerService.start()
+//      )
+//    ).get();
+
+    List<Service> serviceList = new LinkedList<>();
+    serviceList.add(notificationService.startAsync());
+    serviceList.add(provisioningService.startAsync());
+    serviceList.add(applicationLifecycleService.startAsync());
+    serviceList.add(bootstrapService.startAsync());
+    serviceList.add(programRuntimeService.startAsync());
+    serviceList.add(streamCoordinatorClient.startAsync());
+    serviceList.add(programNotificationSubscriberService.startAsync());
+    serviceList.add(runRecordCorrectorService.startAsync());
+    serviceList.add(pluginService.startAsync());
+    serviceList.add(coreSchedulerService.startAsync());
+
+    validateAllService(serviceList, true);
+
 
     // Create handler hooks
     ImmutableList.Builder<HandlerHook> builder = ImmutableList.builder();

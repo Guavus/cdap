@@ -61,7 +61,7 @@ public class RunCountUpgradeService extends AbstractRetryableScheduledService {
   public long runTask() throws Exception {
     if (defaultStore.isUpgradeComplete()) {
       LOG.info("Run count upgrade completed.");
-      stop();
+      stopAsync();
       return 0;
     }
 
