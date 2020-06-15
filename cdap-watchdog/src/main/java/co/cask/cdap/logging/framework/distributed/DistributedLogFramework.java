@@ -23,6 +23,7 @@ import co.cask.cdap.common.resource.ResourceBalancerService;
 import co.cask.cdap.common.service.RetryOnStartFailureService;
 import co.cask.cdap.common.service.RetryStrategies;
 import co.cask.cdap.common.service.RetryStrategy;
+import co.cask.cdap.common.service.ServiceUtil;
 import co.cask.cdap.logging.framework.LogPipelineLoader;
 import co.cask.cdap.logging.framework.LogPipelineSpecification;
 import co.cask.cdap.logging.meta.CheckpointManagerFactory;
@@ -110,56 +111,17 @@ public class DistributedLogFramework extends ResourceBalancerService {
     return new AbstractIdleService() {
       @Override
       protected void startUp() throws Exception {
-        List<Service> serviceList = new LinkedList<>();
         // Starts all pipeline
-        for(Service service: pipelines){
-          serviceList.add(service.startAsync());
-        }
-        validateAllService(serviceList, true);
+        ServiceUtil.startAllBlocking(pipelines);
       }
 
       @Override
       protected void shutDown() throws Exception {
-        List<Service> serviceList = new LinkedList<>();
-        // Stops all pipeline
-        for(Service service: pipelines){
-          serviceList.add(service.stopAsync());
-        }
-        validateAllService(serviceList, false);
+        ServiceUtil.startAllBlocking(pipelines);
       }
     };
   }
 
-  private void validateAllService(List<Service> serviceList , boolean isStarting) throws Exception {
-    Throwable outException = null;
-    for (Service service: serviceList) {
-      try{
-        boolean wait = true;
-        while(wait){
-          if (isStarting) {
-            service.awaitRunning();
-            wait=false;
-          } else{
-            service.awaitTerminated();
-            wait=false;
-          }
-        }
-      } catch (Exception e) {
-        if (outException == null) {
-          outException = e.getCause();
-        } else {
-          outException.addSuppressed(e.getCause());
-        }
-      }
-    }
-
-    if (outException != null) {
-      if (outException instanceof Exception) {
-        throw (Exception) outException;
-      }
-      throw new RuntimeException(outException);
-    }
-  }
 
   /**
    * Blocks and validates all the given futures completed successfully.

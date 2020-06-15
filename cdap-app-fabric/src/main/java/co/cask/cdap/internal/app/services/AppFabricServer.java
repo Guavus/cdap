@@ -27,6 +27,7 @@ import co.cask.cdap.common.http.CommonNettyHttpServiceBuilder;
 import co.cask.cdap.common.logging.LoggingContextAccessor;
 import co.cask.cdap.common.logging.ServiceLoggingContext;
 import co.cask.cdap.common.metrics.MetricsReporterHook;
+import co.cask.cdap.common.service.ServiceUtil;
 import co.cask.cdap.data.stream.StreamCoordinatorClient;
 import co.cask.cdap.internal.app.runtime.plugin.PluginService;
 import co.cask.cdap.internal.bootstrap.BootstrapService;
@@ -140,37 +141,6 @@ public class AppFabricServer extends AbstractIdleService {
   }
 
 
-  private void validateAllService(List<Service> serviceList , boolean isStarting) throws Exception {
-    Throwable outException = null;
-    for (Service service: serviceList) {
-      try{
-        boolean wait = true;
-        while(wait){
-          if (isStarting) {
-            service.awaitRunning();
-            wait=false;
-          } else{
-            service.awaitTerminated();
-            wait=false;
-          }
-        }
-      } catch (Exception e) {
-        if (outException == null) {
-          outException = e.getCause();
-        } else {
-          outException.addSuppressed(e.getCause());
-        }
-      }
-    }
-
-    if (outException != null) {
-      if (outException instanceof Exception) {
-        throw (Exception) outException;
-      }
-      throw new RuntimeException(outException);
-    }
-  }
-
   /**
    * Configures the AppFabricService pre-start.
    */
@@ -195,19 +165,18 @@ public class AppFabricServer extends AbstractIdleService {
 //    ).get();
 
     List<Service> serviceList = new LinkedList<>();
-    serviceList.add(notificationService.startAsync());
-    serviceList.add(provisioningService.startAsync());
-    serviceList.add(applicationLifecycleService.startAsync());
-    serviceList.add(bootstrapService.startAsync());
-    serviceList.add(programRuntimeService.startAsync());
-    serviceList.add(streamCoordinatorClient.startAsync());
-    serviceList.add(programNotificationSubscriberService.startAsync());
-    serviceList.add(runRecordCorrectorService.startAsync());
-    serviceList.add(pluginService.startAsync());
-    serviceList.add(coreSchedulerService.startAsync());
+    serviceList.add(notificationService);
+    serviceList.add(provisioningService);
+    serviceList.add(applicationLifecycleService);
+    serviceList.add(bootstrapService);
+    serviceList.add(programRuntimeService);
+    serviceList.add(streamCoordinatorClient);
+    serviceList.add(programNotificationSubscriberService);
+    serviceList.add(runRecordCorrectorService);
+    serviceList.add(pluginService);
+    serviceList.add(coreSchedulerService);
 
-    validateAllService(serviceList, true);
-
+    ServiceUtil.startAllBlocking(serviceList);
 
     // Create handler hooks
     ImmutableList.Builder<HandlerHook> builder = ImmutableList.builder();
