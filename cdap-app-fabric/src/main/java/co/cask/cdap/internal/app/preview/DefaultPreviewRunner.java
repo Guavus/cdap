@@ -29,6 +29,7 @@ import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.logging.LoggingContextAccessor;
 import co.cask.cdap.common.logging.ServiceLoggingContext;
 import co.cask.cdap.common.namespace.NamespaceAdmin;
+import co.cask.cdap.common.service.ServiceUtil;
 import co.cask.cdap.data2.datafabric.dataset.service.DatasetService;
 import co.cask.cdap.data2.dataset2.lib.table.leveldb.LevelDBTableService;
 import co.cask.cdap.internal.app.deploy.ProgramTerminator;
@@ -59,13 +60,7 @@ import org.apache.twill.common.Threads;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import javax.annotation.Nullable;
 
 /**
@@ -249,11 +244,9 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
   @Override
   protected void startUp() throws Exception {
     if (messagingService instanceof Service) {
-      ((Service) messagingService).startAsync();
-      ((Service) messagingService).awaitRunning();
+      ((Service) messagingService).startAsync().awaitRunning();
     }
-    datasetService.startAsync();
-    datasetService.awaitRunning();
+    datasetService.startAsync().awaitRunning();
 
     // It is recommended to initialize log appender after datasetService is started,
     // since log appender instantiates a dataset.
@@ -263,13 +256,13 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
                                                                        Constants.Logging.COMPONENT_NAME,
                                                                        Constants.Service.PREVIEW_HTTP));
 
-    applicationLifecycleService.addListener();
-    Futures.allAsList(
-      applicationLifecycleService.start(),
-      programRuntimeService.start(),
-      metricsCollectionService.start(),
-      programNotificationSubscriberService.start()
-    ).get();
+    List<Service> serviceList = new LinkedList<Service>();
+    serviceList.add(applicationLifecycleService);
+    serviceList.add(programRuntimeService);
+    serviceList.add(metricsCollectionService);
+    serviceList.add(programNotificationSubscriberService);
+
+    ServiceUtil.startAllBlocking(serviceList);
   }
 
   @Override
@@ -278,8 +271,7 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
     datasetService.stopAsync();
     datasetService.awaitTerminated();
     if (messagingService instanceof Service) {
-      ((Service) messagingService).stopAsync();
-      ((Service) messagingService).awaitTerminated();
+      ((Service) messagingService).stopAsync().awaitTerminated();
     }
     levelDBTableService.close();
   }
@@ -288,14 +280,11 @@ public class DefaultPreviewRunner extends AbstractIdleService implements Preview
     if (timer != null) {
       timer.cancel();
     }
-    programRuntimeService.stopAsync();
-    programRuntimeService.awaitTerminated();
-    applicationLifecycleService.stopAsync();
-    applicationLifecycleService.awaitTerminated();
+
+    programRuntimeService.stopAsync().awaitTerminated();
+    applicationLifecycleService.stopAsync().awaitTerminated();
     logAppenderInitializer.close();
-    metricsCollectionService.stopAsync();
-    metricsCollectionService.awaitTerminated();
-    programNotificationSubscriberService.stopAsync();
-    programNotificationSubscriberService.awaitTerminated();
+    metricsCollectionService.stopAsync().awaitTerminated();
+    programNotificationSubscriberService.stopAsync().awaitTerminated();
   }
 }

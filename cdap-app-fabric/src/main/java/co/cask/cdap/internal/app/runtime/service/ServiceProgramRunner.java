@@ -98,7 +98,7 @@ public class ServiceProgramRunner extends AbstractProgramRunnerWithPlugin {
   }
 
   @Override
-  public ProgramController run(Program program, ProgramOptions options) throws IOException {
+  public ProgramController run(Program program, ProgramOptions options) {
     int instanceId = Integer.parseInt(options.getArguments().getOption(ProgramOptionConstants.INSTANCE_ID, "-1"));
     Preconditions.checkArgument(instanceId >= 0, "Missing instance Id");
 
@@ -147,7 +147,11 @@ public class ServiceProgramRunner extends AbstractProgramRunnerWithPlugin {
       component.startAsync();
       return controller;
     } catch (Throwable t) {
-      pluginInstantiator.close();
+      try{
+        pluginInstantiator.close();
+      } catch (IOException e) {
+        //do nothing
+      }
       throw t;
     }
   }
