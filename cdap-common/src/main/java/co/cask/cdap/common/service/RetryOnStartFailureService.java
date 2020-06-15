@@ -18,15 +18,13 @@ package co.cask.cdap.common.service;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Supplier;
-import com.google.common.util.concurrent.AbstractService;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.Service;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.common.util.concurrent.*;
 import org.apache.twill.common.Threads;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
@@ -70,13 +68,11 @@ public class RetryOnStartFailureService extends AbstractService {
 
         while (delay >= 0 && !stopped) {
           try {
-            currentDelegate.start().get();
+            currentDelegate.startAsync().awaitRunning();
             // Only assigned the delegate if and only if the delegate service started successfully
             startedService = currentDelegate;
             break;
-          } catch (InterruptedException e) {
-            // This thread will be interrupted from the doStop() method. Don't reset the interrupt flag.
-          } catch (Throwable t) {
+          }  catch (Throwable t) {
             LOG.debug("Exception raised when starting service {}", delegateServiceName, t);
 
             delay = retryStrategy.nextRetry(++failures, startTime);
@@ -114,17 +110,48 @@ public class RetryOnStartFailureService extends AbstractService {
     // the setting of the startedService field. When that happens, the stop failure state is not propagated.
     // Nevertheless, there won't be any service left behind without stopping.
     if (startedService != null) {
-      Futures.addCallback(startedService.stop(), new FutureCallback<State>() {
+
+//      try{
+//        startedService.awaitTerminated();
+//        notifyStopped();
+//      } catch (IllegalStateException e){
+//        LOG.warn("Service {} stop failed due to {}", startedService , e.getMessage());
+//        notifyFailed(e);
+//      }
+
+      startedService.addListener(new Listener() {
         @Override
-        public void onSuccess(State result) {
+        public void terminated(State from) {
           notifyStopped();
         }
 
         @Override
-        public void onFailure(Throwable t) {
-          notifyFailed(t);
+        public void failed(State from, Throwable failure) {
+          LOG.warn("Service {} stop failed due to {}", startedService , failure.getMessage());
+          notifyFailed(failure);
         }
-      }, Threads.SAME_THREAD_EXECUTOR);
+      }, MoreExecutors.directExecutor());
+      startedService.stopAsync();
+
+
+//      Futures.addCallback(MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+//        @Override
+//        public Service.State call() throws Exception {
+//          Service service = startedService.stopAsync();
+//          startedService.awaitTerminated();
+//          return service.state();
+//        }
+//      }), new FutureCallback<State>() {
+//        @Override
+//        public void onSuccess(State result) {
+//          notifyStopped();
+//        }
+//
+//        @Override
+//        public void onFailure(Throwable t) {
+//          notifyFailed(t);
+//        }
+//      }, Threads.SAME_THREAD_EXECUTOR);
       return;
     }
 
@@ -132,12 +159,38 @@ public class RetryOnStartFailureService extends AbstractService {
     // because if the underlying service is not yet started due to failure, it shouldn't affect the stop state
     // of this retrying service.
     if (currentDelegate != null) {
-      currentDelegate.stop().addListener(new Runnable() {
+
+//      try{
+//        currentDelegate.awaitTerminated();
+//        notifyStopped();
+//      } catch (IllegalStateException e){
+//        LOG.warn("Service {} stop failed due to {}", currentDelegate , e.getMessage());
+//      }
+
+
+      currentDelegate.addListener(new Listener() {
         @Override
-        public void run() {
+        public void terminated(State from) {
           notifyStopped();
         }
-      }, Threads.SAME_THREAD_EXECUTOR);
+      }, MoreExecutors.directExecutor());
+      currentDelegate.stopAsync();
+
+
+//      // TODO: himanshu: not sure about this needs to be reviewed
+//      MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+//        @Override
+//        public Service.State call() throws Exception {
+//          Service service = currentDelegate.stopAsync();
+//          currentDelegate.awaitTerminated();
+//          return service.state();
+//        }
+//      }).addListener(new Runnable() {
+//        @Override
+//        public void run() {
+//          notifyStopped();
+//        }
+//      }, Threads.SAME_THREAD_EXECUTOR);
       return;
     }
 

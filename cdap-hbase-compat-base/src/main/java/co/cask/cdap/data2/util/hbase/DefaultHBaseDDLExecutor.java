@@ -140,7 +140,7 @@ public abstract class DefaultHBaseDDLExecutor implements HBaseDDLExecutor {
 
     // Wait for table to materialize
     try {
-      Stopwatch stopwatch = new Stopwatch();
+      Stopwatch stopwatch = Stopwatch.createUnstarted();
       stopwatch.start();
       long sleepTime = TimeUnit.MILLISECONDS.toNanos(5000L) / 10;
       sleepTime = sleepTime <= 0 ? 1 : sleepTime;
@@ -156,7 +156,7 @@ public abstract class DefaultHBaseDDLExecutor implements HBaseDDLExecutor {
         } else {
           TimeUnit.NANOSECONDS.sleep(sleepTime);
         }
-      } while (stopwatch.elapsedTime(TimeUnit.MILLISECONDS) < 5000L);
+      } while (stopwatch.elapsed(TimeUnit.MILLISECONDS) < 5000L);
     } catch (InterruptedException e) {
       LOG.warn("Sleeping thread interrupted.");
     }

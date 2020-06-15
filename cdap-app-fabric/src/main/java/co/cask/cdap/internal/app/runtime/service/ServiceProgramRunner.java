@@ -55,6 +55,7 @@ import org.apache.twill.common.Threads;
 import org.apache.twill.discovery.DiscoveryServiceClient;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collections;
 
 /**
@@ -143,10 +144,14 @@ public class ServiceProgramRunner extends AbstractProgramRunnerWithPlugin {
 
       ProgramController controller = new ServiceProgramControllerAdapter(component, program.getId().run(runId),
                                                                          spec.getName() + "-" + instanceId);
-      component.start();
+      component.startAsync();
       return controller;
     } catch (Throwable t) {
-      Closeables.closeQuietly(pluginInstantiator);
+      try{
+        pluginInstantiator.close();
+      } catch (IOException e) {
+        //do nothing
+      }
       throw t;
     }
   }

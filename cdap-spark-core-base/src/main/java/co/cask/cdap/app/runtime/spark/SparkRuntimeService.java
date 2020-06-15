@@ -180,7 +180,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
   }
 
   @Override
-  protected String getServiceName() {
+  protected String serviceName() {
     return "Spark - " + runtimeContext.getSparkSpecification().getName();
   }
 
@@ -482,7 +482,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
     ContainerLauncherGenerator.generateLauncherJar(
       Arrays.asList("org.apache.spark.deploy.yarn.ApplicationMaster",
                     "org.apache.spark.executor.CoarseGrainedExecutorBackend"),
-      SparkContainerLauncher.class, Files.newOutputStreamSupplier(jarFile));
+      SparkContainerLauncher.class, Files.asByteSink(jarFile));
     return jarFile;
   }
 
@@ -734,7 +734,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         FileSystem fs = FileSystem.get(scriptURI, hConf);
         InputStream is = fs.open(new Path(scriptURI))
       ) {
-        ByteStreams.copy(is, Files.newOutputStreamSupplier(pythonFile));
+        ByteStreams.copy(is, Files.asByteSink(pythonFile).openStream());
         return pythonFile.toURI();
       }
     } catch (IOException e) {
@@ -744,7 +744,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
 
     // Last resort, turn the URI to URL and try to copy from it.
     try (InputStream is = scriptURI.toURL().openStream()) {
-      ByteStreams.copy(is, Files.newOutputStreamSupplier(pythonFile));
+      ByteStreams.copy(is, Files.asByteSink(pythonFile).openStream());
     }
     return pythonFile.toURI();
   }

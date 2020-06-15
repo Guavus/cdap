@@ -26,10 +26,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.AbstractService;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.*;
 import org.apache.twill.common.Cancellable;
 import org.apache.twill.common.Threads;
 import org.apache.twill.zookeeper.NodeData;
@@ -129,7 +126,7 @@ public final class ResourceCoordinatorClient extends AbstractService {
 
     return Futures.transform(
       ZKOperations.ignoreError(zkClient.getData(zkPath), KeeperException.NoNodeException.class, null),
-      NODE_DATA_TO_REQUIREMENT
+      NODE_DATA_TO_REQUIREMENT, MoreExecutors.directExecutor()
     );
   }
 
@@ -145,7 +142,7 @@ public final class ResourceCoordinatorClient extends AbstractService {
 
     return Futures.transform(
       ZKOperations.ignoreError(zkClient.delete(zkPath), KeeperException.NoNodeException.class, resourceName),
-      Functions.constant(resourceName)
+      Functions.constant(resourceName), MoreExecutors.directExecutor()
     );
   }
 

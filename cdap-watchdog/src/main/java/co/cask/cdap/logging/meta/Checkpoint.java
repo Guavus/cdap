@@ -16,7 +16,7 @@
 
 package co.cask.cdap.logging.meta;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * Represents a checkpoint that can be saved when reading from Kafka.
@@ -55,7 +55,7 @@ public class Checkpoint {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("nextOffset", nextOffset)
       .add("maxEventTime", maxEventTime)
       .toString();

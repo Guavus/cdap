@@ -36,9 +36,9 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteSource;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
-import com.google.common.io.InputSupplier;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import jline.TerminalFactory;
@@ -296,13 +296,13 @@ public class CLIConfig implements TableRendererConfig {
 
   private String tryGetVersion() {
     try {
-      InputSupplier<? extends InputStream> versionFileSupplier = new InputSupplier<InputStream>() {
+      ByteSource versionFileSupplier = new ByteSource() {
         @Override
-        public InputStream getInput() throws IOException {
+        public InputStream openStream() throws IOException {
           return VersionCommand.class.getClassLoader().getResourceAsStream("VERSION");
         }
       };
-      return CharStreams.toString(CharStreams.newReaderSupplier(versionFileSupplier, Charsets.UTF_8));
+      return CharStreams.toString(versionFileSupplier.asCharSource(Charsets.UTF_8).openStream());
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }

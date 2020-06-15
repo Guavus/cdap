@@ -142,7 +142,7 @@ public final class DistributedProgramRuntimeService extends AbstractProgramRunti
         public void killed() {
           programStateWriter.killed(programId.run(controller.getRunId()));
         }
-      }, MoreExecutors.sameThreadExecutor());
+      }, MoreExecutors.directExecutor());
       return new SimpleRuntimeInfo(controller, programId, twillRunId);
     }
     return null;
@@ -397,12 +397,12 @@ public final class DistributedProgramRuntimeService extends AbstractProgramRunti
 
   @Override
   protected void startUp() {
-    resourceReporter.start();
+    resourceReporter.startAsync();
     LOG.debug("started distributed program runtime service");
   }
 
   @Override
   protected void shutDown() {
-    resourceReporter.stop();
+    resourceReporter.stopAsync();
   }
 }

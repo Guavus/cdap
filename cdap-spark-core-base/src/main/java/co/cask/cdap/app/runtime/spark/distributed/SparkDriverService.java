@@ -80,7 +80,7 @@ public class SparkDriverService extends AbstractExecutionThreadService {
    */
   public void stopWithoutComplete() {
     stopWithoutComplete = true;
-    stopAndWait();
+    stopAsync().awaitTerminated();
   }
 
   @Override
@@ -92,7 +92,7 @@ public class SparkDriverService extends AbstractExecutionThreadService {
 
     // Schedule the credentials update if necessary
     if (credentialsUpdater != null) {
-      credentialsUpdater.startAndWait();
+      credentialsUpdater.startAsync().awaitRunning();
     }
 
     LOG.info("SparkDriverService started.");
@@ -135,7 +135,7 @@ public class SparkDriverService extends AbstractExecutionThreadService {
     Thread.interrupted();
     try {
       if (credentialsUpdater != null) {
-        credentialsUpdater.stopAndWait();
+        credentialsUpdater.stopAsync().awaitTerminated();
       }
     } finally {
       if (!stopWithoutComplete) {
@@ -255,7 +255,7 @@ public class SparkDriverService extends AbstractExecutionThreadService {
     }
     if (SparkCommand.STOP.equals(command)) {
       LOG.info("Stop command received from client. Stopping spark program.");
-      stop();
+      stopAsync();
     } else {
       LOG.warn("Ignoring unsupported command {}", command);
     }

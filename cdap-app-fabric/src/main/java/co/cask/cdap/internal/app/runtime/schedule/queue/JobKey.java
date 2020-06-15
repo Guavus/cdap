@@ -17,6 +17,7 @@
 package co.cask.cdap.internal.app.runtime.schedule.queue;
 
 import co.cask.cdap.proto.id.ScheduleId;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -67,7 +68,7 @@ public class JobKey {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("scheduleId", scheduleId)
       .add("creationTime", creationTime)
       .toString();

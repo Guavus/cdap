@@ -85,14 +85,14 @@ public class GrantAccessToken {
    * Initialize the TokenManager.
    */
   public void init() {
-    tokenManager.start();
+    tokenManager.startAsync();
   }
 
   /**
    * Stop the TokenManager.
    */
   public void destroy() {
-    tokenManager.stop();
+    tokenManager.stopAsync();
   }
 
   /**

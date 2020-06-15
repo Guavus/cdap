@@ -56,9 +56,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.common.util.concurrent.*;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.twill.api.ElectionHandler;
@@ -77,10 +75,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nullable;
@@ -154,8 +149,8 @@ public class DistributedStreamService extends AbstractStreamService {
   protected void initialize() throws Exception {
     LOG.info("Initializing DistributedStreamService.");
     createHeartbeatsFeed();
-    heartbeatPublisher.startAndWait();
-    resourceCoordinatorClient.startAndWait();
+    heartbeatPublisher.startAsync().awaitRunning();
+    resourceCoordinatorClient.startAsync().awaitRunning();
     coordinationSubscription = resourceCoordinatorClient.subscribe(discoverableSupplier.get().getName(),
                                                                    new StreamsLeaderHandler());
 
@@ -191,10 +186,17 @@ public class DistributedStreamService extends AbstractStreamService {
       heartbeatsSubscriptionExecutor.shutdownNow();
     }
 
-    heartbeatPublisher.stopAndWait();
+    heartbeatPublisher.stopAsync().awaitTerminated();
 
     if (leaderElection != null) {
-      Uninterruptibles.getUninterruptibly(leaderElection.stop(), 5, TimeUnit.SECONDS);
+      ListenableFuture lf = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+        @Override
+        public State call() throws Exception {
+          return leaderElection.stopAsync().state();
+        }
+      });
+
+      Uninterruptibles.getUninterruptibly(lf, 5, TimeUnit.SECONDS);
     }
 
     if (coordinationSubscription != null) {
@@ -202,7 +204,7 @@ public class DistributedStreamService extends AbstractStreamService {
     }
 
     if (resourceCoordinatorClient != null) {
-      resourceCoordinatorClient.stopAndWait();
+      resourceCoordinatorClient.stopAsync().awaitTerminated();
     }
   }
 
@@ -438,7 +440,7 @@ public class DistributedStreamService extends AbstractStreamService {
         LOG.info("Became Stream handler leader. Starting resource coordinator.");
         resourceCoordinator = new ResourceCoordinator(getCoordinatorZKClient(), discoveryServiceClient,
                                                       new BalancedAssignmentStrategy());
-        resourceCoordinator.startAndWait();
+        resourceCoordinator.startAsync().awaitRunning();
         updateRequirement();
       }
 
@@ -446,11 +448,11 @@ public class DistributedStreamService extends AbstractStreamService {
       public void follower() {
         LOG.info("Became Stream handler follower.");
         if (resourceCoordinator != null) {
-          resourceCoordinator.stopAndWait();
+          resourceCoordinator.stopAsync().awaitTerminated();
         }
       }
     });
-    leaderElection.start();
+    leaderElection.startAsync();
   }
 
   /**
@@ -480,7 +482,7 @@ public class DistributedStreamService extends AbstractStreamService {
                 TimeUnit.SECONDS.sleep(2);
                 LOG.info("Retrying update stream resource requirement");
                 Futures.addCallback(resourceCoordinatorClient.modifyRequirement(Constants.Service.STREAMS, modifier),
-                                    callback);
+                                    callback, MoreExecutors.directExecutor());
               } catch (InterruptedException e) {
                 LOG.warn("Stream resource retry thread interrupted", e);
               }
@@ -490,7 +492,7 @@ public class DistributedStreamService extends AbstractStreamService {
           retryThread.start();
         }
       }
-    });
+    }, MoreExecutors.directExecutor());
   }
 
   /**

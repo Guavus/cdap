@@ -75,6 +75,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -105,10 +106,10 @@ public final class FlowUtils {
     String backwardsCompatibleNamespace =
       NamespaceId.DEFAULT.getEntityName().equals(namespace) ? Constants.DEVELOPER_ACCOUNT : namespace;
     return Hashing.md5().newHasher()
-      .putString(backwardsCompatibleNamespace)
-      .putString(programId.getApplication())
-      .putString(programId.getProgram())
-      .putString(flowletId).hash().asLong();
+      .putString(backwardsCompatibleNamespace, StandardCharsets.UTF_8)
+      .putString(programId.getApplication(), StandardCharsets.UTF_8)
+      .putString(programId.getProgram(), StandardCharsets.UTF_8)
+      .putString(flowletId, StandardCharsets.UTF_8).hash().asLong();
   }
 
   /**
@@ -233,7 +234,9 @@ public final class FlowUtils {
           });
       } finally {
         for (ConsumerGroupConfigurer configurer : groupConfigurers) {
-          Closeables.closeQuietly(configurer);
+          try {
+            configurer.close();
+          } catch (Exception e) {}
         }
       }
 
@@ -277,7 +280,9 @@ public final class FlowUtils {
         });
     } finally {
       for (QueueConfigurer configurer : queueConfigurers) {
-        Closeables.closeQuietly(configurer);
+        try {
+          configurer.close();
+        } catch (Exception e) {}
       }
     }
   }

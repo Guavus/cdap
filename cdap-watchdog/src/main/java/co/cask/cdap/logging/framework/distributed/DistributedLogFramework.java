@@ -23,6 +23,7 @@ import co.cask.cdap.common.resource.ResourceBalancerService;
 import co.cask.cdap.common.service.RetryOnStartFailureService;
 import co.cask.cdap.common.service.RetryStrategies;
 import co.cask.cdap.common.service.RetryStrategy;
+import co.cask.cdap.common.service.ServiceUtil;
 import co.cask.cdap.logging.framework.LogPipelineLoader;
 import co.cask.cdap.logging.framework.LogPipelineSpecification;
 import co.cask.cdap.logging.meta.CheckpointManagerFactory;
@@ -43,10 +44,7 @@ import org.apache.twill.discovery.DiscoveryServiceClient;
 import org.apache.twill.kafka.client.BrokerService;
 import org.apache.twill.zookeeper.ZKClient;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -114,46 +112,46 @@ public class DistributedLogFramework extends ResourceBalancerService {
       @Override
       protected void startUp() throws Exception {
         // Starts all pipeline
-        validateAllFutures(Iterables.transform(pipelines, Service::start));
+        ServiceUtil.startAllBlocking(pipelines);
       }
 
       @Override
       protected void shutDown() throws Exception {
-        // Stops all pipeline
-        validateAllFutures(Iterables.transform(pipelines, Service::stop));
+        ServiceUtil.startAllBlocking(pipelines);
       }
     };
   }
 
+
   /**
    * Blocks and validates all the given futures completed successfully.
    */
-  private void validateAllFutures(Iterable<? extends ListenableFuture<?>> futures) throws Exception {
-    // The get call shouldn't throw exception. It just block until all futures completed.
-    Futures.successfulAsList(futures).get();
-
-    // Iterates all futures to make sure all of them completed successfully
-    Throwable exception = null;
-    for (ListenableFuture<?> future : futures) {
-      try {
-        future.get();
-      } catch (ExecutionException e) {
-        if (exception == null) {
-          exception = e.getCause();
-        } else {
-          exception.addSuppressed(e.getCause());
-        }
-      }
-    }
-
-    // Throw exception if any of the future failed.
-    if (exception != null) {
-      if (exception instanceof Exception) {
-        throw (Exception) exception;
-      }
-      throw new RuntimeException(exception);
-    }
-  }
+//  private void validateAllFutures(Iterable<? extends ListenableFuture<?>> futures) throws Exception {
+//    // The get call shouldn't throw exception. It just block until all futures completed.
+//    Futures.successfulAsList(futures).get();
+//
+//    // Iterates all futures to make sure all of them completed successfully
+//    Throwable exception = null;
+//    for (ListenableFuture<?> future : futures) {
+//      try {
+//        future.get();
+//      } catch (ExecutionException e) {
+//        if (exception == null) {
+//          exception = e.getCause();
+//        } else {
+//          exception.addSuppressed(e.getCause());
+//        }
+//      }
+//    }
+//
+//    // Throw exception if any of the future failed.
+//    if (exception != null) {
+//      if (exception instanceof Exception) {
+//        throw (Exception) exception;
+//      }
+//      throw new RuntimeException(exception);
+//    }
+//  }
 
   /**
    * Determines the buffer size for one pipeline.

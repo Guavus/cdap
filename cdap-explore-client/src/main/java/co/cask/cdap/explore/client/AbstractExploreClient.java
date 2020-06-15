@@ -97,7 +97,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -111,7 +111,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -126,7 +126,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -139,7 +139,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -154,7 +154,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -168,7 +168,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -181,7 +181,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -196,7 +196,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -211,7 +211,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -226,7 +226,7 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
     });
 
     // Exceptions will be thrown in case of an error in the futureHandle
-    return Futures.transform(futureResults, Functions.<Void>constant(null));
+    return Futures.transform(futureResults, Functions.<Void>constant(null), MoreExecutors.directExecutor());
   }
 
   @Override
@@ -638,7 +638,8 @@ public abstract class AbstractExploreClient extends ExploreHttpClient implements
           LOG.error("Caught exception", t);
           setException(t);
         }
-      });
+      }, MoreExecutors.directExecutor()
+      );
     }
   }
 }

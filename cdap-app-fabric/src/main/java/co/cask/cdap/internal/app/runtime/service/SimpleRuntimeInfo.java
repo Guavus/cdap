@@ -20,7 +20,7 @@ import co.cask.cdap.app.runtime.ProgramController;
 import co.cask.cdap.app.runtime.ProgramRuntimeService;
 import co.cask.cdap.proto.ProgramType;
 import co.cask.cdap.proto.id.ProgramId;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import org.apache.twill.api.RunId;
 
 import javax.annotation.Nullable;
@@ -67,7 +67,7 @@ public final class SimpleRuntimeInfo implements ProgramRuntimeService.RuntimeInf
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(ProgramRuntimeService.RuntimeInfo.class)
+    return MoreObjects.toStringHelper(ProgramRuntimeService.RuntimeInfo.class)
       .add("programId", programId)
       .add("twillRunId", twillRunId)
       .toString();

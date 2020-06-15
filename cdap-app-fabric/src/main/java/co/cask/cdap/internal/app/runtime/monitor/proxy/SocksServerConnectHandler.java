@@ -197,7 +197,11 @@ final class SocksServerConnectHandler extends SimpleChannelInboundHandler<SocksM
     });
 
     // Close the port forwarding channel when the connect get closed
-    channel.closeFuture().addListener(future -> Closeables.closeQuietly(portForwarding));
+    channel.closeFuture().addListener(future -> {
+      try {
+        portForwarding.close();
+      } catch (Exception e) {}
+    });
 
     // Creates a handler that forward everything to the port forwarding channel
     return new ChannelInboundHandlerAdapter() {

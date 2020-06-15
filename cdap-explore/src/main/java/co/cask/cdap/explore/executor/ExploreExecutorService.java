@@ -28,7 +28,7 @@ import co.cask.cdap.explore.service.ExploreService;
 import co.cask.cdap.proto.id.NamespaceId;
 import co.cask.http.HttpHandler;
 import co.cask.http.NettyHttpService;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
@@ -88,7 +88,8 @@ public class ExploreExecutorService extends AbstractIdleService {
     LOG.info("Starting {}...", ExploreExecutorService.class.getSimpleName());
 
     if (!startOnDemand) {
-      exploreService.startAndWait();
+      exploreService.startAsync();
+      exploreService.awaitRunning();
     }
 
     httpService.start();
@@ -113,14 +114,15 @@ public class ExploreExecutorService extends AbstractIdleService {
         httpService.stop();
       } finally {
         // Finally stop explore service
-        exploreService.stopAndWait();
+        exploreService.stopAsync();
+        exploreService.awaitTerminated();
       }
     }
   }
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("bindAddress", httpService.getBindAddress())
         .toString();
   }

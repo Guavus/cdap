@@ -282,8 +282,8 @@ public class FileStreamAdmin implements StreamAdmin {
                                                           configLocation.toURI().getPath(), streamId));
           }
           StreamConfig config = GSON.fromJson(
-            CharStreams.toString(CharStreams.newReaderSupplier(Locations.newInputSupplier(configLocation),
-                                                               Charsets.UTF_8)), StreamConfig.class);
+            CharStreams.toString(Locations.newInputSupplier(configLocation).asCharSource(Charsets.UTF_8).openStream()),
+                  StreamConfig.class);
 
           int threshold = config.getNotificationThresholdMB();
           if (threshold <= 0) {
@@ -718,8 +718,8 @@ public class FileStreamAdmin implements StreamAdmin {
     Location configLocation = config.getLocation().append(CONFIG_FILE_NAME);
     Location tmpConfigLocation = configLocation.getTempFile(null);
 
-    CharStreams.write(GSON.toJson(config), CharStreams.newWriterSupplier(
-      Locations.newOutputSupplier(tmpConfigLocation), Charsets.UTF_8));
+    // Bipin: Changed to write characters using asWriter and asCharSink, Need to check the behaviour on run time
+    CharStreams.asWriter(Locations.newOutputSupplier(tmpConfigLocation).asCharSink(Charsets.UTF_8).openStream()).write(GSON.toJson(config));
 
     try {
       // Windows does not allow renaming if the destination file exists so we must delete the configLocation

@@ -169,7 +169,7 @@ public class DatasetTypeManager {
           } finally {
             if (cl != null) {
               // Close the ProgramClassLoader
-              Closeables.closeQuietly(cl);
+              cl.close();
             }
             try {
               DirUtils.deleteDirectoryContents(unpackedLocation);

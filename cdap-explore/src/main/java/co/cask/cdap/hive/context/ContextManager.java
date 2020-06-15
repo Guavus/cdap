@@ -59,7 +59,7 @@ import co.cask.cdap.security.spi.authentication.AuthenticationContext;
 import co.cask.cdap.security.spi.authorization.AuthorizationEnforcer;
 import co.cask.cdap.security.spi.authorization.PrivilegesManager;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -175,7 +175,8 @@ public class ContextManager {
     Injector injector = createInjector(cConf, hConf);
 
     ZKClientService zkClientService = injector.getInstance(ZKClientService.class);
-    zkClientService.startAndWait();
+    zkClientService.startAsync();
+    zkClientService.awaitRunning();
 
     DatasetFramework datasetFramework = injector.getInstance(DatasetFramework.class);
     StreamAdmin streamAdmin = injector.getInstance(StreamAdmin.class);
@@ -252,7 +253,7 @@ public class ContextManager {
      */
     public SystemDatasetInstantiator createDatasetInstantiator(@Nullable ClassLoader parentClassLoader) {
       parentClassLoader = parentClassLoader == null ?
-        Objects.firstNonNull(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader()) :
+        MoreObjects.firstNonNull(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader()) :
         parentClassLoader;
       return datasetInstantiatorFactory.create(FilterClassLoader.create(parentClassLoader));
     }
@@ -263,7 +264,8 @@ public class ContextManager {
       // since Explore manages the lifecycle of the zk service. it is not null if used by a MR job launched by Hive.
 
       if (zkClientService != null) {
-        zkClientService.stopAndWait();
+        zkClientService.stopAsync();
+        zkClientService.awaitTerminated();
       }
     }
   }

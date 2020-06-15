@@ -51,14 +51,14 @@ public final class DistributedStreamFileJanitorService extends AbstractIdleServi
       public void leader() {
         LOG.info("Leader of stream file janitor service");
         janitorService = new LocalStreamFileJanitorService(janitor, cConf);
-        janitorService.start();
+        janitorService.startAsync();
       }
 
       @Override
       public void follower() {
         LOG.info("Follower of stream file janitor service");
         if (janitorService != null) {
-          janitorService.stop();
+          janitorService.stopAsync();
           janitorService = null;
         }
       }
@@ -67,11 +67,11 @@ public final class DistributedStreamFileJanitorService extends AbstractIdleServi
 
   @Override
   protected void startUp() throws Exception {
-    leaderElection.startAndWait();
+    leaderElection.startAsync().awaitRunning();
   }
 
   @Override
   protected void shutDown() throws Exception {
-    leaderElection.stopAndWait();
+    leaderElection.stopAsync().awaitTerminated();
   }
 }

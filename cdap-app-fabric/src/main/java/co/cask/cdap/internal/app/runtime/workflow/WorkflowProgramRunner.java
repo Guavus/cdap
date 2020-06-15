@@ -137,7 +137,7 @@ public class WorkflowProgramRunner extends AbstractProgramRunnerWithPlugin {
       // Controller needs to be created before starting the driver so that the state change of the driver
       // service can be fully captured by the controller.
       ProgramController controller = new WorkflowProgramController(program.getId().run(runId), driver);
-      driver.start();
+      driver.startAsync();
       return controller;
     } catch (Exception e) {
       closeAllQuietly(closeables);

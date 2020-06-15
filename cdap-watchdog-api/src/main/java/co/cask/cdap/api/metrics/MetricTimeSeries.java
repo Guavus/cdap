@@ -19,6 +19,7 @@ package co.cask.cdap.api.metrics;
 import co.cask.cdap.api.dataset.lib.cube.TimeValue;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -75,9 +76,9 @@ public final class MetricTimeSeries {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("metricName", metricName)
-      .add("tagValues", Joiner.on(",").withKeyValueSeparator(":").useForNull("null").join(tagValues))
-      .add("timeValues", Joiner.on(",").join(timeValues)).toString();
+    return MoreObjects.toStringHelper(this)
+            .add("metricName", metricName)
+            .add("tagValues", Joiner.on(",").withKeyValueSeparator(":").useForNull("null").join(tagValues))
+            .add("timeValues", Joiner.on(",").join(timeValues)).toString();
   }
 }

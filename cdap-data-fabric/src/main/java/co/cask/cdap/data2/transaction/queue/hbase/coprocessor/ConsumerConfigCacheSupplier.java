@@ -19,9 +19,8 @@ package co.cask.cdap.data2.transaction.queue.hbase.coprocessor;
 import co.cask.cdap.data2.transaction.coprocessor.CacheSupplier;
 import co.cask.cdap.data2.util.hbase.CConfigurationReader;
 import com.google.common.base.Supplier;
-import com.google.common.io.InputSupplier;
+import com.google.common.io.ByteSource;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Table;
 import org.apache.tephra.coprocessor.ReferenceCountedSupplier;
 import org.apache.tephra.persist.TransactionVisibilityState;
 
@@ -34,7 +33,7 @@ public class ConsumerConfigCacheSupplier implements CacheSupplier<ConsumerConfig
 
   public ConsumerConfigCacheSupplier(final TableName tableName, final CConfigurationReader cConfReader,
                                      final Supplier<TransactionVisibilityState> transactionSnapshotSupplier,
-                                     final InputSupplier<Table> hTableSupplier) {
+                                     final ByteSource hTableSupplier) {
     this.supplier = new Supplier<ConsumerConfigCache>() {
       @Override
       public ConsumerConfigCache get() {

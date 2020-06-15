@@ -66,8 +66,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.MinMaxPriorityQueue;
 import com.google.common.collect.Sets;
+import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.InputSupplier;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
@@ -672,7 +672,7 @@ public class ArtifactStore {
    */
   public ArtifactDetail write(final Id.Artifact artifactId,
                               final ArtifactMeta artifactMeta,
-                              final InputSupplier<? extends InputStream> artifactContentSupplier,
+                              final ByteSource artifactContentSupplier,
                               EntityImpersonator entityImpersonator)
     throws WriteConflictException, ArtifactAlreadyExistsException, IOException {
 
@@ -729,19 +729,19 @@ public class ArtifactStore {
   }
 
   private Location copyFileToDestination(final Id.Artifact artifactId,
-                                         final InputSupplier<? extends InputStream> artifactContentSupplier,
+                                         final ByteSource artifactContentSupplier,
                                          EntityImpersonator entityImpersonator) throws Exception {
     return entityImpersonator.impersonate(() -> copyFile(artifactId, artifactContentSupplier));
   }
 
   private Location copyFile(Id.Artifact artifactId,
-                            InputSupplier<? extends InputStream> artifactContentSupplier) throws IOException {
+                            ByteSource artifactContentSupplier) throws IOException {
     Location fileDirectory = namespacedLocationFactory.get(artifactId.getNamespace().toEntityId())
                                                       .append(ARTIFACTS_PATH).append(artifactId.getName());
     Location destination = fileDirectory.append(artifactId.getVersion().getVersion()).getTempFile(".jar");
     Locations.mkdirsIfNotExists(fileDirectory);
     // write the file contents
-    try (InputStream artifactContents = artifactContentSupplier.getInput();
+    try (InputStream artifactContents = artifactContentSupplier.openStream();
          OutputStream destinationStream = destination.getOutputStream()) {
       ByteStreams.copy(artifactContents, destinationStream);
     }

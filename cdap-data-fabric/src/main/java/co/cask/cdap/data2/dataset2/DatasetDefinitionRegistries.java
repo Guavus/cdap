@@ -20,6 +20,7 @@ import co.cask.cdap.api.dataset.module.DatasetDefinitionRegistry;
 import co.cask.cdap.api.dataset.module.DatasetModule;
 import co.cask.cdap.common.lang.ClassLoaders;
 import co.cask.cdap.data2.dataset2.module.lib.DatasetModules;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import javax.annotation.Nullable;
@@ -36,7 +37,7 @@ public final class DatasetDefinitionRegistries {
     ClassLoader systemClassLoader = DatasetDefinitionRegistries.class.getClassLoader();
 
     // Either uses the given classloader or the system one
-    ClassLoader moduleClassLoader = Objects.firstNonNull(classLoader, systemClassLoader);
+    ClassLoader moduleClassLoader = MoreObjects.firstNonNull(classLoader, systemClassLoader);
 
     Class<? extends DatasetModule> moduleClass;
     try {

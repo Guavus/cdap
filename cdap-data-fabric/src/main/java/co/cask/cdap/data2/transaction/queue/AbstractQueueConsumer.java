@@ -23,10 +23,7 @@ import co.cask.cdap.data2.queue.ConsumerConfig;
 import co.cask.cdap.data2.queue.DequeueResult;
 import co.cask.cdap.data2.queue.DequeueStrategy;
 import co.cask.cdap.data2.queue.QueueConsumer;
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Stopwatch;
+import com.google.common.base.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
@@ -39,14 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
@@ -219,8 +209,7 @@ public abstract class AbstractQueueConsumer implements QueueConsumer, Transactio
     }
 
     boolean isReachedDequeueTimeLimit = false;
-    Stopwatch stopwatch = new Stopwatch();
-    stopwatch.start();
+    Stopwatch stopwatch = Stopwatch.createUnstarted();
     while (consumingEntries.size() < maxBatchSize && getEntries(consumingEntries, maxBatchSize, stopwatch)) {
 
       // ANDREAS: this while loop should stop once getEntries/populateCache reaches the end of the queue. Currently, it
@@ -242,7 +231,7 @@ public abstract class AbstractQueueConsumer implements QueueConsumer, Transactio
               iterator.remove();
             }
 
-            if (stopwatch.elapsedMillis() >= maxDequeueMillis) {
+            if (stopwatch.elapsed(TimeUnit.MILLISECONDS) >= maxDequeueMillis) {
               break;
             }
           }
@@ -251,7 +240,7 @@ public abstract class AbstractQueueConsumer implements QueueConsumer, Transactio
         Iterators.advance(iterator, Integer.MAX_VALUE);
       }
 
-      if (stopwatch.elapsedMillis() >= maxDequeueMillis) {
+      if (stopwatch.elapsed(TimeUnit.MILLISECONDS) >= maxDequeueMillis) {
         // If time limit reached and yet we don't have enough entries as requested, treat it as dequeue time limit
         // reached. There can be some false positive (reached the end of queue, yet passed the time limit), but
         // it's ok since we only use this boolean for logging only and normally it won't be the case as long as
@@ -373,7 +362,7 @@ public abstract class AbstractQueueConsumer implements QueueConsumer, Transactio
         entryCache.put(rowKey, new SimpleQueueEntry(rowKey, dataBytes, stateBytes));
 
         // Check here to make sure there is at least one entry read to make sure there is some progress
-        if (stopwatch.elapsedMillis() >= maxDequeueMillis) {
+        if (stopwatch.elapsed(TimeUnit.MILLISECONDS) >= maxDequeueMillis) {
           break;
         }
       }
@@ -453,14 +442,14 @@ public abstract class AbstractQueueConsumer implements QueueConsumer, Transactio
     @Override
     public Iterator<byte[]> iterator() {
       if (isEmpty()) {
-        return Iterators.emptyIterator();
+        return Collections.emptyIterator();
       }
       return Iterators.transform(entries.iterator(), ENTRY_TO_BYTE_ARRAY);
     }
 
     @Override
     public String toString() {
-      return Objects.toStringHelper(this)
+      return MoreObjects.toStringHelper(this)
         .add("size", entries.size())
         .add("queue", queueName)
         .add("config", getConfig())

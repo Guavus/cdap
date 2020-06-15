@@ -219,19 +219,19 @@ public class StandaloneMain {
     ConfigurationLogger.logImportantConfig(cConf);
 
     if (messagingService instanceof Service) {
-      ((Service) messagingService).startAndWait();
+      ((Service) messagingService).startAsync().awaitRunning();
     }
     // TODO: CDAP-7688, remove next line after the issue is resolved
-    injector.getInstance(MessagingHttpService.class).startAndWait();
+    injector.getInstance(MessagingHttpService.class).startAsync().awaitRunning();
 
-    txService.startAndWait();
-    metricsCollectionService.startAndWait();
-    datasetService.startAndWait();
-    serviceStore.startAndWait();
-    streamService.startAndWait();
+    txService.startAsync().awaitRunning();
+    metricsCollectionService.startAsync().awaitRunning();
+    datasetService.startAsync().awaitRunning();
+    serviceStore.startAsync().awaitRunning();
+    streamService.startAsync().awaitRunning();
 
     remoteExecutionTwillRunnerService.start();
-    metadataSubscriberService.startAndWait();
+    metadataSubscriberService.startAsync().awaitRunning();
 
     // Validate the logging pipeline configuration.
     // Do it explicitly as Standalone doesn't have a separate master check phase as the distributed does.
@@ -240,28 +240,29 @@ public class StandaloneMain {
     // since log appender instantiates a dataset.
     logAppenderInitializer.initialize();
 
-    Service.State state = appFabricServer.startAndWait();
+    Service.State state = appFabricServer.startAsync().state();
+            appFabricServer.awaitRunning();
     if (state != Service.State.RUNNING) {
       throw new Exception("Failed to start Application Fabric");
     }
 
-    metricsQueryService.startAndWait();
-    router.startAndWait();
+    metricsQueryService.startAsync().awaitRunning();
+    router.startAsync().awaitRunning();
 
     if (userInterfaceService != null) {
-      userInterfaceService.startAndWait();
+      userInterfaceService.startAsync().awaitRunning();
     }
 
     if (securityEnabled) {
-      externalAuthenticationServer.startAndWait();
+      externalAuthenticationServer.startAsync().awaitRunning();
     }
 
     if (exploreExecutorService != null) {
-      exploreExecutorService.startAndWait();
+      exploreExecutorService.startAsync().awaitRunning();
     }
-    metadataService.startAndWait();
+    metadataService.startAsync().awaitRunning();
 
-    operationalStatsService.startAndWait();
+    operationalStatsService.startAsync().awaitRunning();
 
     String protocol = sslEnabled ? "https" : "http";
     int dashboardPort = sslEnabled ?
@@ -280,42 +281,42 @@ public class StandaloneMain {
     try {
       // order matters: first shut down UI 'cause it will stop working after router is down
       if (userInterfaceService != null) {
-        userInterfaceService.stopAndWait();
+        userInterfaceService.stopAsync().awaitTerminated();
       }
 
       //  shut down router to stop all incoming traffic
-      router.stopAndWait();
+      router.stopAsync().awaitTerminated();
 
-      operationalStatsService.stopAndWait();
+      operationalStatsService.stopAsync().awaitTerminated();
 
       // Stop all services that requires tx service
-      metadataSubscriberService.stopAndWait();
-      streamService.stopAndWait();
+      metadataSubscriberService.stopAsync().awaitTerminated();
+      streamService.stopAsync().awaitTerminated();
       if (exploreExecutorService != null) {
-        exploreExecutorService.stopAndWait();
+        exploreExecutorService.stopAsync().awaitTerminated();
       }
       exploreClient.close();
-      metadataService.stopAndWait();
+      metadataService.stopAsync().awaitTerminated();
       remoteExecutionTwillRunnerService.stop();
-      serviceStore.stopAndWait();
+      serviceStore.stopAsync().awaitTerminated();
       // app fabric will also stop all programs
-      appFabricServer.stopAndWait();
+      appFabricServer.stopAsync().awaitTerminated();
       // all programs are stopped: dataset service, metrics, transactions can stop now
-      datasetService.stopAndWait();
+      datasetService.stopAsync().awaitTerminated();
 
-      metricsCollectionService.stopAndWait();
-      metricsQueryService.stopAndWait();
-      txService.stopAndWait();
+      metricsCollectionService.stopAsync().awaitTerminated();
+      metricsQueryService.stopAsync().awaitTerminated();
+      txService.stopAsync().awaitTerminated();
 
       if (securityEnabled) {
         // auth service is on the side anyway
-        externalAuthenticationServer.stopAndWait();
+        externalAuthenticationServer.stopAsync().awaitTerminated();
       }
 
       // TODO: CDAP-7688, remove next line after the issue is resolved
-      injector.getInstance(MessagingHttpService.class).startAndWait();
+      injector.getInstance(MessagingHttpService.class).startAsync().awaitRunning();
       if (messagingService instanceof Service) {
-        ((Service) messagingService).stopAndWait();
+        ((Service) messagingService).stopAsync().awaitTerminated();
       }
 
       logAppenderInitializer.close();

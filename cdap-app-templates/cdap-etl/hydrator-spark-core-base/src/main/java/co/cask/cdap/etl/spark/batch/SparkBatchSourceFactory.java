@@ -24,6 +24,7 @@ import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.spark.JavaSparkExecutionContext;
 import co.cask.cdap.api.stream.StreamEventDecoder;
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import org.apache.hadoop.conf.Configuration;
@@ -159,7 +160,7 @@ final class SparkBatchSourceFactory {
       for (Map.Entry<String, String> entry : inputFormatProvider.getInputFormatConfiguration().entrySet()) {
         hConf.set(entry.getKey(), entry.getValue());
       }
-      ClassLoader classLoader = Objects.firstNonNull(currentThread().getContextClassLoader(),
+      ClassLoader classLoader = MoreObjects.firstNonNull(currentThread().getContextClassLoader(),
                                                      getClass().getClassLoader());
       try {
         @SuppressWarnings("unchecked")

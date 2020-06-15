@@ -18,9 +18,8 @@ package co.cask.cdap.data2.transaction.queue.hbase.coprocessor;
 
 import co.cask.cdap.data2.util.hbase.CConfigurationReader;
 import com.google.common.base.Supplier;
-import com.google.common.io.InputSupplier;
+import com.google.common.io.ByteSource;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Table;
 import org.apache.tephra.coprocessor.ReferenceCountedSupplier;
 import org.apache.tephra.persist.TransactionVisibilityState;
 
@@ -40,10 +39,10 @@ public class TableNameAwareCacheSupplier {
 
   public static ConsumerConfigCacheSupplier getSupplier(TableName tableName, CConfigurationReader cConfReader,
                                                         Supplier<TransactionVisibilityState> snapshotSupplier,
-                                                        InputSupplier<Table> hTableSuplpier) {
+                                                        ByteSource hTableSupplier) {
     ConsumerConfigCacheSupplier supplier = SUPPLIER_MAP.get(tableName);
     if (supplier == null) {
-      supplier = new ConsumerConfigCacheSupplier(tableName, cConfReader, snapshotSupplier, hTableSuplpier);
+      supplier = new ConsumerConfigCacheSupplier(tableName, cConfReader, snapshotSupplier, hTableSupplier);
       if (SUPPLIER_MAP.putIfAbsent(tableName, supplier) != null) {
         // discard our instance and re-retrieve, since someone else has set it
         supplier = SUPPLIER_MAP.get(tableName);

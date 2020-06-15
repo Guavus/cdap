@@ -87,7 +87,11 @@ public class DirectoryClassLoaderProvider implements DatasetClassLoaderProvider 
     public void onRemoval(RemovalNotification<CacheKey, ClassLoader> notification) {
       ClassLoader cl = notification.getValue();
       if (cl instanceof Closeable) {
-        Closeables.closeQuietly((Closeable) cl);
+        try {
+          ((Closeable) cl).close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
   }

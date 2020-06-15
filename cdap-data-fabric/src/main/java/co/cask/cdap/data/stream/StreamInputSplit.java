@@ -15,6 +15,7 @@
  */
 package co.cask.cdap.data.stream;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Writable;
@@ -109,7 +110,7 @@ public final class StreamInputSplit extends FileSplit implements Writable {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("path", getPath())
       .add("index", getIndexPath())
       .add("start", getStart())

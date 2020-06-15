@@ -26,6 +26,7 @@ import co.cask.cdap.data2.datafabric.dataset.service.executor.DatasetOpExecutor;
 import co.cask.cdap.data2.metrics.DatasetMetricsReporter;
 import co.cask.http.ChannelPipelineModifier;
 import co.cask.http.NettyHttpService;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -122,8 +124,8 @@ public class DatasetService extends AbstractExecutionThreadService {
   protected void startUp() throws Exception {
     LOG.info("Starting DatasetService...");
 
-    typeService.startAndWait();
-    opExecutorClient.startAndWait();
+    typeService.startAsync().awaitRunning();
+    opExecutorClient.startAsync().awaitRunning();
     httpService.start();
 
     // setting watch for ops executor service that we need to be running to operate correctly
@@ -135,15 +137,15 @@ public class DatasetService extends AbstractExecutionThreadService {
           LOG.info("Discovered {} service", Constants.Service.DATASET_EXECUTOR);
           opExecutorDiscovered.set(serviceDiscovered);
         }
-      }, MoreExecutors.sameThreadExecutor());
+      }, MoreExecutors.getExitingExecutorService((ThreadPoolExecutor) MoreExecutors.directExecutor()));
 
     for (DatasetMetricsReporter metricsReporter : metricReporters) {
-      metricsReporter.start();
+      metricsReporter.startAsync();
     }
   }
 
   @Override
-  protected String getServiceName() {
+  protected String serviceName() {
     return "DatasetService";
   }
 
@@ -208,14 +210,14 @@ public class DatasetService extends AbstractExecutionThreadService {
     LOG.info("Stopping DatasetService...");
 
     for (DatasetMetricsReporter metricsReporter : metricReporters) {
-      metricsReporter.stop();
+      metricsReporter.stopAsync();
     }
 
     if (opExecutorServiceWatch != null) {
       opExecutorServiceWatch.cancel();
     }
 
-    typeService.stopAndWait();
+    typeService.stopAsync().awaitTerminated();
 
     if (cancelDiscovery != null) {
       cancelDiscovery.cancel();
@@ -229,12 +231,12 @@ public class DatasetService extends AbstractExecutionThreadService {
     }
 
     httpService.stop();
-    opExecutorClient.stopAndWait();
+    opExecutorClient.stopAsync().awaitTerminated();
   }
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("bindAddress", httpService.getBindAddress())
       .toString();
   }

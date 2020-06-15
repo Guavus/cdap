@@ -168,7 +168,8 @@ public class DefaultPreviewManager implements PreviewManager {
     Injector injector = createPreviewInjector(previewApp);
     PreviewRunner runner = injector.getInstance(PreviewRunner.class);
     if (runner instanceof Service) {
-      ((Service) runner).startAndWait();
+      ((Service) runner).startAsync();
+      ((Service) runner).awaitRunning();
     }
     try {
       runner.startPreview(new PreviewRequest<>(getProgramIdFromRequest(previewApp, appRequest), appRequest));
@@ -277,7 +278,8 @@ public class DefaultPreviewManager implements PreviewManager {
 
   private void stopQuietly(Service service) {
     try {
-      service.stopAndWait();
+      service.stopAsync();
+      service.awaitTerminated();
     } catch (Exception e) {
       LOG.debug("Error stopping the preview runner.", e);
     }

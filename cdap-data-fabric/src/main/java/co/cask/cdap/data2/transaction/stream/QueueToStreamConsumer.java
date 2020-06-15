@@ -26,6 +26,7 @@ import co.cask.cdap.data2.queue.DequeueResult;
 import co.cask.cdap.data2.queue.QueueConsumer;
 import co.cask.cdap.proto.id.StreamId;
 import co.cask.common.io.ByteBufferInputStream;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -165,7 +166,7 @@ public final class QueueToStreamConsumer implements StreamConsumer {
 
   @Override
   public String getTransactionAwareName() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("queue", streamId)
       .add("config", consumerConfig)
       .toString();

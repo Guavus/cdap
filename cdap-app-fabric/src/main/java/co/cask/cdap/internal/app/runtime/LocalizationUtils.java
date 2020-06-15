@@ -20,6 +20,7 @@ import co.cask.cdap.common.io.Locations;
 import co.cask.cdap.common.lang.jar.BundleJarUtil;
 import co.cask.cdap.internal.app.runtime.distributed.LocalizeResource;
 import com.google.common.base.Preconditions;
+import com.google.common.io.ByteSink;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
@@ -87,7 +88,7 @@ public final class LocalizationUtils {
     URL url = uri.toURL();
     String name = new File(uri.getPath()).getName();
     File tempFile = new File(tempDir, name);
-    Files.copy(Resources.newInputStreamSupplier(url), tempFile);
+    Resources.asByteSource(url).copyTo(Files.asByteSink(tempFile));
     return tempFile;
   }
 
@@ -161,7 +162,7 @@ public final class LocalizationUtils {
       } else {
         //noinspection ResultOfMethodCallIgnored
         output.getParentFile().mkdirs();
-        ByteStreams.copy(tis, Files.newOutputStreamSupplier(output));
+        ByteStreams.copy(tis, Files.asByteSink(output).openStream());
       }
       entry = tis.getNextTarEntry();
     }

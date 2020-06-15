@@ -17,6 +17,7 @@
 package co.cask.cdap.api.metrics;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.util.List;
@@ -70,10 +71,10 @@ public class MetricSearchQuery {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("startTs", startTs)
-      .add("endTs", endTs)
-      .add("resolution", resolution)
-      .add("tagValues", Joiner.on(",").join(tagValues)).toString();
+    return MoreObjects.toStringHelper(this)
+            .add("startTs", startTs)
+            .add("endTs", endTs)
+            .add("resolution", resolution)
+            .add("tagValues", Joiner.on(",").join(tagValues)).toString();
   }
 }

@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.JavaConversions;
 import scala.collection.Seq;
-
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
@@ -64,7 +64,11 @@ public final class SparkClassFileHandler extends AbstractHttpHandler implements 
     Lock writeLock = this.lock.writeLock();
     writeLock.lock();
     try {
-      Closeables.closeQuietly(jarClassFinder);
+      try{
+        jarClassFinder.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     } finally {
       writeLock.unlock();
     }
@@ -79,7 +83,11 @@ public final class SparkClassFileHandler extends AbstractHttpHandler implements 
     writeLock.lock();
     try {
       this.urls.addAll(JavaConversions.asJavaCollection(urls));
-      Closeables.closeQuietly(jarClassFinder);
+      try{
+        jarClassFinder.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       jarClassFinder = new URLClassLoader(this.urls.toArray(new URL[this.urls.size()]), null);
     } finally {
       writeLock.unlock();
@@ -97,7 +105,11 @@ public final class SparkClassFileHandler extends AbstractHttpHandler implements 
       for (URL url : urls) {
         this.urls.remove(url);
       }
-      Closeables.closeQuietly(jarClassFinder);
+      try{
+        jarClassFinder.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       jarClassFinder = new URLClassLoader(this.urls.toArray(new URL[this.urls.size()]), null);
     } finally {
       writeLock.unlock();

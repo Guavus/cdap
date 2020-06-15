@@ -86,7 +86,7 @@ public class MetadataService extends AbstractIdleService {
 
     // Only first instance will run the migration thread.
     if (Boolean.valueOf(cConf.get(Constants.Dataset.Executor.IS_UPGRADE_NEEDED, "false"))) {
-      metadataMigrator.start();
+      metadataMigrator.startAsync();
     }
 
     InetSocketAddress socketAddress = httpService.getBindAddress();
@@ -102,7 +102,7 @@ public class MetadataService extends AbstractIdleService {
     cancelDiscovery.cancel();
     httpService.stop();
     if (metadataMigrator.isRunning()) {
-      metadataMigrator.stop();
+      metadataMigrator.stopAsync();
     }
     LOG.info("Metadata HTTP service stopped");
   }

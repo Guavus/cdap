@@ -17,6 +17,7 @@
 package co.cask.cdap.security.server;
 
 import co.cask.cdap.common.conf.Constants;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 
@@ -58,7 +59,7 @@ public class LDAPAuthenticationHandler extends JAASAuthenticationHandler {
         copyProperties(handlerProps, map, optionalConfigurables, false);
 
         String ldapsVerifyCertificate = handlerProps.get("ldapsVerifyCertificate");
-        ldapSSLVerifyCertificate = Boolean.parseBoolean(Objects.firstNonNull(ldapsVerifyCertificate, "true"));
+        ldapSSLVerifyCertificate = Boolean.parseBoolean(MoreObjects.firstNonNull(ldapsVerifyCertificate, "true"));
 
         return new AppConfigurationEntry[] {
           new AppConfigurationEntry(handlerProps.get(Constants.Security.LOGIN_MODULE_CLASS_NAME),

@@ -17,6 +17,7 @@
 package co.cask.cdap.common.utils;
 
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * An {@link ImmutablePair} consists of two elements within. The elements once set
@@ -79,7 +80,7 @@ public final class ImmutablePair<A, B> {
    */
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
             .add("first", first)
             .add("second", second)
             .toString();

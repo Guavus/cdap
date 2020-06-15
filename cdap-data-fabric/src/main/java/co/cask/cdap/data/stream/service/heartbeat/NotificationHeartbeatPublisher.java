@@ -45,12 +45,12 @@ public class NotificationHeartbeatPublisher extends AbstractIdleService implemen
 
   @Override
   protected void startUp() throws Exception {
-    notificationService.startAndWait();
+    notificationService.startAsync().awaitRunning();
   }
 
   @Override
   protected void shutDown() throws Exception {
-    notificationService.stopAndWait();
+    notificationService.stopAsync().awaitTerminated();
   }
 
   @Override

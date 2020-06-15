@@ -28,7 +28,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
-import com.google.common.io.OutputSupplier;
+import com.google.common.io.ByteSink;
 import com.google.common.primitives.Longs;
 import org.apache.hadoop.fs.Syncable;
 
@@ -95,11 +95,11 @@ public final class StreamDataFileWriter implements TimestampCloseable, Flushable
 
   /**
    * Constructs a new instance that writes to given outputs. Same as calling
-   * {@link StreamDataFileWriter#StreamDataFileWriter(OutputSupplier, OutputSupplier, long, Map)}
+   * {@link StreamDataFileWriter#StreamDataFileWriter(ByteSink, ByteSink, long, Map)}
    * with an empty property map.
    */
-  public StreamDataFileWriter(OutputSupplier<? extends OutputStream> eventOutputSupplier,
-                              OutputSupplier<? extends OutputStream> indexOutputSupplier,
+  public StreamDataFileWriter(ByteSink eventOutputSupplier,
+                              ByteSink indexOutputSupplier,
                               long indexInterval) throws IOException {
     this(eventOutputSupplier, indexOutputSupplier, indexInterval, ImmutableMap.<String, String>of());
   }
@@ -113,14 +113,14 @@ public final class StreamDataFileWriter implements TimestampCloseable, Flushable
    * @param properties the property set that will be stored as file properties
    * @throws IOException if there is an error in preparing the output streams
    */
-  public StreamDataFileWriter(OutputSupplier<? extends OutputStream> eventOutputSupplier,
-                              OutputSupplier<? extends OutputStream> indexOutputSupplier,
+  public StreamDataFileWriter(ByteSink eventOutputSupplier,
+                              ByteSink indexOutputSupplier,
                               long indexInterval, Map<String, String> properties) throws IOException {
-    this.eventOutput = eventOutputSupplier.getOutput();
+    this.eventOutput = eventOutputSupplier.openStream();
     try {
-      this.indexOutput = indexOutputSupplier.getOutput();
+      this.indexOutput = indexOutputSupplier.openStream();
     } catch (IOException e) {
-      Closeables.closeQuietly(this.eventOutput);
+      this.eventOutput.close();
       throw e;
     }
     this.indexInterval = indexInterval;
@@ -134,8 +134,8 @@ public final class StreamDataFileWriter implements TimestampCloseable, Flushable
     try {
       init(properties);
     } catch (IOException e) {
-      Closeables.closeQuietly(eventOutput);
-      Closeables.closeQuietly(indexOutput);
+      eventOutput.close();
+      indexOutput.close();
       throw e;
     }
   }
@@ -324,8 +324,8 @@ public final class StreamDataFileWriter implements TimestampCloseable, Flushable
    */
   private IOException closeWithException(IOException ex) throws IOException {
     closed = true;
-    Closeables.closeQuietly(eventOutput);
-    Closeables.closeQuietly(indexOutput);
+    eventOutput.close();
+    indexOutput.close();
     throw ex;
   }
 

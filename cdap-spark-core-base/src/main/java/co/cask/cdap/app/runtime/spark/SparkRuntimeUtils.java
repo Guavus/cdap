@@ -21,7 +21,7 @@ import co.cask.cdap.app.runtime.spark.classloader.SparkRunnerClassLoader;
 import co.cask.cdap.app.runtime.spark.distributed.SparkDriverService;
 import co.cask.cdap.common.lang.ClassLoaders;
 import co.cask.cdap.common.lang.jar.BundleJarUtil;
-import com.google.common.io.OutputSupplier;
+import com.google.common.io.ByteSink;
 import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.AbstractService;
 import com.google.common.util.concurrent.Service;
@@ -86,9 +86,9 @@ public final class SparkRuntimeUtils {
 
     try {
       File confDir = new File(confDirPath);
-      BundleJarUtil.createArchive(confDir, new OutputSupplier<ZipOutputStream>() {
+      BundleJarUtil.createArchive(confDir, new ByteSink() {
         @Override
-        public ZipOutputStream getOutput() throws IOException {
+        public ZipOutputStream openStream() throws IOException {
           ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(zipFile));
           zipOutput.putNextEntry(new ZipEntry(propertiesEntryName));
           properties.store(zipOutput, "Spark configuration.");
@@ -212,7 +212,7 @@ public final class SparkRuntimeUtils {
       }
     }, Threads.SAME_THREAD_EXECUTOR);
 
-    driverService.startAndWait();
+    driverService.startAsync().awaitRunning();
     return new SparkProgramCompletion() {
       @Override
       public void completed() {
@@ -235,7 +235,7 @@ public final class SparkRuntimeUtils {
         if (failure && driverService instanceof SparkDriverService) {
           ((SparkDriverService) driverService).stopWithoutComplete();
         } else {
-          driverService.stopAndWait();
+          driverService.stopAsync().awaitTerminated();
         }
       }
     };

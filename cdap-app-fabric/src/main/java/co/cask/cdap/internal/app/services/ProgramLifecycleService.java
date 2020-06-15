@@ -86,6 +86,7 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import org.apache.twill.api.RunId;
 import org.apache.twill.api.logging.LogEntry;
+import org.apache.twill.common.Threads;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -649,10 +650,10 @@ public class ProgramLifecycleService {
                                       .collect(Collectors.toSet());
 
     List<ListenableFuture<ProgramRunId>> futures = new ArrayList<>();
-    Stopwatch stopwatch = new Stopwatch().start();
+    Stopwatch stopwatch = Stopwatch.createStarted();
 
     Set<ProgramRunId> cancelledProvisionRuns = new HashSet<>();
-    while (!pendingStops.isEmpty() && stopwatch.elapsedTime(TimeUnit.SECONDS) < 3L) {
+    while (!pendingStops.isEmpty() && stopwatch.elapsed(TimeUnit.SECONDS) < 3L) {
       Iterator<String> iterator = pendingStops.iterator();
       while (iterator.hasNext()) {
         ProgramRunId activeRunId = programId.run(iterator.next());
@@ -673,7 +674,8 @@ public class ProgramLifecycleService {
         // if there is a runtimeInfo, the run is in the 'starting' state or later
         if (runtimeInfo != null) {
           ListenableFuture<ProgramController> future = runtimeInfo.getController().stop();
-          futures.add(Futures.transform(future, ProgramController::getProgramRunId));
+          // TODO: Suspicious code ahead - Neelesh.
+          futures.add(Futures.transform(future, ProgramController::getProgramRunId, Threads.SAME_THREAD_EXECUTOR));
           iterator.remove();
           // if it was in this set, it means we cancelled a task, but it had already sent a PROVISIONED message
           // by the time we cancelled it. We then waited for it to show up in the runtime service and got here.

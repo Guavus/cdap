@@ -17,13 +17,12 @@
 package co.cask.cdap.common.service;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import javax.annotation.Nullable;
 
 /**
@@ -48,7 +47,15 @@ public class Services {
   public static void startAndWait(Service service, long timeout, TimeUnit timeoutUnit,
                                   @Nullable String timeoutErrorMessage)
     throws TimeoutException, InterruptedException, ExecutionException {
-    ListenableFuture<Service.State> startFuture = service.start();
+    // TODO: himanshu: not sure about this needs to be reviewed
+    ListenableFuture<Service.State> startFuture = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()).submit(new Callable<Service.State>() {
+      @Override
+      public Service.State call() throws Exception {
+        Service service1 = service.startAsync();
+        service.awaitRunning();
+        return service1.state();
+      }
+    });
     try {
       startFuture.get(timeout, timeoutUnit);
     } catch (TimeoutException e) {
@@ -58,7 +65,7 @@ public class Services {
         timeoutException.setStackTrace(e.getStackTrace());
       }
       try {
-        service.stop();
+        service.stopAsync();
       } catch (Exception stopException) {
         LOG.error("Error while trying to stop service: ", stopException);
       }
@@ -66,7 +73,7 @@ public class Services {
     } catch (InterruptedException e) {
       LOG.error("Interrupted while waiting to start service.", e);
       try {
-        service.stop();
+        service.stopAsync();
       } catch (Exception stopException) {
         LOG.error("Error while trying to stop service:", stopException);
       }

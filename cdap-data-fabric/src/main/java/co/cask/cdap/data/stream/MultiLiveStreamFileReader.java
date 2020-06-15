@@ -85,8 +85,7 @@ public final class MultiLiveStreamFileReader implements FileReader<StreamEventOf
                   long timeout, TimeUnit unit, ReadFilter readFilter) throws IOException, InterruptedException {
     int eventsRead = 0;
 
-    Stopwatch stopwatch = new Stopwatch();
-    stopwatch.start();
+    Stopwatch stopwatch = Stopwatch.createUnstarted();
 
     while (eventsRead < maxEvents && !(emptySources.isEmpty() && eventSources.isEmpty())) {
       if (!emptySources.isEmpty()) {
@@ -94,7 +93,7 @@ public final class MultiLiveStreamFileReader implements FileReader<StreamEventOf
       }
       eventsRead += read(events, readFilter);
 
-      if (eventSources.isEmpty() && stopwatch.elapsedTime(unit) >= timeout) {
+      if (eventSources.isEmpty() && stopwatch.elapsed(unit) >= timeout) {
         break;
       }
     }

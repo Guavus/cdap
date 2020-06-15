@@ -16,10 +16,7 @@
 
 package co.cask.cdap.common.lang;
 
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.base.Splitter;
-import com.google.common.base.Throwables;
+import com.google.common.base.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +64,7 @@ public final class ClassLoaders {
    */
   public static Class<?> loadClass(String className, @Nullable ClassLoader classLoader,
                                    Object caller) throws ClassNotFoundException {
-    ClassLoader cl = Objects.firstNonNull(classLoader, caller.getClass().getClassLoader());
+    ClassLoader cl = MoreObjects.firstNonNull(classLoader, caller.getClass().getClassLoader());
     return cl.loadClass(className);
   }
 

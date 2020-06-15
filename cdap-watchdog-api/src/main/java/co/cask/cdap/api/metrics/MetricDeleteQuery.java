@@ -17,6 +17,7 @@
 package co.cask.cdap.api.metrics;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.util.Collection;
@@ -77,11 +78,11 @@ public class MetricDeleteQuery {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("startTs", startTs)
-      .add("endTs", endTs)
-      .add("metricName", metricNames)
-      .add("sliceByTags", Joiner.on(",").withKeyValueSeparator(":").useForNull("null").join(sliceByTagValues))
-      .toString();
+    return MoreObjects.toStringHelper(this)
+            .add("startTs", startTs)
+            .add("endTs", endTs)
+            .add("metricName", metricNames)
+            .add("sliceByTags", Joiner.on(",").withKeyValueSeparator(":").useForNull("null").join(sliceByTagValues))
+            .toString();
   }
 }

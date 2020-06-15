@@ -156,11 +156,11 @@ public class CombinedHBaseMetricsTable implements MetricsTable {
       if (e.getCause() instanceof IOException) {
         try {
           if (!v2MetricsTableExists()) {
-            Closeables.closeQuietly(v2HBaseTable);
+            v2HBaseTable.close();
             v2HBaseTable = null;
             return;
           }
-        } catch (DatasetManagementException dme) {
+        } catch (DatasetManagementException | IOException dme) {
           LOG.error("{} operation failed on table {}", operation, tableName, dme);
           throw Throwables.propagate(e);
         }
@@ -187,8 +187,8 @@ public class CombinedHBaseMetricsTable implements MetricsTable {
 
   @Override
   public void close() throws IOException {
-    Closeables.closeQuietly(v3HBaseTable);
-    Closeables.closeQuietly(v2HBaseTable);
+    v3HBaseTable.close();
+    v2HBaseTable.close();
   }
 
   private DatasetId getV2MetricsTableDatasetId() {

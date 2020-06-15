@@ -24,6 +24,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 import co.cask.cdap.etl.api.streaming.StreamingSource;
 import co.cask.cdap.etl.proto.v2.DataStreamsConfig;
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -35,7 +36,7 @@ public class DataStreamsApp extends AbstractApplication<DataStreamsConfig> {
   @Override
   public void configure() {
     DataStreamsConfig config = getConfig();
-    setDescription(Objects.firstNonNull(config.getDescription(), "Data Streams Application"));
+    setDescription(MoreObjects.firstNonNull(config.getDescription(), "Data Streams Application"));
 
     DataStreamsPipelineSpec spec = new DataStreamsPipelineSpecGenerator<>(getConfigurer(),
                                                                           ImmutableSet.of(StreamingSource.PLUGIN_TYPE),

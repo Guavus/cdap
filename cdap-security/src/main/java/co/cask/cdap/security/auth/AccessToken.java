@@ -18,6 +18,7 @@ package co.cask.cdap.security.auth;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.data.schema.Schema;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 
@@ -117,7 +118,7 @@ public class AccessToken implements Signed<AccessTokenIdentifier> {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("identifier", identifier)
       .add("keyId", keyId)
       .add("digest", Bytes.toStringBinary(digest))

@@ -28,8 +28,8 @@ import co.cask.cdap.data.file.ReadFilter;
 import co.cask.cdap.internal.io.SchemaTypeAdapter;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.InputSupplier;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
@@ -53,8 +53,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public final class StreamDataFileReader implements FileReader<PositionStreamEvent, Long> {
 
-  private final InputSupplier<? extends SeekableInputStream> eventInputSupplier;
-  private final InputSupplier<? extends InputStream> indexInputSupplier;
+  private final ByteSource eventInputSupplier;
+  private final ByteSource indexInputSupplier;
   private final long startTime;
   private final long offset;
   private final byte[] timestampBuffer;
@@ -71,10 +71,10 @@ public final class StreamDataFileReader implements FileReader<PositionStreamEven
   /**
    * Opens a new {@link StreamDataFileReader} with the given inputs.
    *
-   * @param eventInputSupplier An {@link InputSupplier} for providing the stream to read events.
+   * @param eventInputSupplier An {@link ByteSource} for providing the stream to read events.
    * @return A new instance of {@link StreamDataFileReader}.
    */
-  public static StreamDataFileReader create(InputSupplier<? extends SeekableInputStream> eventInputSupplier) {
+  public static StreamDataFileReader create(ByteSource eventInputSupplier) {
     return new StreamDataFileReader(eventInputSupplier, null, 0L, 0L);
   }
 
@@ -82,14 +82,14 @@ public final class StreamDataFileReader implements FileReader<PositionStreamEven
    * Opens a new {@link StreamDataFileReader} with the given inputs that starts reading events that are
    * written at or after the given timestamp.
    *
-   * @param eventInputSupplier An {@link InputSupplier} for providing the stream to read events.
-   * @param indexInputSupplier An {@link InputSupplier} for providing the stream to read event index.
+   * @param eventInputSupplier An {@link ByteSource} for providing the stream to read events.
+   * @param indexInputSupplier An {@link ByteSource} for providing the stream to read event index.
    * @param startTime Timestamp in milliseconds for the event time to start reading with.
    * @return A new instance of {@link StreamDataFileReader}.
    */
   public static StreamDataFileReader createByStartTime(
-    InputSupplier<? extends SeekableInputStream> eventInputSupplier,
-    @Nullable InputSupplier<? extends InputStream> indexInputSupplier, long startTime) {
+          ByteSource eventInputSupplier,
+          ByteSource indexInputSupplier, long startTime) {
     return new StreamDataFileReader(eventInputSupplier, indexInputSupplier, startTime, 0L);
   }
 
@@ -97,19 +97,19 @@ public final class StreamDataFileReader implements FileReader<PositionStreamEven
    * Opens a new {@link StreamDataFileReader} with the given inputs, which starts reading events at a the smallest
    * event position that is larger than or equal to the given offset.
    *
-   * @param eventInputSupplier An {@link InputSupplier} for providing the stream to read events.
-   * @param indexInputSupplier An {@link InputSupplier} for providing the stream to read event index.
+   * @param eventInputSupplier An {@link ByteSource} for providing the stream to read events.
+   * @param indexInputSupplier An {@link ByteSource} for providing the stream to read event index.
    * @param offset An arbitrary event file offset.
    * @return A new instance of {@link StreamDataFileReader}.
    */
-  public static StreamDataFileReader createWithOffset(InputSupplier<? extends SeekableInputStream> eventInputSupplier,
-                                                      @Nullable InputSupplier<? extends InputStream> indexInputSupplier,
+  public static StreamDataFileReader createWithOffset(ByteSource eventInputSupplier,
+                                                      ByteSource indexInputSupplier,
                                                       long offset) {
     return new StreamDataFileReader(eventInputSupplier, indexInputSupplier, 0L, offset);
   }
 
-  private StreamDataFileReader(InputSupplier<? extends SeekableInputStream> eventInputSupplier,
-                               @Nullable InputSupplier<? extends InputStream> indexInputSupplier,
+  private StreamDataFileReader(ByteSource eventInputSupplier,
+                               ByteSource indexInputSupplier,
                                long startTime, long offset) {
     this.eventInputSupplier = eventInputSupplier;
     this.indexInputSupplier = indexInputSupplier;
@@ -176,8 +176,7 @@ public final class StreamDataFileReader implements FileReader<PositionStreamEven
     int eventCount = 0;
     long sleepNano = computeSleepNano(timeout, unit);
     try {
-      Stopwatch stopwatch = new Stopwatch();
-      stopwatch.start();
+      Stopwatch stopwatch = Stopwatch.createUnstarted();
 
       // Keep reading events until max events.
       while (!eof && eventCount < maxEvents) {
@@ -209,13 +208,13 @@ public final class StreamDataFileReader implements FileReader<PositionStreamEven
             break;
           }
 
-          if (stopwatch.elapsedTime(unit) >= timeout) {
+          if (stopwatch.elapsed(unit) >= timeout) {
             break;
           }
 
           TimeUnit.NANOSECONDS.sleep(sleepNano);
 
-          if (stopwatch.elapsedTime(unit) >= timeout) {
+          if (stopwatch.elapsed(unit) >= timeout) {
             break;
           }
         }
@@ -244,7 +243,7 @@ public final class StreamDataFileReader implements FileReader<PositionStreamEven
    */
   private void doOpen() throws IOException {
     try {
-      eventInput = eventInputSupplier.getInput();
+      eventInput = (SeekableInputStream) eventInputSupplier.openStream();
       decoder = new BinaryDecoder(eventInput);
 
       // If position is <= 0, the reader is not being used yet, hence needs to initialize.

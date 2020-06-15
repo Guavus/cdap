@@ -17,7 +17,7 @@
 package co.cask.cdap.common.lang;
 
 import co.cask.cdap.common.lang.jar.BundleJarUtil;
-import com.google.common.io.InputSupplier;
+import com.google.common.io.ByteSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -112,9 +112,9 @@ public abstract class InterceptableClassLoader extends URLClassLoader implements
         try {
           // Tries to load the Manifest from the Jar URI
           final URI jarURI = URI.create(jarURIString);
-          manifests.put(jarURIString, BundleJarUtil.getManifest(jarURI, new InputSupplier<InputStream>() {
+          manifests.put(jarURIString, BundleJarUtil.getManifest(jarURI, new ByteSource() {
             @Override
-            public InputStream getInput() throws IOException {
+            public InputStream openStream() throws IOException {
               return jarURI.toURL().openStream();
             }
           }));

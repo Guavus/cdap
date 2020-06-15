@@ -18,6 +18,7 @@ package co.cask.cdap.data.stream.service.heartbeat;
 
 import co.cask.cdap.data.stream.service.DistributedStreamService;
 import co.cask.cdap.proto.id.StreamId;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 
@@ -53,7 +54,7 @@ public class StreamWriterHeartbeat {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(StreamWriterHeartbeat.class)
+    return MoreObjects.toStringHelper(StreamWriterHeartbeat.class)
       .add("timestamp", timestamp)
       .add("instanceId", instanceId)
       .add("streamsSizes", streamsSizes)

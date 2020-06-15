@@ -50,6 +50,7 @@ import co.cask.cdap.api.service.http.HttpServiceResponder;
 import co.cask.cdap.api.worker.AbstractWorker;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 import org.apache.hadoop.io.IntWritable;
@@ -173,7 +174,7 @@ public class AppWithPartitionConsumers extends AbstractApplication {
               String string = Bytes.toString(Bytes.toBytes(content));
 
               for (String token : string.split(" ")) {
-                Long count = Objects.firstNonNull(wordCounts.get(token), 0L);
+                Long count = MoreObjects.firstNonNull(wordCounts.get(token), 0L);
                 wordCounts.put(token, count + 1);
               }
             }

@@ -37,7 +37,9 @@ import co.cask.cdap.internal.app.runtime.artifact.Artifacts;
 import co.cask.cdap.internal.app.runtime.plugin.PluginInstantiator;
 import co.cask.cdap.internal.io.ReflectionSchemaGenerator;
 import com.google.common.base.Throwables;
+import com.google.common.io.CharSource;
 import com.google.common.io.CharStreams;
+import com.google.common.io.Files;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -50,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 /**
@@ -124,7 +127,7 @@ public final class InMemoryConfigurator implements Configurator {
 
   private ConfigResponse createResponse(Application app) throws Exception {
     String specJson = getSpecJson(app);
-    return new DefaultConfigResponse(0, CharStreams.newReaderSupplier(specJson));
+    return new DefaultConfigResponse(0, CharSource.wrap(specJson));
   }
 
   private <T extends Config> String getSpecJson(Application<T> app) throws Exception {

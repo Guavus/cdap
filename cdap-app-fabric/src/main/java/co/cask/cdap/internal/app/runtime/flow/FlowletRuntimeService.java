@@ -64,9 +64,11 @@ final class FlowletRuntimeService extends AbstractIdleService {
     flowletContext.getProgramMetrics().increment("process.instance", 1);
     flowletProcessDriver = new FlowletProcessDriver(flowletContext, dataFabricFacade, txCallback, processSpecs);
 
-    serviceHook.startAndWait();
+    serviceHook.startAsync();
+    serviceHook.awaitRunning();
     initFlowlet();
-    flowletProcessDriver.startAndWait();
+    flowletProcessDriver.startUp();
+    flowletProcessDriver.awaitRunning();
     LOG.info("Started Flowlet '{}' for Flow '{}'. Flowlet details: [{}]",
              flowletContext.getFlowletId(), flowletContext.getFlowId(), flowletContext);
   }
@@ -89,7 +91,8 @@ final class FlowletRuntimeService extends AbstractIdleService {
    * make sure thread safety.
    */
   void suspend() {
-    flowletProcessDriver.stopAndWait();
+    flowletProcessDriver.stopAsync();
+    flowletProcessDriver.awaitTerminated();
 
     // After a FlowletProcessDriver stopped, it cannot be started again
     // Hence copying all states to a new instance and start it again on resuming.
@@ -102,7 +105,8 @@ final class FlowletRuntimeService extends AbstractIdleService {
    * make sure thread safety.
    */
   void resume() {
-    flowletProcessDriver.startAndWait();
+    flowletProcessDriver.startAsync();
+    flowletProcessDriver.awaitRunning();
   }
 
   private void initFlowlet() throws Exception {
@@ -127,7 +131,8 @@ final class FlowletRuntimeService extends AbstractIdleService {
    */
   private void stopService(Service service) {
     try {
-      service.stopAndWait();
+      service.stopAsync();
+      service.awaitTerminated();
     } catch (Throwable t) {
       LOG.warn("Exception when stopping service {}", service);
     }

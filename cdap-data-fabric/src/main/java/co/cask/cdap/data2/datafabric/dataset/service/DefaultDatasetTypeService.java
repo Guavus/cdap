@@ -126,7 +126,7 @@ public class DefaultDatasetTypeService extends AbstractIdleService implements Da
 
   @Override
   protected void startUp() throws Exception {
-    txClientService.startAndWait();
+    txClientService.startAsync().awaitRunning();
 
     // Bootstrap the meta and instance tables. Make sure the underlying table exists.
     DatasetsUtil.createIfNotExists(datasetFramework, DatasetMetaTableUtil.META_TABLE_INSTANCE_ID,
@@ -142,7 +142,7 @@ public class DefaultDatasetTypeService extends AbstractIdleService implements Da
 
   @Override
   protected void shutDown() throws Exception {
-    txClientService.stopAndWait();
+    txClientService.stopAsync().awaitTerminated();
   }
 
   /**
@@ -340,7 +340,7 @@ public class DefaultDatasetTypeService extends AbstractIdleService implements Da
           Locations.mkdirsIfNotExists(archiveDir);
 
           LOG.debug("Copy from {} to {}", uploadedFile, tmpLocation);
-          Files.copy(uploadedFile, Locations.newOutputSupplier(tmpLocation));
+          Files.copy(uploadedFile, Locations.newOutputSupplier(tmpLocation).openStream());
 
           // Finally, move archive to final location
           LOG.debug("Storing module {} jar at {}", datasetModuleId, archive);

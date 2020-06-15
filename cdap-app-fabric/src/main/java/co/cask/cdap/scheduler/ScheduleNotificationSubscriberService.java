@@ -22,6 +22,7 @@ import co.cask.cdap.api.metrics.MetricsCollectionService;
 import co.cask.cdap.common.NotFoundException;
 import co.cask.cdap.common.conf.CConfiguration;
 import co.cask.cdap.common.conf.Constants;
+import co.cask.cdap.common.service.ServiceUtil;
 import co.cask.cdap.common.utils.ImmutablePair;
 import co.cask.cdap.data2.dataset2.DatasetFramework;
 import co.cask.cdap.internal.app.runtime.ProgramOptionConstants;
@@ -96,23 +97,26 @@ public class ScheduleNotificationSubscriberService extends AbstractIdleService {
       1, Threads.createDaemonThreadFactory("scheduler-notification-subscriber-%d"));
 
     // Start all subscriber services. All of them has no-op in start, so they shouldn't fail.
-    Futures.successfulAsList(subscriberServices.stream().map(Service::start).collect(Collectors.toList())).get();
+    ServiceUtil.startAllBlocking(subscriberServices);
+    //Futures.successfulAsList(subscriberServices.stream().map(Service::start).collect(Collectors.toList())).get();
   }
 
   @Override
   protected void shutDown() throws Exception {
     // This never throw
-    Futures.successfulAsList(subscriberServices.stream().map(Service::stop).collect(Collectors.toList())).get();
+//    Futures.successfulAsList(subscriberServices.stream().map(Service::stop).collect(Collectors.toList())).get();
 
-    for (Service service : subscriberServices) {
-      // The service must have been stopped, and calling stop again will just return immediate with the
-      // future that carries the stop state.
-      try {
-        service.stop().get();
-      } catch (ExecutionException e) {
-        LOG.warn("Exception raised when stopping service {}", service, e.getCause());
-      }
-    }
+//    for (Service service : subscriberServices) {
+//      // The service must have been stopped, and calling stop again will just return immediate with the
+//      // future that carries the stop state.
+//      try {
+//        service.stop().get();
+//      } catch (ExecutionException e) {
+//        LOG.warn("Exception raised when stopping service {}", service, e.getCause());
+//      }
+//    }
+
+    ServiceUtil.startAllBlocking(subscriberServices);
 
     subscriberExecutor.shutdownNow();
     LOG.info("Stopped {}", getClass().getSimpleName());

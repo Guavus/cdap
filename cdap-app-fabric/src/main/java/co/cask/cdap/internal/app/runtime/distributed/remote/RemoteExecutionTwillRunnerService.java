@@ -30,6 +30,7 @@ import co.cask.cdap.common.io.Locations;
 import co.cask.cdap.common.service.Retries;
 import co.cask.cdap.common.service.RetryStrategies;
 import co.cask.cdap.common.service.RetryStrategy;
+import co.cask.cdap.common.service.ServiceUtil;
 import co.cask.cdap.common.ssh.DefaultSSHSession;
 import co.cask.cdap.common.ssh.SSHConfig;
 import co.cask.cdap.common.utils.DirUtils;
@@ -102,11 +103,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -188,7 +185,8 @@ public class RemoteExecutionTwillRunnerService implements TwillRunnerService {
       throw new RuntimeException(e);
     }
 
-    monitorSocksProxy.startAndWait();
+    monitorSocksProxy.startAsync();
+    monitorSocksProxy.awaitRunning();
     monitorScheduler = Executors.newScheduledThreadPool(cConf.getInt(Constants.RuntimeMonitor.THREADS),
                                                         Threads.createDaemonThreadFactory("runtime-monitor-%d"));
     long startMillis = System.currentTimeMillis();
@@ -200,14 +198,13 @@ public class RemoteExecutionTwillRunnerService implements TwillRunnerService {
   @Override
   public void stop() {
     // Stops all the runtime monitor. This won't terminate the remotely running program.
-    List<ListenableFuture<Service.State>> stopFutures = new ArrayList<>();
+    List<Service> serviceList = new LinkedList<>();
     for (RemoteExecutionTwillController controller : controllers.values()) {
-      stopFutures.add(controller.getRuntimeMonitor().stop());
+      serviceList.add(controller.getRuntimeMonitor());
     }
 
-    // Wait for all of them to stop
     try {
-      Uninterruptibles.getUninterruptibly(Futures.successfulAsList(stopFutures));
+      ServiceUtil.stopAllBlocking(serviceList);
     } catch (Exception e) {
       // This shouldn't happen
       LOG.warn("Exception raised when waiting for runtime monitors to stop.", e);
@@ -215,7 +212,8 @@ public class RemoteExecutionTwillRunnerService implements TwillRunnerService {
 
     try {
       try {
-        monitorSocksProxy.stopAndWait();
+        monitorSocksProxy.stopAsync();
+        monitorSocksProxy.awaitTerminated();
       } catch (Exception e) {
         LOG.warn("Exception raised when stopping runtime monitor socks proxy", e);
       }
@@ -455,7 +453,7 @@ public class RemoteExecutionTwillRunnerService implements TwillRunnerService {
             ClusterKeyInfo clusterKeyInfo = new ClusterKeyInfo(programOptions, locationFactory);
             RemoteExecutionTwillController controller = createControllerFactory(programRunId, programOptions,
                                                                                 clusterKeyInfo).create();
-            controller.getRuntimeMonitor().start();
+            controller.getRuntimeMonitor().startAsync();
           }
 
           return scanResult.isEmpty();

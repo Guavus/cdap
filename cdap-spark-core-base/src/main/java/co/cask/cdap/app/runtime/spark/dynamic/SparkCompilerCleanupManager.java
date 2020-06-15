@@ -24,6 +24,7 @@ import com.google.common.cache.RemovalNotification;
 import com.google.common.io.Closeables;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 /**
@@ -41,7 +42,11 @@ public class SparkCompilerCleanupManager implements AutoCloseable {
       .removalListener(new RemovalListener<SparkCompiler, Closeable>() {
         @Override
         public void onRemoval(RemovalNotification<SparkCompiler, Closeable> notification) {
-          Closeables.closeQuietly(notification.getValue());
+          try{
+            notification.getValue().close();
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
         }
       })
       .build();

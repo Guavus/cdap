@@ -39,6 +39,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSink;
 import com.google.common.io.ByteStreams;
 import joptsimple.OptionSpec;
 import org.apache.hadoop.conf.Configuration;
@@ -79,15 +80,7 @@ import org.apache.twill.launcher.FindFreePort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -460,7 +453,7 @@ class RemoteExecutionTwillPreparer implements TwillPreparer {
           session.executeAndWait(targetPath + "/launcher.sh");
 
           // Starts monitoring after launching the remote process.
-          controller.getRuntimeMonitor().start();
+          controller.getRuntimeMonitor().startAsync();
 
           return controller;
         }
@@ -491,7 +484,7 @@ class RemoteExecutionTwillPreparer implements TwillPreparer {
       // If not yet uploaded, upload it
       String localizedFile = localizedFiles.get(uri);
       if (localizedFile == null) {
-        String fileName = Hashing.md5().hashString(uri.toString()).toString() + "-" + getFileName(uri);
+        String fileName = Hashing.md5().hashString(uri.toString(), StandardCharsets.UTF_8).toString() + "-" + getFileName(uri);
         localizedFile = localizedDir + "/" + fileName;
         try (InputStream inputStream = openURI(uri)) {
           LOG.debug("Upload file {} to {}@{}:{}", uri, session.getUsername(), session.getAddress(), localizedFile);
@@ -599,7 +592,7 @@ class RemoteExecutionTwillPreparer implements TwillPreparer {
     List<String> classList = classes.stream().map(Class::getName).sorted().collect(Collectors.toList());
     Hasher hasher = Hashing.md5().newHasher();
     for (String name : classList) {
-      hasher.putString(name);
+      hasher.putString(name, StandardCharsets.UTF_8);
     }
     // Only depends on class list so that it can be reused across different launches
     String name = hasher.hash().toString() + "-" + Constants.Files.APPLICATION_JAR;
@@ -836,7 +829,12 @@ class RemoteExecutionTwillPreparer implements TwillPreparer {
   }
 
   private void saveArguments(Arguments arguments, final Path targetPath) throws IOException {
-    ArgumentsCodec.encode(arguments, () -> Files.newBufferedWriter(targetPath, StandardCharsets.UTF_8));
+    ArgumentsCodec.encode(arguments, new ByteSink() {
+      @Override
+      public OutputStream openStream() throws IOException {
+        return Files.newOutputStream(targetPath);
+      }
+    });
   }
 
   /**

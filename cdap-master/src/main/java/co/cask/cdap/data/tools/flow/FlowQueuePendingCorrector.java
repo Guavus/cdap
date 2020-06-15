@@ -302,33 +302,50 @@ public class FlowQueuePendingCorrector extends AbstractIdleService {
       queuePending = timeValue.getValue();
     }
 
-    metricsCollectionService.startAndWait();
-
+    metricsCollectionService.startAsync();
+    metricsCollectionService.awaitRunning();
     MetricsContext collector = metricsCollectionService.getContext(tags);
     collector.gauge("queue.pending", correctQueuePendingValue);
     System.out.printf("Adjusted system.queue.pending metric from %d to %d (tags %s)\n",
                       queuePending, correctQueuePendingValue, GSON.toJson(tags));
 
     // stop will flush the metrics
-    metricsCollectionService.stopAndWait();
+    metricsCollectionService.stopAsync();
+    metricsCollectionService.awaitTerminated();
   }
 
   @Override
   protected void startUp() throws Exception {
-    kafkaClientService.startAndWait();
-    zkClientService.startAndWait();
+    kafkaClientService.startAsync();
+    kafkaClientService.awaitRunning();
+
+    zkClientService.startAsync();
+    zkClientService.awaitRunning();;
+
     twillRunnerService.start();
-    programRuntimeService.startAndWait();
-    queueDebugger.startAndWait();
+
+    programRuntimeService.startAsync();
+    programRuntimeService.awaitRunning();
+
+    queueDebugger.startAsync();
+    queueDebugger.awaitRunning();
   }
 
   @Override
   protected void shutDown() throws Exception {
-    queueDebugger.stopAndWait();
-    programRuntimeService.stopAndWait();
+    queueDebugger.stopAsync();
+    queueDebugger.awaitTerminated();
+
+    programRuntimeService.stopAsync();
+    programRuntimeService.awaitTerminated();
+
     twillRunnerService.stop();
-    zkClientService.stopAndWait();
-    kafkaClientService.stopAndWait();
+
+    zkClientService.stopAsync();
+    zkClientService.awaitTerminated();
+
+    kafkaClientService.stopAsync();
+    kafkaClientService.awaitTerminated();
   }
 
   public static FlowQueuePendingCorrector createCorrector() {
@@ -381,7 +398,8 @@ public class FlowQueuePendingCorrector extends AbstractIdleService {
   public static void main(String[] args) throws Exception {
     CommandLine cmd = parseArgs(args);
     FlowQueuePendingCorrector corrector = createCorrector();
-    corrector.startAndWait();
+    corrector.startAsync();
+    corrector.awaitRunning();
 
     try {
       String namespace = cmd.getOptionValue("namespace");
@@ -407,7 +425,8 @@ public class FlowQueuePendingCorrector extends AbstractIdleService {
         corrector.run(new FlowId(namespace, app, flow), producerFlowlet, consumerFlowlet, queue);
       }
     } finally {
-      corrector.stopAndWait();
+      corrector.stopAsync();
+      corrector.awaitTerminated();
     }
   }
 

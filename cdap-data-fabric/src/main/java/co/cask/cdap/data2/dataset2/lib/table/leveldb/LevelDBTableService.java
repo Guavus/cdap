@@ -96,9 +96,9 @@ public class LevelDBTableService implements AutoCloseable {
   /**
    * only use in unit test since the singleton may be reused for multiple tests.
    */
-  public void clearTables() {
+  public void clearTables() throws IOException {
     for (DB entries : tables.values()) {
-      Closeables.closeQuietly(entries);
+      entries.close();
     }
     tables.clear();
   }
@@ -107,7 +107,7 @@ public class LevelDBTableService implements AutoCloseable {
     Preconditions.checkState(!isClosed, "%s has already been closed.", getClass().getSimpleName());
   }
 
-  public void close() {
+  public void close() throws IOException {
     isClosed = true;
     clearTables();
   }

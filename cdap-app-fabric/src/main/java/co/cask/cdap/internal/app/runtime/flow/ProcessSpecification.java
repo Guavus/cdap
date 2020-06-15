@@ -18,6 +18,7 @@ package co.cask.cdap.internal.app.runtime.flow;
 
 import co.cask.cdap.api.annotation.Tick;
 import co.cask.cdap.app.queue.QueueReader;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.util.concurrent.TimeUnit;
@@ -69,7 +70,7 @@ final class ProcessSpecification<T> {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("queue", queueReader)
       .add("method", processMethod)
       .toString();

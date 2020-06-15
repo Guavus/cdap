@@ -19,6 +19,7 @@ package co.cask.cdap.api.metrics;
 import co.cask.cdap.api.dataset.lib.cube.AggregationFunction;
 import co.cask.cdap.api.dataset.lib.cube.Interpolator;
 import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -160,12 +161,12 @@ public final class MetricDataQuery {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-      .add("startTs", startTs)
-      .add("endTs", endTs)
-      .add("resolution", resolution)
-      .add("metrics", metrics)
-      .add("sliceByTags", Joiner.on(",").withKeyValueSeparator(":").useForNull("null").join(sliceByTagValues))
-      .add("groupByTags", Joiner.on(",").join(groupByTags)).toString();
+    return MoreObjects.toStringHelper(this)
+            .add("startTs", startTs)
+            .add("endTs", endTs)
+            .add("resolution", resolution)
+            .add("metrics", metrics)
+            .add("sliceByTags", Joiner.on(",").withKeyValueSeparator(":").useForNull("null").join(sliceByTagValues))
+            .add("groupByTags", Joiner.on(",").join(groupByTags)).toString();
   }
 }

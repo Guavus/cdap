@@ -17,6 +17,7 @@
 package co.cask.cdap.common.lang;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
@@ -80,7 +81,7 @@ public class PackageFilterClassLoader extends ClassLoader {
       return resources;
     }
     if (name.endsWith(".class") && !predicate.apply(getResourcePackage(name))) {
-      return Iterators.asEnumeration(Iterators.<URL>emptyIterator());
+      return Iterators.asEnumeration(ImmutableSet.<URL>of().iterator());
     }
     return super.getResources(name);
   }

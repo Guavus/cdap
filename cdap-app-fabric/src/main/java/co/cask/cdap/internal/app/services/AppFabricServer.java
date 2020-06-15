@@ -27,6 +27,7 @@ import co.cask.cdap.common.http.CommonNettyHttpServiceBuilder;
 import co.cask.cdap.common.logging.LoggingContextAccessor;
 import co.cask.cdap.common.logging.ServiceLoggingContext;
 import co.cask.cdap.common.metrics.MetricsReporterHook;
+import co.cask.cdap.common.service.ServiceUtil;
 import co.cask.cdap.data.stream.StreamCoordinatorClient;
 import co.cask.cdap.internal.app.runtime.plugin.PluginService;
 import co.cask.cdap.internal.bootstrap.BootstrapService;
@@ -43,6 +44,7 @@ import co.cask.http.NettyHttpService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.Service;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.twill.common.Cancellable;
@@ -55,6 +57,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -137,6 +140,7 @@ public class AppFabricServer extends AbstractIdleService {
     this.runCountUpgradeService = runCountUpgradeService;
   }
 
+
   /**
    * Configures the AppFabricService pre-start.
    */
@@ -145,20 +149,34 @@ public class AppFabricServer extends AbstractIdleService {
     LoggingContextAccessor.setLoggingContext(new ServiceLoggingContext(NamespaceId.SYSTEM.getNamespace(),
                                                                        Constants.Logging.COMPONENT_NAME,
                                                                        Constants.Service.APP_FABRIC_HTTP));
-    Futures.allAsList(
-      ImmutableList.of(
-        notificationService.start(),
-        provisioningService.start(),
-        applicationLifecycleService.start(),
-        bootstrapService.start(),
-        programRuntimeService.start(),
-        streamCoordinatorClient.start(),
-        programNotificationSubscriberService.start(),
-        runRecordCorrectorService.start(),
-        pluginService.start(),
-        coreSchedulerService.start()
-      )
-    ).get();
+//    Futures.allAsList(
+//      ImmutableList.of(
+//        notificationService.start(),
+//        provisioningService.start(),
+//        applicationLifecycleService.start(),
+//        bootstrapService.start(),
+//        programRuntimeService.start(),
+//        streamCoordinatorClient.start(),
+//        programNotificationSubscriberService.start(),
+//        runRecordCorrectorService.start(),
+//        pluginService.start(),
+//        coreSchedulerService.start()
+//      )
+//    ).get();
+
+    List<Service> serviceList = new LinkedList<>();
+    serviceList.add(notificationService);
+    serviceList.add(provisioningService);
+    serviceList.add(applicationLifecycleService);
+    serviceList.add(bootstrapService);
+    serviceList.add(programRuntimeService);
+    serviceList.add(streamCoordinatorClient);
+    serviceList.add(programNotificationSubscriberService);
+    serviceList.add(runRecordCorrectorService);
+    serviceList.add(pluginService);
+    serviceList.add(coreSchedulerService);
+
+    ServiceUtil.startAllBlocking(serviceList);
 
     // Create handler hooks
     ImmutableList.Builder<HandlerHook> builder = ImmutableList.builder();
@@ -192,25 +210,36 @@ public class AppFabricServer extends AbstractIdleService {
 
     cancelHttpService = startHttpService(httpServiceBuilder.build());
     if (runCountUpgradeService != null) {
-      runCountUpgradeService.startAndWait();
+      runCountUpgradeService.startAsync();
+      runCountUpgradeService.awaitRunning();
     }
   }
 
   @Override
   protected void shutDown() throws Exception {
-    coreSchedulerService.stopAndWait();
+    coreSchedulerService.stopAsync();
+    coreSchedulerService.awaitTerminated();
     routeStore.close();
-    bootstrapService.stopAndWait();
+    bootstrapService.stopAsync();
+    bootstrapService.awaitTerminated();
     cancelHttpService.cancel();
-    programRuntimeService.stopAndWait();
-    applicationLifecycleService.stopAndWait();
-    notificationService.stopAndWait();
-    programNotificationSubscriberService.stopAndWait();
-    runRecordCorrectorService.stopAndWait();
-    pluginService.stopAndWait();
-    provisioningService.stopAndWait();
+    programRuntimeService.stopAsync();
+    programRuntimeService.awaitTerminated();
+    applicationLifecycleService.stopAsync();
+    applicationLifecycleService.awaitTerminated();
+    notificationService.stopAsync();
+    notificationService.awaitTerminated();
+    programNotificationSubscriberService.stopAsync();
+    programNotificationSubscriberService.awaitTerminated();
+    runRecordCorrectorService.stopAsync();
+    runRecordCorrectorService.awaitTerminated();
+    pluginService.stopAsync();
+    pluginService.awaitTerminated();
+    provisioningService.stopAsync();
+    provisioningService.awaitTerminated();
     if (runCountUpgradeService != null && runCountUpgradeService.isRunning()) {
-      runCountUpgradeService.stopAndWait();
+      runCountUpgradeService.stopAsync();
+      runCountUpgradeService.awaitTerminated();
     }
   }
 

@@ -71,7 +71,7 @@ public class ProgramControllerServiceAdapter extends AbstractProgramController {
   protected void doStop() throws Exception {
     if (service.state() != Service.State.TERMINATED && service.state() != Service.State.FAILED) {
       LOG.debug("stopping controller service for program {}.", getProgramRunId());
-      service.stopAndWait();
+      service.stopAsync().awaitTerminated();
       LOG.debug("stopped controller service for program {}, waiting for it to finish running listener hooks.",
                 getProgramRunId());
       serviceStoppedLatch.await(30, TimeUnit.SECONDS);

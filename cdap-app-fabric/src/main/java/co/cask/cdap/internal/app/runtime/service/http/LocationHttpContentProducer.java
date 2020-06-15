@@ -83,7 +83,11 @@ public class LocationHttpContentProducer extends HttpContentProducer {
   @Override
   @TransactionPolicy(TransactionControl.EXPLICIT)
   public void onError(Throwable failureCause) {
-    Closeables.closeQuietly(input);
+    try {
+      input.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     LOG.warn("Failure in producing http content from location {}", location, failureCause);
   }
 }

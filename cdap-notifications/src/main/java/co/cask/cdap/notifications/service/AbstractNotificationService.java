@@ -72,12 +72,14 @@ public abstract class AbstractNotificationService extends AbstractIdleService im
 
   @Override
   protected void startUp() throws Exception {
-    transactionSystemClient.startAndWait();
+    transactionSystemClient.startAsync();
+    transactionSystemClient.awaitRunning();
   }
 
   @Override
   protected void shutDown() throws Exception {
-    transactionSystemClient.stopAndWait();
+    transactionSystemClient.stopAsync();
+    transactionSystemClient.awaitTerminated();
   }
 
   /**

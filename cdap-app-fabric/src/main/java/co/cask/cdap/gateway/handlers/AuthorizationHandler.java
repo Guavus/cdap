@@ -38,6 +38,7 @@ import co.cask.cdap.security.spi.authentication.SecurityRequestContext;
 import co.cask.cdap.security.spi.authorization.Authorizer;
 import co.cask.cdap.security.spi.authorization.PrivilegesManager;
 import co.cask.http.HttpResponder;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -224,7 +225,7 @@ public class AuthorizationHandler extends AbstractAppFabricHttpHandler {
   }
 
   private void createLogEntry(HttpRequest httpRequest, HttpResponseStatus responseStatus) throws UnknownHostException {
-    InetAddress clientAddr = InetAddress.getByName(Objects.firstNonNull(SecurityRequestContext.getUserIP(), "0.0.0.0"));
+    InetAddress clientAddr = InetAddress.getByName(MoreObjects.firstNonNull(SecurityRequestContext.getUserIP(), "0.0.0.0"));
     AuditLogEntry logEntry = new AuditLogEntry(httpRequest, clientAddr.getHostAddress());
     logEntry.setUserName(authenticationContext.getPrincipal().getName());
     logEntry.setResponse(responseStatus.code(), 0L);

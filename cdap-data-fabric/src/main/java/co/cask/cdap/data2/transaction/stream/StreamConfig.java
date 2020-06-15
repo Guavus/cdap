@@ -19,6 +19,7 @@ import co.cask.cdap.api.data.format.FormatSpecification;
 import co.cask.cdap.api.data.format.Formats;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.proto.id.StreamId;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.apache.twill.filesystem.Location;
 
@@ -94,7 +95,7 @@ public final class StreamConfig {
    * @return The format of the stream body.
    */
   public FormatSpecification getFormat() {
-    return Objects.firstNonNull(format, DEFAULT_STREAM_FORMAT);
+    return MoreObjects.firstNonNull(format, DEFAULT_STREAM_FORMAT);
   }
 
   /**
@@ -106,7 +107,7 @@ public final class StreamConfig {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .add("streamId", streamId)
       .add("duration", partitionDuration)
       .add("indexInterval", indexInterval)
@@ -149,10 +150,10 @@ public final class StreamConfig {
 
     public StreamConfig build() {
       return new StreamConfig(config.getStreamId(), config.getPartitionDuration(), config.getIndexInterval(),
-                              Objects.firstNonNull(ttl, config.getTTL()),
+                              MoreObjects.firstNonNull(ttl, config.getTTL()),
                               config.getLocation(),
-                              Objects.firstNonNull(formatSpec, config.getFormat()),
-                              Objects.firstNonNull(notificationThreshold, config.getNotificationThresholdMB()));
+                              MoreObjects.firstNonNull(formatSpec, config.getFormat()),
+                              MoreObjects.firstNonNull(notificationThreshold, config.getNotificationThresholdMB()));
     }
   }
 }

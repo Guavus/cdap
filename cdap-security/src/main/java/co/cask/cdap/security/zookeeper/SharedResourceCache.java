@@ -24,9 +24,7 @@ import com.google.common.base.Throwables;
 import com.google.common.cache.AbstractLoadingCache;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.*;
 import org.apache.twill.common.Threads;
 import org.apache.twill.zookeeper.NodeChildren;
 import org.apache.twill.zookeeper.NodeData;
@@ -66,7 +64,7 @@ public class SharedResourceCache<T> extends AbstractLoadingCache<String, T> {
   private final String parentZnode;
   private ZKWatcher watcher;
   private Map<String, T> resources;
-  private ListenerManager listeners;
+  private final ListenerManager listeners;
 
   public SharedResourceCache(ZKClient zookeeper, Codec<T> codec, String parentZnode, List<ACL> znodeACL) {
     this.zookeeper = zookeeper;
@@ -102,7 +100,8 @@ public class SharedResourceCache<T> extends AbstractLoadingCache<String, T> {
         LOG.info("Listing existing children for node {}", parentZnode);
         List<String> children = nodeChildren.getChildren();
         for (String child : children) {
-          OperationFuture<NodeData> dataFuture = zookeeper.getData(joinZNode(parentZnode, child), watcher);
+         OperationFuture<NodeData> dataFuture = zookeeper.getData(joinZNode(parentZnode, child), watcher);
+          //ListenableFuture<NodeData> dataFuture = zookeeper.getData(joinZNode(parentZnode, child), watcher);
           final String nodeName = getZNode(dataFuture.getRequestPath());
           Futures.addCallback(dataFuture, new FutureCallback<NodeData>() {
             @Override
@@ -122,7 +121,7 @@ public class SharedResourceCache<T> extends AbstractLoadingCache<String, T> {
               LOG.error("Failed to get data for child node {}", nodeName, t);
               listeners.notifyError(nodeName, t);
             }
-          });
+          }, MoreExecutors.directExecutor());
           LOG.debug("Added future for {}", child);
         }
       }
@@ -185,7 +184,7 @@ public class SharedResourceCache<T> extends AbstractLoadingCache<String, T> {
             listeners.notifyError(name, t);
             completion.setException(t);
           }
-        }
+        }, MoreExecutors.directExecutor()
       );
 
       // Block until it is done
@@ -220,7 +219,8 @@ public class SharedResourceCache<T> extends AbstractLoadingCache<String, T> {
         LOG.error("Failed to remove znode {}", znode, t);
         listeners.notifyError(name, t);
       }
-    });
+    }, MoreExecutors.directExecutor()
+    );
   }
 
   /**
@@ -335,7 +335,8 @@ public class SharedResourceCache<T> extends AbstractLoadingCache<String, T> {
       public void onFailure(Throwable t) {
         resourceCallback.onFailure(t);
       }
-    });
+    }, MoreExecutors.directExecutor()
+    );
   }
 
   private class ZKWatcher implements Watcher {
@@ -364,7 +365,7 @@ public class SharedResourceCache<T> extends AbstractLoadingCache<String, T> {
 
   private class ListenerManager {
     private final Set<ResourceListener<T>> listeners = Sets.newCopyOnWriteArraySet();
-    private ExecutorService listenerExecutor;
+    private final ExecutorService listenerExecutor;
 
     private ListenerManager() {
       this.listenerExecutor = Executors.newSingleThreadExecutor(

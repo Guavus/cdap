@@ -17,7 +17,7 @@
 package co.cask.cdap.internal.app.runtime.batch.distributed;
 
 import co.cask.cdap.internal.asm.Methods;
-import com.google.common.io.OutputSupplier;
+import com.google.common.io.ByteSink;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -43,11 +43,11 @@ public final class ContainerLauncherGenerator {
    *
    * @param mainClassNames List of main class names to generate
    * @param mainDelegatorClass the actual class that the main method will delegate to
-   * @param outputSupplier the {@link OutputSupplier} for the jar file
+   * @param outputSupplier the {@link ByteSink} for the jar file
    */
   public static void generateLauncherJar(Iterable<String> mainClassNames, Class<?> mainDelegatorClass,
-                                         OutputSupplier<? extends OutputStream> outputSupplier) throws IOException {
-    try (JarOutputStream output = new JarOutputStream(outputSupplier.getOutput())) {
+                                         ByteSink outputSupplier) throws IOException {
+    try (JarOutputStream output = new JarOutputStream(outputSupplier.openStream())) {
       for (String mainClassName : mainClassNames) {
         generateMainClass(mainClassName, Type.getType(mainDelegatorClass), output);
       }

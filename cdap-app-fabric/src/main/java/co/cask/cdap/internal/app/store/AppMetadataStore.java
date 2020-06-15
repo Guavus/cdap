@@ -1579,7 +1579,7 @@ public class AppMetadataStore extends MetadataStoreDataset {
     ScanFunction(Predicate<RunRecordMeta> filter, Ticker ticker, long maxScanTimeMillis) {
       this.filter = filter;
       this.maxScanTimeMillis = maxScanTimeMillis;
-      this.stopwatch = new Stopwatch(ticker);
+      this.stopwatch = Stopwatch.createUnstarted(ticker);
     }
 
     public void start() {
@@ -1600,7 +1600,7 @@ public class AppMetadataStore extends MetadataStoreDataset {
 
     @Override
     public Boolean apply(MetadataStoreDataset.KeyValue<RunRecordMeta> input) {
-      long elapsedMillis = stopwatch.elapsedMillis();
+      long elapsedMillis = stopwatch.elapsed(TimeUnit.MILLISECONDS);
       if (elapsedMillis > maxScanTimeMillis) {
         return false;
       }
