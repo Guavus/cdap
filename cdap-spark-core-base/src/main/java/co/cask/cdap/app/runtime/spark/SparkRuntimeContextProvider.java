@@ -202,7 +202,7 @@ public final class SparkRuntimeContextProvider {
       // of the spark executor, hence there should be exactly one instance only.
       // The problem with not shutting down nicely is that some logs/metrics might be lost
       for (Service coreService : coreServices) {
-        coreService.startAndWait();
+        coreService.startAsync().awaitRunning();
       }
 
       Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -214,7 +214,7 @@ public final class SparkRuntimeContextProvider {
           // Stop all services. Reverse the order.
           for (Service service : (Iterable<Service>) coreServices::descendingIterator) {
             try {
-              service.stopAndWait();
+              service.stopAsync().awaitTerminated();
             } catch (Exception e) {
               LOG.warn("Exception raised when stopping service {} during program termination.", service, e);
             }

@@ -44,6 +44,7 @@ import co.cask.cdap.proto.id.ProgramId;
 import co.cask.cdap.security.spi.authentication.AuthenticationContext;
 import co.cask.cdap.security.spi.authorization.AuthorizationEnforcer;
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.hadoop.conf.Configuration;
@@ -247,7 +248,7 @@ public final class SparkRuntimeContext extends AbstractContext implements Metric
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(SparkRuntimeContext.class)
+    return MoreObjects.toStringHelper(SparkRuntimeContext.class)
       .add("id", getProgram().getId())
       .add("runId", getRunId())
       .toString();
