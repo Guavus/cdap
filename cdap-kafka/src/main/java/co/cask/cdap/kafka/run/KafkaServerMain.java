@@ -131,7 +131,7 @@ public class KafkaServerMain extends DaemonMain {
     kafkaServer = new EmbeddedKafkaServer(kafkaProperties);
     kafkaServer.startAsync();
     kafkaServer.awaitRunning();
-    Service state = (Service) kafkaServer.state();
+    Service.State  state = kafkaServer.state();
 
     if (state != Service.State.RUNNING) {
       throw new  IllegalStateException("Kafka server has not started... terminating.");
