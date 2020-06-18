@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Copyright © 2014-2018 Cask Data, Inc.
-
   Licensed under the Apache License, Version 2.0 (the "License"); you may not
   use this file except in compliance with the License. You may obtain a copy of
   the License at
-
   http://www.apache.org/licenses/LICENSE-2.0
-
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -23,7 +20,7 @@
   <parent>
     <groupId>co.cask.cdap</groupId>
     <artifactId>cdap</artifactId>
-    <version>5.1.203</version>
+    <version>5.1.2171</version>
   </parent>
 
   <artifactId>cdap-ui</artifactId>
@@ -44,13 +41,13 @@
       <artifactId>cdap-common</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>co.cask.cdap</groupId>
       <artifactId>cdap-common</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -207,8 +204,8 @@
                   <goal>install-node-and-yarn</goal>
                 </goals>
                 <configuration>
-                  <nodeVersion>v8.7.0</nodeVersion>
-                  <yarnVersion>v1.2.1</yarnVersion>
+                  <nodeVersion>v8.9.4</nodeVersion>
+                  <yarnVersion>v1.13.0</yarnVersion>
                 </configuration>
               </execution>
               <execution>
@@ -217,7 +214,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>global add node-gyp</arguments>
+                  <arguments>global add node-gyp --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
@@ -226,7 +223,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>install --silent --frozen-lockfile</arguments>
+                  <arguments>install --silent --frozen-lockfile --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
@@ -244,7 +241,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>run ${ui.build.name}</arguments>
+                  <arguments>run ${ui.build.name} --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
@@ -253,7 +250,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>run distribute</arguments>
+                  <arguments>run distribute --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
@@ -262,7 +259,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>install --production --frozen-lockfile</arguments>
+                  <arguments>install --production --frozen-lockfile --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
