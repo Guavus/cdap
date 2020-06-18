@@ -80,15 +80,13 @@ public final class DistributedTimeSchedulerService extends AbstractTimeScheduler
   protected void startUp() throws Exception {
     LOG.info("Starting scheduler.");
     // RetryOnStartFailureservice#startAndWait returns before its service's startAndWait completes
-    serviceDelegate.startAsync();
-    serviceDelegate.awaitRunning();
+    serviceDelegate.startAsync().awaitRunning();
     startUpLatch.await();
   }
 
   @Override
   protected void shutDown() throws Exception {
     LOG.info("Stopping scheduler.");
-    serviceDelegate.stopAsync();
-    serviceDelegate.awaitTerminated();
+    serviceDelegate.stopAsync().awaitTerminated();
   }
 }

@@ -47,8 +47,7 @@ public final class KafkaLogAppender extends LogAppender {
 
   @Override
   public void start() {
-    kafkaLogPublisher.startAsync();
-    kafkaLogPublisher.awaitRunning();
+    kafkaLogPublisher.startAsync().awaitRunning();
     addInfo("Successfully initialized KafkaLogAppender.");
     super.start();
   }

@@ -302,50 +302,40 @@ public class FlowQueuePendingCorrector extends AbstractIdleService {
       queuePending = timeValue.getValue();
     }
 
-    metricsCollectionService.startAsync();
-    metricsCollectionService.awaitRunning();
+    metricsCollectionService.startAsync().awaitRunning();
     MetricsContext collector = metricsCollectionService.getContext(tags);
     collector.gauge("queue.pending", correctQueuePendingValue);
     System.out.printf("Adjusted system.queue.pending metric from %d to %d (tags %s)\n",
                       queuePending, correctQueuePendingValue, GSON.toJson(tags));
 
     // stop will flush the metrics
-    metricsCollectionService.stopAsync();
-    metricsCollectionService.awaitTerminated();
+    metricsCollectionService.stopAsync().awaitTerminated();
   }
 
   @Override
   protected void startUp() throws Exception {
-    kafkaClientService.startAsync();
-    kafkaClientService.awaitRunning();
+    kafkaClientService.startAsync().awaitRunning();
 
-    zkClientService.startAsync();
-    zkClientService.awaitRunning();;
+    zkClientService.startAsync().awaitRunning();;
 
     twillRunnerService.start();
 
-    programRuntimeService.startAsync();
-    programRuntimeService.awaitRunning();
+    programRuntimeService.startAsync().awaitRunning();
 
-    queueDebugger.startAsync();
-    queueDebugger.awaitRunning();
+    queueDebugger.startAsync().awaitRunning();
   }
 
   @Override
   protected void shutDown() throws Exception {
-    queueDebugger.stopAsync();
-    queueDebugger.awaitTerminated();
+    queueDebugger.stopAsync().awaitTerminated();
 
-    programRuntimeService.stopAsync();
-    programRuntimeService.awaitTerminated();
+    programRuntimeService.stopAsync().awaitTerminated();
 
     twillRunnerService.stop();
 
-    zkClientService.stopAsync();
-    zkClientService.awaitTerminated();
+    zkClientService.stopAsync().awaitTerminated();
 
-    kafkaClientService.stopAsync();
-    kafkaClientService.awaitTerminated();
+    kafkaClientService.stopAsync().awaitTerminated();
   }
 
   public static FlowQueuePendingCorrector createCorrector() {
@@ -398,8 +388,7 @@ public class FlowQueuePendingCorrector extends AbstractIdleService {
   public static void main(String[] args) throws Exception {
     CommandLine cmd = parseArgs(args);
     FlowQueuePendingCorrector corrector = createCorrector();
-    corrector.startAsync();
-    corrector.awaitRunning();
+    corrector.startAsync().awaitRunning();
 
     try {
       String namespace = cmd.getOptionValue("namespace");

@@ -175,8 +175,7 @@ public class ContextManager {
     Injector injector = createInjector(cConf, hConf);
 
     ZKClientService zkClientService = injector.getInstance(ZKClientService.class);
-    zkClientService.startAsync();
-    zkClientService.awaitRunning();
+    zkClientService.startAsync().awaitRunning();
 
     DatasetFramework datasetFramework = injector.getInstance(DatasetFramework.class);
     StreamAdmin streamAdmin = injector.getInstance(StreamAdmin.class);

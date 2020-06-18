@@ -126,12 +126,7 @@ import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
@@ -265,10 +260,8 @@ public class MasterServiceMain extends DaemonMain {
     // Tries to create the ZK root node (which can be namespaced through the zk connection string)
     Futures.getUnchecked(ZKOperations.ignoreError(zkClient.create("/", null, CreateMode.PERSISTENT),
                                                   KeeperException.NodeExistsException.class, null));
-    electionInfoService.startAsync();
-    electionInfoService.awaitRunning();
-    leaderElection.startAsync();
-    leaderElection.awaitRunning();
+    electionInfoService.startAsync().awaitRunning();
+    leaderElection.startAsync().awaitRunning();
   }
 
   @Override
@@ -396,8 +389,8 @@ public class MasterServiceMain extends DaemonMain {
   private static <T extends Service> T getAndStart(Injector injector, Class<T> cls) {
     T service = injector.getInstance(cls);
     LOG.debug("Starting service in master {}", service);
-    service.startAsync();
-    service.awaitRunning();
+    service.startAsync().awaitRunning();
+
     LOG.info("Service {} started in master", service);
     return service;
   }
@@ -409,8 +402,8 @@ public class MasterServiceMain extends DaemonMain {
     try {
       if (service != null) {
         LOG.debug("Stopping service in master: {}", service);
-        service.stopAsync();
-        service.awaitTerminated();
+        service.stopAsync().awaitTerminated();
+
         LOG.info("Service {} stopped in master", service);
       }
     } catch (Exception e) {
@@ -683,8 +676,7 @@ public class MasterServiceMain extends DaemonMain {
         }
         LOG.info("Starting service in master: {}", service);
         try {
-          service.startAsync();
-          service.awaitRunning();
+          service.startAsync().awaitRunning();
         } catch (Throwable t) {
           // shut down the executor and stop the twill app,
           // then throw an exception to cause the leader election service to stop
@@ -726,14 +718,20 @@ public class MasterServiceMain extends DaemonMain {
       }
       services.clear();
 
+      closeQuietly(authorizerInstantiator);
+      closeQuietly(exploreClient);
+      closeQuietly(logAppenderInitializer);
+    }
+
+
+    private void closeQuietly(Closeable closeable) {
       try {
-        authorizerInstantiator.close();
-        exploreClient.close();
-        logAppenderInitializer.close();
+        closeable.close();
       } catch (Exception ex) {
-        // Ignore
+        // do nothing
       }
     }
+
 
     /**
      * Stops the twill application if necessary. If this process was not the leader, this method will just return.

@@ -88,8 +88,7 @@ public class ExploreExecutorService extends AbstractIdleService {
     LOG.info("Starting {}...", ExploreExecutorService.class.getSimpleName());
 
     if (!startOnDemand) {
-      exploreService.startAsync();
-      exploreService.awaitRunning();
+      exploreService.startAsync().awaitRunning();
     }
 
     httpService.start();

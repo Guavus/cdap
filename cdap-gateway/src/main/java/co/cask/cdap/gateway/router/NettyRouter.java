@@ -135,8 +135,7 @@ public class NettyRouter extends AbstractIdleService {
 
   @Override
   protected void startUp() throws Exception {
-    tokenValidator.startAsync();
-    tokenValidator.awaitRunning();
+    tokenValidator.startAsync().awaitRunning();
     ChannelGroup channelGroup = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
     serverCancellable = startServer(createServerBootstrap(channelGroup), channelGroup);
   }
@@ -147,8 +146,7 @@ public class NettyRouter extends AbstractIdleService {
     LOG.info("Stopping Netty Router...");
 
     serverCancellable.cancel();
-    tokenValidator.stopAsync();
-    tokenValidator.awaitTerminated();
+    tokenValidator.stopAsync().awaitTerminated();
 
     LOG.info("Stopped Netty Router.");
   }

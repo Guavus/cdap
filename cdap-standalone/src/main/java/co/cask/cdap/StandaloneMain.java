@@ -240,8 +240,9 @@ public class StandaloneMain {
     // since log appender instantiates a dataset.
     logAppenderInitializer.initialize();
 
-    Service.State state = appFabricServer.startAsync().state();
-            appFabricServer.awaitRunning();
+    Service appFabricService = appFabricServer.startAsync();
+    appFabricService.awaitRunning();
+    Service.State state = appFabricService.state();
     if (state != Service.State.RUNNING) {
       throw new Exception("Failed to start Application Fabric");
     }

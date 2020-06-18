@@ -64,8 +64,7 @@ final class FlowletRuntimeService extends AbstractIdleService {
     flowletContext.getProgramMetrics().increment("process.instance", 1);
     flowletProcessDriver = new FlowletProcessDriver(flowletContext, dataFabricFacade, txCallback, processSpecs);
 
-    serviceHook.startAsync();
-    serviceHook.awaitRunning();
+    serviceHook.startAsync().awaitRunning();
     initFlowlet();
     flowletProcessDriver.startUp();
     flowletProcessDriver.awaitRunning();
@@ -105,8 +104,7 @@ final class FlowletRuntimeService extends AbstractIdleService {
    * make sure thread safety.
    */
   void resume() {
-    flowletProcessDriver.startAsync();
-    flowletProcessDriver.awaitRunning();
+    flowletProcessDriver.startAsync().awaitRunning();
   }
 
   private void initFlowlet() throws Exception {

@@ -548,8 +548,7 @@ public abstract class AbstractProgramTwillRunnable<T extends ProgramRunner> impl
     try {
       // Starts the core services
       for (Service service : coreServices) {
-        service.startAsync();
-        service.awaitRunning();
+        service.startAsync().awaitRunning();
       }
     } catch (Exception e) {
       logAppenderInitializer.close();
@@ -561,8 +560,7 @@ public abstract class AbstractProgramTwillRunnable<T extends ProgramRunner> impl
     // Stop all services. Reverse the order.
     for (Service service : (Iterable<Service>) coreServices::descendingIterator) {
       try {
-        service.stopAsync();
-        service.awaitTerminated();
+        service.stopAsync().awaitTerminated();
       } catch (Exception e) {
         LOG.warn("Exception raised when stopping service {} during program termination.", service, e);
       }

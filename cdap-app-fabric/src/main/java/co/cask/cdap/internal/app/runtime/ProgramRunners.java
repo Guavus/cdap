@@ -71,7 +71,7 @@ public final class ProgramRunners {
           @Override
           public Service.State call() throws Exception {
             Service service1 = service.startAsync();
-            service.awaitRunning();
+            service1.awaitRunning();
             return service1.state();
           }
         });

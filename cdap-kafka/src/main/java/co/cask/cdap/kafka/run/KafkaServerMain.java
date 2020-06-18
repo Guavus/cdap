@@ -78,14 +78,12 @@ public class KafkaServerMain extends DaemonMain {
           client.create(path, null, CreateMode.PERSISTENT),
           KeeperException.NodeExistsException.class, path).get();
 
-        client.stopAsync();
-        client.awaitTerminated();
+        client.stopAsync().awaitTerminated();
         zkConnectStr = String.format("%s/%s", zkConnectStr, zkNamespace);
       } catch (Exception e) {
         throw Throwables.propagate(e);
       } finally {
-        client.stopAsync();
-        client.awaitTerminated();
+        client.stopAsync().awaitTerminated();
       }
     }
 
@@ -129,9 +127,9 @@ public class KafkaServerMain extends DaemonMain {
     LOG.info("Starting embedded kafka server...");
 
     kafkaServer = new EmbeddedKafkaServer(kafkaProperties);
-    kafkaServer.startAsync();
-    kafkaServer.awaitRunning();
-    Service.State  state = kafkaServer.state();
+    Service kafkaService = kafkaServer.startAsync();
+    kafkaService.awaitRunning();
+    Service.State  state = kafkaService.state();
 
     if (state != Service.State.RUNNING) {
       throw new  IllegalStateException("Kafka server has not started... terminating.");
@@ -144,8 +142,7 @@ public class KafkaServerMain extends DaemonMain {
   public void stop() {
     LOG.info("Stopping embedded kafka server...");
     if (kafkaServer != null && kafkaServer.isRunning()) {
-      kafkaServer.stopAsync();
-      kafkaServer.awaitTerminated();
+      kafkaServer.stopAsync().awaitTerminated();
     }
   }
 

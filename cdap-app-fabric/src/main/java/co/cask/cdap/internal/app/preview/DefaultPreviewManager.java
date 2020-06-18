@@ -168,8 +168,7 @@ public class DefaultPreviewManager implements PreviewManager {
     Injector injector = createPreviewInjector(previewApp);
     PreviewRunner runner = injector.getInstance(PreviewRunner.class);
     if (runner instanceof Service) {
-      ((Service) runner).startAsync();
-      ((Service) runner).awaitRunning();
+      ((Service) runner).startAsync().awaitRunning();
     }
     try {
       runner.startPreview(new PreviewRequest<>(getProgramIdFromRequest(previewApp, appRequest), appRequest));

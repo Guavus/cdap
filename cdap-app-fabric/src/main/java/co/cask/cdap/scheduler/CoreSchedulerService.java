@@ -137,25 +137,19 @@ public class CoreSchedulerService extends AbstractIdleService implements Schedul
           datasetFramework.addInstance(Schedulers.STORE_TYPE_NAME,
                                        Schedulers.STORE_DATASET_ID, DatasetProperties.EMPTY);
         }
-        timeSchedulerService.startAsync();
-        timeSchedulerService.awaitRunning();
+        timeSchedulerService.startAsync().awaitRunning();
         cleanupJobs();
-        constraintCheckerService.startAsync();
-        constraintCheckerService.awaitRunning();
-        scheduleNotificationSubscriberService.startAsync();
-        scheduleNotificationSubscriberService.awaitRunning();
+        constraintCheckerService.startAsync().awaitRunning();
+        scheduleNotificationSubscriberService.startAsync().awaitRunning();
         startedLatch.countDown();
         LOG.info("Started core scheduler service.");
       }
 
       @Override
       protected void shutDown() {
-        scheduleNotificationSubscriberService.stopAsync();
-        scheduleNotificationSubscriberService.awaitTerminated();
-        constraintCheckerService.stopAsync();
-        constraintCheckerService.awaitTerminated();
-        timeSchedulerService.stopAsync();
-        timeSchedulerService.awaitTerminated();
+        scheduleNotificationSubscriberService.stopAsync().awaitTerminated();
+        constraintCheckerService.stopAsync().awaitTerminated();
+        timeSchedulerService.stopAsync().awaitTerminated();
         LOG.info("Stopped core scheduler service.");
       }
     }, co.cask.cdap.common.service.RetryStrategies.exponentialDelay(200, 5000, TimeUnit.MILLISECONDS));
@@ -222,8 +216,7 @@ public class CoreSchedulerService extends AbstractIdleService implements Schedul
 
   @Override
   protected void startUp() throws Exception {
-    internalService.startAsync();
-    internalService.awaitRunning();
+    internalService.startAsync().awaitRunning();
   }
 
   @Override

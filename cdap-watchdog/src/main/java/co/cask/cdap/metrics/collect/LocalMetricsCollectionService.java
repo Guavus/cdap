@@ -83,8 +83,7 @@ public final class LocalMetricsCollectionService extends AggregatedMetricsCollec
       messagingMetricsProcessor = messagingMetricsProcessorFactory.create(
         IntStream.range(0, cConf.getInt(Constants.Metrics.MESSAGING_TOPIC_NUM)).boxed().collect(Collectors.toSet()),
         getContext(METRICS_PROCESSOR_CONTEXT), 0);
-      messagingMetricsProcessor.startAsync();
-      messagingMetricsProcessor.awaitRunning();
+      messagingMetricsProcessor.startAsync().awaitRunning();
     }
 
     // It will only do cleanup if the underlying table doesn't supports TTL.

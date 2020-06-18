@@ -185,8 +185,7 @@ public class RemoteExecutionTwillRunnerService implements TwillRunnerService {
       throw new RuntimeException(e);
     }
 
-    monitorSocksProxy.startAsync();
-    monitorSocksProxy.awaitRunning();
+    monitorSocksProxy.startAsync().awaitRunning();
     monitorScheduler = Executors.newScheduledThreadPool(cConf.getInt(Constants.RuntimeMonitor.THREADS),
                                                         Threads.createDaemonThreadFactory("runtime-monitor-%d"));
     long startMillis = System.currentTimeMillis();

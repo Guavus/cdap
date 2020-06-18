@@ -60,16 +60,14 @@ public final class TMSLogAppender extends LogAppender {
 
   @Override
   public void start() {
-    tmsLogPublisher.startAsync();
-    tmsLogPublisher.awaitRunning();
+    tmsLogPublisher.startAsync().awaitRunning();
     addInfo("Successfully started " + APPENDER_NAME);
     super.start();
   }
 
   @Override
   public void stop() {
-    tmsLogPublisher.stopAsync();
-    tmsLogPublisher.awaitTerminated();
+    tmsLogPublisher.stopAsync().awaitTerminated();
     addInfo("Successfully stopped " + APPENDER_NAME);
     super.stop();
   }

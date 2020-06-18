@@ -126,8 +126,7 @@ public class TwillAppLifecycleEventHandler extends AbortOnTimeoutEventHandler {
       );
 
       zkClientService = injector.getInstance(ZKClientService.class);
-      zkClientService.startAsync();
-      zkClientService.awaitRunning();
+      zkClientService.startAsync().awaitRunning();
 
       ProgramStateWriter programStateWriter = injector.getInstance(ProgramStateWriter.class);
       MessagingService messagingService = injector.getInstance(MessagingService.class);

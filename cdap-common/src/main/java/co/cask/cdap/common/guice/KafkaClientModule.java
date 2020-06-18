@@ -130,12 +130,18 @@ public class KafkaClientModule extends PrivateModule {
       return new ForwardingZKClientService(zkClientService) {
         @Override
         public Service startAsync() {
-          return super.startAsync();
+          if (startedCount.getAndIncrement() == 0) {
+            return super.startAsync();
+          }
+          return this;
         }
 
         @Override
         public Service stopAsync() {
-          return super.stopAsync();
+          if (startedCount.decrementAndGet() == 0) {
+            return super.stopAsync();
+          }
+          return this;
         }
 
         @Override

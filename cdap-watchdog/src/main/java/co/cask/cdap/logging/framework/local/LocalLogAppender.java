@@ -109,8 +109,7 @@ public class LocalLogAppender extends LogAppender {
         new LogProcessorPipelineContext(cConf, spec.getName(), spec.getContext(),
                                         spec.getContext().getMetricsContext(), spec.getContext().getInstanceId());
       LocalLogProcessorPipeline pipeline = new LocalLogProcessorPipeline(context, syncIntervalMillis);
-      pipeline.startAsync();
-      pipeline.awaitRunning();
+      pipeline.startAsync().awaitRunning();
       pipelineThreads.add(pipeline.getAppenderThread());
       pipelines.add(pipeline);
     }
