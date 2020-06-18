@@ -91,7 +91,7 @@ public final class ETLBatchConfig extends ETLConfig {
   }
 
   public Engine getEngine() {
-    return engine == null ? Engine.MAPREDUCE : engine;
+    return engine == null ? Engine.SPARK : engine;
   }
 
   @Nullable
@@ -178,7 +178,7 @@ public final class ETLBatchConfig extends ETLConfig {
     public Builder(String schedule) {
       super();
       this.schedule = schedule;
-      this.engine = Engine.MAPREDUCE;
+      this.engine = Engine.SPARK;
       this.endingActions = new ArrayList<>();
     }
 
