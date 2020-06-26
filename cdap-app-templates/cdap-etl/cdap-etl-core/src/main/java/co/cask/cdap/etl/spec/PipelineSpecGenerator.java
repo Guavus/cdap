@@ -138,6 +138,7 @@ public abstract class PipelineSpecGenerator<C extends ETLConfig,
     for (ETLStage stage : traversalOrder) {
       String stageName = stage.getName();
       DefaultPipelineConfigurer<T> pluginConfigurer = pluginConfigurers.get(stageName);
+      pluginConfigurer.setPropertiesFromStages(propertiesFromStages);
 
       ConfiguredStage configuredStage = configureStage(stage, validatedPipeline, pluginConfigurer);
 

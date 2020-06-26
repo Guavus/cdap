@@ -30,6 +30,7 @@ import co.cask.cdap.etl.api.MultiInputStageConfigurer;
 import co.cask.cdap.etl.api.MultiOutputPipelineConfigurer;
 import co.cask.cdap.etl.api.MultiOutputStageConfigurer;
 import co.cask.cdap.etl.api.PipelineConfigurer;
+import com.google.common.collect.Table;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,7 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
   private final String stageName;
   private final DefaultStageConfigurer stageConfigurer;
   private final Map<String, String> properties;
+  private Table<String, String, String> propertiesFromStages;
 
   public DefaultPipelineConfigurer(C configurer, String stageName, Engine engine) {
     this.configurer = configurer;
@@ -57,6 +59,12 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
     this.engine = engine;
     this.properties = new HashMap<>();
   }
+
+  public DefaultPipelineConfigurer(C configurer, String stageName, Engine engine, Table<String, String, String> pipelinePropertiesTillPrevStage) {
+    this(configurer, stageName, engine);
+    this.propertiesFromStages = pipelinePropertiesTillPrevStage;
+  }
+
 
   @Override
   public void addStream(Stream stream) {
@@ -155,7 +163,36 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
     return stageConfigurer;
   }
 
+  /**
+   * Returns pipeline properties
+   * @return
+   */
   public Map<String, String> getPipelineProperties() {
+    return properties;
+  }
+
+  /**
+   * Set pipeline properties belonging to all previous stages
+   * @param propertiesFromStages All pipeline properties from previous stages as a Table object.)
+   */
+  public void setPropertiesFromStages(Table <String, String, String> propertiesFromStages) {
+    this.propertiesFromStages.clear();
+    this.propertiesFromStages = propertiesFromStages;
+  }
+
+  /**
+   * Returns map of pipeline properties that were set in previous stage excluding the
+   * properties set during the time of pipeline creation.
+   * @param stageName Name of the stage.
+   * @return
+   */
+  public Map<String, String> getPropertiesFromStages(String stageName) {
+    Map<String, String>  properties = new HashMap<>();
+    propertiesFromStages.cellSet().forEach(cell -> {
+      if(stageName.equals(cell.getValue())) {
+        properties.put(cell.getRowKey(), cell.getColumnKey());
+      }
+    });
     return properties;
   }
 }

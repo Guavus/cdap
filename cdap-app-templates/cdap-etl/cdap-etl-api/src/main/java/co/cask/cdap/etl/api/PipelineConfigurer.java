@@ -19,6 +19,7 @@ package co.cask.cdap.etl.api;
 import co.cask.cdap.api.DatasetConfigurer;
 import co.cask.cdap.api.annotation.Beta;
 import co.cask.cdap.api.plugin.PluginConfigurer;
+import com.google.common.collect.Table;
 
 import java.util.Map;
 
@@ -48,4 +49,18 @@ public interface PipelineConfigurer extends PluginConfigurer, DatasetConfigurer 
    * @param properties the properties to set
    */
   void setPipelineProperties(Map<String, String> properties);
+
+  /**
+   * Set pipeline properties belonging to all previous stages
+   * @param propertiesFromStages All pipeline properties from previous stages as a Table object.)
+   */
+  void setPropertiesFromStages(Table<String, String, String> propertiesFromStages);
+
+  /**
+   * Returns map of pipeline properties that were set in previous stage excluding the
+   * properties set during the time of pipeline creation.
+   * @param stageName Name of the stage.
+   * @return
+   */
+  Map<String, String> getPropertiesFromStages(String stageName);
 }
