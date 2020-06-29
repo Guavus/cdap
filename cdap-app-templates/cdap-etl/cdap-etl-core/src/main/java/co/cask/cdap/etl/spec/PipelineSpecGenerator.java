@@ -134,6 +134,7 @@ public abstract class PipelineSpecGenerator<C extends ETLConfig,
     // row = property name, column = property value, val = stage that set the property
     // this is used so that we can error with a nice message about which stages are setting conflicting properties
     Table<String, String, String> propertiesFromStages = HashBasedTable.create();
+
     // configure the stages in order and build up the stage specs
     for (ETLStage stage : traversalOrder) {
       String stageName = stage.getName();

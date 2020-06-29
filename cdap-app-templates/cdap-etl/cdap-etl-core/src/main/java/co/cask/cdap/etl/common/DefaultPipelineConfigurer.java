@@ -31,6 +31,8 @@ import co.cask.cdap.etl.api.MultiOutputPipelineConfigurer;
 import co.cask.cdap.etl.api.MultiOutputStageConfigurer;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import com.google.common.collect.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +53,7 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
   private final DefaultStageConfigurer stageConfigurer;
   private final Map<String, String> properties;
   private Table<String, String, String> propertiesFromStages;
+  private transient final Logger LOG = LoggerFactory.getLogger(DefaultPipelineConfigurer.class);
 
   public DefaultPipelineConfigurer(C configurer, String stageName, Engine engine) {
     this.configurer = configurer;
@@ -58,6 +61,7 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
     this.stageConfigurer = new DefaultStageConfigurer();
     this.engine = engine;
     this.properties = new HashMap<>();
+    LOG.warn("DEFAULTPIPELINECONFIGURER CREATED");
   }
 
   public DefaultPipelineConfigurer(C configurer, String stageName, Engine engine, Table<String, String, String> pipelinePropertiesTillPrevStage) {
@@ -176,6 +180,7 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
    * @param propertiesFromStages All pipeline properties from previous stages as a Table object.)
    */
   public void setPropertiesFromStages(Table <String, String, String> propertiesFromStages) {
+    LOG.warn("SETTING STAGE PROPERTIES");
     this.propertiesFromStages.clear();
     this.propertiesFromStages = propertiesFromStages;
   }
@@ -187,6 +192,7 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
    * @return
    */
   public Map<String, String> getPropertiesFromStages(String stageName) {
+    LOG.warn("GETTING STAGE PROPERTIES");
     Map<String, String>  properties = new HashMap<>();
     propertiesFromStages.cellSet().forEach(cell -> {
       if(stageName.equals(cell.getValue())) {

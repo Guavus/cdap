@@ -24,6 +24,8 @@ import co.cask.cdap.etl.proto.v2.ETLBatchConfig;
 import co.cask.cdap.etl.proto.v2.ETLStage;
 import co.cask.cdap.etl.spec.PipelineSpecGenerator;
 import co.cask.cdap.etl.spec.PluginSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
@@ -35,15 +37,19 @@ import java.util.Set;
 public class BatchPipelineSpecGenerator<T extends PluginConfigurer & DatasetConfigurer>
   extends PipelineSpecGenerator<ETLBatchConfig, BatchPipelineSpec, T> {
 
+  private transient final Logger LOG = LoggerFactory.getLogger(BatchPipelineSpecGenerator.class);
+
   public BatchPipelineSpecGenerator(T configurer,
                                     Set<String> sourcePluginTypes,
                                     Set<String> sinkPluginTypes,
                                     Engine engine) {
     super(configurer, sourcePluginTypes, sinkPluginTypes, engine);
+    LOG.warn("BATCHPIPELINESPECGENERATOR CREATED");
   }
 
   @Override
   public BatchPipelineSpec generateSpec(ETLBatchConfig config) {
+    LOG.warn("GENERATING SPEC");
     BatchPipelineSpec.Builder specBuilder = BatchPipelineSpec.builder();
 
     for (ETLStage endingAction : config.getPostActions()) {
