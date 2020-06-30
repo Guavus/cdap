@@ -30,6 +30,7 @@ import co.cask.cdap.etl.api.MultiInputStageConfigurer;
 import co.cask.cdap.etl.api.MultiOutputPipelineConfigurer;
 import co.cask.cdap.etl.api.MultiOutputStageConfigurer;
 import co.cask.cdap.etl.api.PipelineConfigurer;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
     this.stageConfigurer = new DefaultStageConfigurer();
     this.engine = engine;
     this.properties = new HashMap<>();
+    this.propertiesFromStages = HashBasedTable.create();
     LOG.warn("DEFAULTPIPELINECONFIGURER CREATED");
   }
 
@@ -181,7 +183,9 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
    */
   public void setPropertiesFromStages(Table <String, String, String> propertiesFromStages) {
     LOG.warn("SETTING STAGE PROPERTIES");
-    this.propertiesFromStages.clear();
+    if(this.propertiesFromStages != null) {
+      this.propertiesFromStages.clear();
+    }
     this.propertiesFromStages = propertiesFromStages;
   }
 

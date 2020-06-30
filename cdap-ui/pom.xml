@@ -217,7 +217,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>global add node-gyp --ignore-engines</arguments>
+                  <arguments>global add node-gyp@3.6.2</arguments>
                 </configuration>
               </execution>
               <execution>
