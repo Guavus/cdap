@@ -198,7 +198,10 @@ public class DefaultPipelineConfigurer<C extends PluginConfigurer & DatasetConfi
   public Map<String, String> getPropertiesFromStages(String stageName) {
     LOG.warn("GETTING STAGE PROPERTIES");
     Map<String, String>  properties = new HashMap<>();
-    propertiesFromStages.cellSet().forEach(cell -> {
+    if(this.propertiesFromStages == null) {
+      return properties;
+    }
+    this.propertiesFromStages.cellSet().forEach(cell -> {
       if(stageName.equals(cell.getValue())) {
         properties.put(cell.getRowKey(), cell.getColumnKey());
       }
