@@ -32,6 +32,7 @@ $quality-bar-null-color: #95a5a6;
     border-left: 1px solid $border-color;
     height: 100%;
     padding: 0;
+    min-width: 540px;
 
     .tabs-headers {
       height: $tab-header-height;
