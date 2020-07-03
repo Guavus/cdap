@@ -77,6 +77,10 @@ $success_alert_bg_color: $brand-success;
         .connection-type {
           font-size: 13px;
           color: $top-panel-connection-color;
+          white-space: nowrap;
+          overflow-y: hidden;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
 
           .connection-name {
             margin-left: 5px;

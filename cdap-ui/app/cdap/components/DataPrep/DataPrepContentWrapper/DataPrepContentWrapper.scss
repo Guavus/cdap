@@ -20,9 +20,12 @@ $tab_border_bottom_color: #cccccc;
 $tab_font_color: #999999;
 
 .dataprep-content-wrapper {
+  overflow-x: auto;
   height: 100%;
   > .row {
     height: 100%;
+    display: flex;
+    margin: 0;
     [class*="col-"] {
       padding: 0;
       height: 100%;
