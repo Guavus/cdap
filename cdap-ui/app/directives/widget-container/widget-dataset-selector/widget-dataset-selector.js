@@ -1,14 +1,14 @@
 /*
  * Copyright © 2015-2017 Cask Data, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * Licensed under the Apache License, Version 2.0 (the 'License'); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * distributed under the License is distributed on an 'AS IS' BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
@@ -58,19 +58,19 @@ angular.module(PKG.name + '.commons')
         var modalOpen = false;
         // Dataset name encryption function
         var encryptValue = function (referenceId) {
-          if (referenceId.startsWith("/")) {
-            referenceId = referenceId.replace("/", "file_");
+          if (referenceId.startsWith('/')) {
+            referenceId = referenceId.replace('/', 'file_');
           }
-          return referenceId.replace(/[/]/g, "_--_").replace(/[:]/g, "-__-").replace(/[.]/g, "-___-")
-            .replace(/[*]/g, "_---_");
+          return referenceId.replace(/[/]/g, '_--_').replace(/[:]/g, '-__-').replace(/[.]/g, '-___-')
+            .replace(/[*]/g, '_---_');
         };
         // Dataset name decrypt function
         var decryptValue = function (referenceId) {
-          if (referenceId.startsWith("file_")) {
-            referenceId = referenceId.replace("file_", "/");
+          if (referenceId.startsWith('file_')) {
+            referenceId = referenceId.replace('file_', '/');
           }
-          return referenceId.replace(/_--_/g, "/").replace(/-__-/g, ":").replace(/-___-/g, ".")
-            .replace(/_---_/g, "*");
+          return referenceId.replace(/_--_/g, '/').replace(/-__-/g, ':').replace(/-___-/g, '.')
+            .replace(/_---_/g, '*');
         };
         var showPopupFunc = function(schema, properties, oldDatasetName) {
           let sinkName = $scope.stageName;
