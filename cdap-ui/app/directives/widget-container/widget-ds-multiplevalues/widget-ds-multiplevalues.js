@@ -63,8 +63,9 @@ angular.module(PKG.name + '.commons')
           var str = '';
 
           angular.forEach($scope.properties, function(p) {
-            var isAnyEmptyValue = p.values.filter(function(val) { return val.length === 0; });
-            if (isAnyEmptyValue.length) { return; }
+            // If any of the configuration field is filled then do not remove it.
+            var isAnyEmptyValue = p.values.filter(function(val) { return val.length !== 0; });
+            if (isAnyEmptyValue.length === 0) { return; }
             str = str + p.values.join($scope.valuesdelimiter) + $scope.delimiter;
           });
 
