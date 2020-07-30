@@ -26,13 +26,18 @@ angular.module(PKG.name + '.commons')
       },
       templateUrl: 'widget-container/widget-dsv/widget-dsv.html',
       controller: function($scope, myHelpers) {
+        $scope.valueStr = undefined;
+        $scope.changedByProperties = false;
+
         $scope.placeholder = myHelpers.objectQuery($scope.config, 'widget-attributes', 'value-placeholder') || 'value';
 
         var delimiter = $scope.delimiter || ',';
 
         // initializing
         function initialize() {
-          var str = $scope.model;
+          $scope.valueStr = $scope.model;
+          var str = $scope.valueStr;
+
           $scope.properties = [];
 
           if (!str) {
@@ -55,6 +60,7 @@ angular.module(PKG.name + '.commons')
         initialize();
 
         var propertyListener = $scope.$watch('properties', function() {
+          $scope.changedByProperties = true;
           var str = '';
 
           angular.forEach($scope.properties, function(p) {
@@ -71,6 +77,13 @@ angular.module(PKG.name + '.commons')
           $scope.model = str;
 
         }, true);
+
+        $scope.$watch('model', function() {
+          if($scope.valueStr !== $scope.model && !$scope.changedByProperties) {
+            initialize();
+          }
+          $scope.changedByProperties = false;
+        });
 
         $scope.$on('$destroy', function() {
           propertyListener();
