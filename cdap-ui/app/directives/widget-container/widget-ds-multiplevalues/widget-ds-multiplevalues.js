@@ -24,6 +24,9 @@ angular.module(PKG.name + '.commons')
       },
       templateUrl: 'widget-container/widget-ds-multiplevalues/widget-ds-multiplevalues.html',
       controller: function($scope, myHelpers) {
+        $scope.keyValueStr = undefined;
+        $scope.changedByProperties = false;
+
         $scope.valuesdelimiter = myHelpers
           .objectQuery($scope.config, 'widget-attributes', 'values-delimiter') || ':';
         $scope.delimiter = myHelpers
@@ -36,7 +39,8 @@ angular.module(PKG.name + '.commons')
 
         // initializing
         function initialize() {
-          var str = $scope.model;
+          $scope.keyValueStr = $scope.model;
+          var str = $scope.keyValueStr;
           $scope.properties = [];
 
           if (!str) {
@@ -60,6 +64,7 @@ angular.module(PKG.name + '.commons')
         initialize();
 
         $scope.$watch('properties', function() {
+          $scope.changedByProperties = true;
           var str = '';
 
           angular.forEach($scope.properties, function(p) {
@@ -76,6 +81,13 @@ angular.module(PKG.name + '.commons')
           $scope.model = str;
 
         }, true);
+
+        $scope.$watch('model', function() {
+          if($scope.keyValueStr !== $scope.model && !$scope.changedByProperties) {
+            initialize();
+          }
+          $scope.changedByProperties = false;
+        });
 
 
         $scope.addProperty = function() {
