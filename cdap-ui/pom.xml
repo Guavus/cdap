@@ -217,7 +217,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>global add node-gyp</arguments>
+                  <arguments>global add node-gyp@3.6.2 --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
@@ -226,7 +226,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>install --silent --frozen-lockfile</arguments>
+                  <arguments>install --silent --frozen-lockfile --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
@@ -244,7 +244,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>run ${ui.build.name}</arguments>
+                  <arguments>run ${ui.build.name} --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
@@ -253,7 +253,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>run distribute</arguments>
+                  <arguments>run distribute --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
@@ -262,7 +262,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>install --production --frozen-lockfile</arguments>
+                  <arguments>install --production --frozen-lockfile --ignore-engines</arguments>
                 </configuration>
               </execution>
               <execution>
