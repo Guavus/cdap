@@ -70,6 +70,7 @@ import co.cask.cdap.etl.mock.batch.aggregator.GroupFilterAggregator;
 import co.cask.cdap.etl.mock.batch.aggregator.IdentityAggregator;
 import co.cask.cdap.etl.mock.batch.joiner.MockJoiner;
 import co.cask.cdap.etl.mock.condition.MockCondition;
+import co.cask.cdap.etl.mock.spark.sparkjoin.MockSparkJoiner;
 import co.cask.cdap.etl.mock.test.HydratorTestBase;
 import co.cask.cdap.etl.mock.transform.DropNullTransform;
 import co.cask.cdap.etl.mock.transform.FilterErrorTransform;
@@ -138,6 +139,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import static junit.framework.TestCase.fail;
 
 /**
  *
@@ -2219,6 +2222,123 @@ public class DataPipelineTest extends HydratorTestBase {
     validateMetric(4, appId, "source.records.out");
     validateMetric(4, appId, "sparkcompute.records.in");
     validateMetric(4, appId, "sink.records.in");
+  }
+
+  @Ignore
+  @Test
+  public void testSinglePhaseWithSparkJoiner() throws Exception {
+    /*
+     * source1 -->| sparkjoiner --> sink
+     * source2 -->|
+     */
+
+    Engine engine = Engine.SPARK;
+
+    Schema inputSchema1 = Schema.recordOf(
+            "customerRecord",
+            Schema.Field.of("customer_id", Schema.of(Schema.Type.STRING)),
+            Schema.Field.of("customer_name", Schema.of(Schema.Type.STRING))
+    );
+
+    Schema inputSchema2 = Schema.recordOf(
+            "itemRecord",
+            Schema.Field.of("item_id", Schema.of(Schema.Type.STRING)),
+            Schema.Field.of("item_price", Schema.of(Schema.Type.LONG)),
+            Schema.Field.of("cust_id", Schema.of(Schema.Type.STRING))
+    );
+
+
+    String input1Name = "source1InnerJoinInput";
+    String input2Name = "source2InnerJoinInput";
+    String outputName = "innerJoinOutput";
+    String joinerName = "innerJoiner";
+    String sinkName = "innerJoinSink";
+    Schema outSchema = Schema.recordOf(
+            "join.output",
+            Schema.Field.of("customer_id", Schema.of(Schema.Type.STRING)),
+            Schema.Field.of("customer_name", Schema.of(Schema.Type.STRING)),
+            Schema.Field.of("item_id", Schema.of(Schema.Type.STRING)),
+            Schema.Field.of("item_price", Schema.of(Schema.Type.LONG))
+    );
+    ETLBatchConfig etlConfig = ETLBatchConfig.builder()
+            .addStage(new ETLStage("source1", MockSource.getPlugin(input1Name, inputSchema1)))
+            .addStage(new ETLStage("source2", MockSource.getPlugin(input2Name, inputSchema2)))
+            .addStage(new ETLStage("innerJoiner", MockSparkJoiner.getPlugin(
+                    "source1",
+                    "customer_id",
+                    "source2",
+                    "cust_id",
+                    outSchema,
+                    "customer_id:source1:customer_id;"+
+                            "customer_name:source1:customer_name;"+
+                            "item_id:source2:item_id;"+
+                            "item_price:source2:item_price"
+                    )))
+            .addStage(new ETLStage(sinkName, MockSink.getPlugin(outputName)))
+            .addConnection("source1", joinerName)
+            .addConnection("source2", joinerName)
+            .addConnection(joinerName, sinkName)
+            .setEngine(engine)
+            .build();
+
+    AppRequest<ETLBatchConfig> appRequest = new AppRequest<>(APP_ARTIFACT, etlConfig);
+    ApplicationId appId = NamespaceId.DEFAULT.app("InnerJoinApp");
+    ApplicationManager appManager = deployApplication(appId, appRequest);
+
+
+    // supports 1<->n relationship between records, which is not the case
+    // with the very limited Joiner (only 1<-> relationship  with equijoin is really supported)
+    StructuredRecord recordSamuel = StructuredRecord.builder(inputSchema1).set("customer_id", "1")
+            .set("customer_name", "samuel").build();
+    StructuredRecord recordBob = StructuredRecord.builder(inputSchema1).set("customer_id", "2")
+            .set("customer_name", "bob").build();
+    StructuredRecord recordJane = StructuredRecord.builder(inputSchema1).set("customer_id", "3")
+            .set("customer_name", "jane").build();
+
+    StructuredRecord recordCar = StructuredRecord.builder(inputSchema2).set("item_id", "11").set("item_price", 10000L)
+            .set("cust_id", "1").build();
+    StructuredRecord recordCycle = StructuredRecord.builder(inputSchema2).set("item_id", "16").set("item_price", 152L)
+            .set("cust_id", "1").build();
+    StructuredRecord recordBike = StructuredRecord.builder(inputSchema2).set("item_id", "22").set("item_price", 100L)
+            .set("cust_id", "3").build();
+    StructuredRecord recordDrone = StructuredRecord.builder(inputSchema2).set("item_id", "42").set("item_price", 50L)
+            .set("cust_id", "3").build();
+
+
+    // write one record to each source
+    DataSetManager<Table> inputManager = getDataset(NamespaceId.DEFAULT.dataset(input1Name));
+    MockSource.writeInput(inputManager, ImmutableList.of(recordSamuel, recordBob, recordJane));
+    inputManager = getDataset(NamespaceId.DEFAULT.dataset(input2Name));
+    MockSource.writeInput(inputManager, ImmutableList.of(recordCar, recordBike,recordCycle, recordDrone ));
+
+    WorkflowManager workflowManager = appManager.getWorkflowManager(SmartWorkflow.NAME);
+    workflowManager.start();
+    workflowManager.waitForRun(ProgramRunStatus.COMPLETED, 5, TimeUnit.MINUTES);
+
+    StructuredRecord joinRecordCar = StructuredRecord.builder(outSchema)
+            .set("customer_id", "1").set("customer_name", "samuel")
+            .set("item_id", "11").set("item_price", 10000L).build();
+    StructuredRecord joinRecordCycle = StructuredRecord.builder(outSchema)
+            .set("customer_id", "1").set("customer_name", "samuel")
+            .set("item_id", "16").set("item_price", 152L).build();
+
+    StructuredRecord joinRecordBike = StructuredRecord.builder(outSchema)
+            .set("customer_id", "3").set("customer_name", "jane")
+            .set("item_id", "22").set("item_price", 100L).build();
+    StructuredRecord joinRecordDrone = StructuredRecord.builder(outSchema)
+            .set("customer_id", "3").set("customer_name", "jane")
+            .set("item_id", "42").set("item_price", 50L).build();
+
+    DataSetManager<Table> sinkManager = getDataset(outputName);
+    Set<StructuredRecord> expected = ImmutableSet.of(joinRecordCar, joinRecordCycle, joinRecordBike, joinRecordDrone);
+    Set<StructuredRecord> actual = Sets.newHashSet(MockSink.readOutput(sinkManager));
+    Assert.assertEquals(expected, actual);
+
+    //validateMetric(2, appId, joinerName + ".records.out");
+    //validateMetric(2, appId, sinkName + ".records.in");
+
+
+
   }
 
   @Ignore

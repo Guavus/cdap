@@ -1741,7 +1741,7 @@
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
-          <version>0.10</version>
+          <version>0.11</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.doxia</groupId>
@@ -1908,7 +1908,7 @@
       <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
-        <version>0.10</version>
+        <version>0.11</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

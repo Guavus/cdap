@@ -30,6 +30,7 @@ import co.cask.cdap.api.spark.AbstractSpark;
 import co.cask.cdap.api.spark.SparkClientContext;
 import co.cask.cdap.api.workflow.WorkflowToken;
 import co.cask.cdap.etl.api.StageSubmitterContext;
+import co.cask.cdap.etl.api.SubmitterLifecycle;
 import co.cask.cdap.etl.api.Transform;
 import co.cask.cdap.etl.api.batch.BatchAggregator;
 import co.cask.cdap.etl.api.batch.BatchConfigurable;
@@ -40,6 +41,7 @@ import co.cask.cdap.etl.api.batch.BatchSource;
 import co.cask.cdap.etl.api.batch.BatchSourceContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import co.cask.cdap.etl.api.batch.SparkSink;
+import co.cask.cdap.etl.api.batch.*;
 import co.cask.cdap.etl.api.lineage.field.FieldOperation;
 import co.cask.cdap.etl.batch.BatchPhaseSpec;
 import co.cask.cdap.etl.batch.DefaultAggregatorContext;
@@ -244,9 +246,10 @@ public class ETLSpark extends AbstractSpark {
           }
         });
 
-      } else if (BatchJoiner.PLUGIN_TYPE.equals(pluginType)) {
+      } else if (BatchJoiner.PLUGIN_TYPE.equals(pluginType) || SparkJoiner.PLUGIN_TYPE.equals(pluginType)) {
 
-        BatchJoiner joiner = pluginInstantiator.newPluginInstance(stageName, evaluator);
+        // Both Joiners are SubmitterLifecycle interface for purpose of following initialization code
+        SubmitterLifecycle joiner = pluginInstantiator.newPluginInstance(stageName, evaluator);
         ContextProvider<DefaultJoinerContext> contextProvider =
           new JoinerContextProvider(pipelineRuntime, stageSpec, admin);
         submitterPlugin = new SubmitterPlugin<>(

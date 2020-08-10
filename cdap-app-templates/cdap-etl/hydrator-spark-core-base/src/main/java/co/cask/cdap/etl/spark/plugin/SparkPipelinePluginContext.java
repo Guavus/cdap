@@ -21,6 +21,7 @@ import co.cask.cdap.api.plugin.PluginContext;
 import co.cask.cdap.api.spark.JavaSparkMain;
 import co.cask.cdap.api.spark.SparkMain;
 import co.cask.cdap.etl.api.batch.SparkCompute;
+import co.cask.cdap.etl.api.batch.SparkJoiner;
 import co.cask.cdap.etl.api.batch.SparkSink;
 import co.cask.cdap.etl.api.streaming.StreamingSource;
 import co.cask.cdap.etl.api.streaming.Windower;
@@ -50,6 +51,8 @@ public class SparkPipelinePluginContext extends PipelinePluginContext {
       return new WrappedStreamingSource<>((StreamingSource) plugin, caller);
     } else if (plugin instanceof JavaSparkMain) {
       return new WrappedJavaSparkMain((JavaSparkMain) plugin, caller);
+    } else if (plugin instanceof SparkJoiner) {
+      return new WrappedSparkJoiner<>((SparkJoiner) plugin, caller);
     } else if (plugin instanceof SparkMain) {
       return new WrappedSparkMain((SparkMain) plugin, caller);
     }

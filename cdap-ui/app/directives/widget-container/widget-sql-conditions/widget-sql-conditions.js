@@ -79,6 +79,8 @@ function SqlConditionsController() {
         vm.mapInputSchema[input.name] = JSON.parse(input.schema).fields.map((field) => {
           return field.name;
         });
+        // CDAP-15910 : make exact join optional, e.g for plugins that do temporal or spatial join : empty keys will be skipped
+        vm.mapInputSchema[input.name].unshift('');
       } catch (e) {
         console.log('ERROR: ', e);
         vm.error = 'Error parsing input schemas.';
