@@ -22,6 +22,9 @@
 #
 
 ###
+
+DEFAULT_STOP_TIMEOUT=300
+
 #
 # Global functions (not prefixed)
 #
@@ -187,18 +190,41 @@ cdap_status_pidfile() {
 #
 cdap_stop_pidfile() {
   local readonly __ret __pidfile=${1} __label=${2:-Process}
+
+  local __timeout=$DEFAULT_STOP_TIMEOUT
+  if [[ -n ${STOP_TIMEOUT} ]] && [[ ${STOP_TIMEOUT} -gt 0 ]]; then
+    __timeout=${STOP_TIMEOUT}
+  fi
+
+  local __curr_time=0
+
   if [[ -f ${__pidfile} ]]; then
     local readonly __pid=$(<${__pidfile})
     echo -n "$(date) Stopping ${__label} ..."
+    logecho "$(date) Stopping ${__label} ..."
     if kill -0 ${__pid} >/dev/null 2>&1; then
       kill ${__pid} >/dev/null 2>&1
       while kill -0 ${__pid} >/dev/null 2>&1; do
         echo -n .
         sleep 1
+        __curr_time=`expr $__curr_time + 1`
+        if [[ ${__curr_time} -gt ${__timeout} ]]; then
+          echo "$(date) Killing ${__label} ..."
+          logecho "$(date) Killing ${__label} ..."
+          kill -9 ${__pid} >/dev/null 2>&1
+          sleep 5
+          break
+        fi
       done
-      rm -f ${__pidfile}
       echo
-      __ret=0
+      if kill -0 ${__pid} >/dev/null 2>&1; then
+        echo "$(date) Failed to kill ${__label} ..."
+        logecho "$(date) Failed to kill ${__label} ..."
+        __ret=1
+      else
+        rm -f ${__pidfile}
+        __ret=0
+      fi
     else
       __ret=${?}
     fi
