@@ -118,6 +118,7 @@ angular.module(PKG.name + '.commons')
             }
 
             if (confirmObj.applySchema) {
+              $scope.$parent.node['isSchemaApplied'] = true;
               isCurrentlyExistingDataset = true;
 
               if (!schema) {
@@ -127,6 +128,8 @@ angular.module(PKG.name + '.commons')
                 $scope.schemaError = false;
                 EventPipe.emit('dataset.selected', schema, null, true, $scope.model);
               }
+            } else {
+              $scope.$parent.node['isSchemaApplied'] = false;
             }
 
             // If nothing is selected(neither applySchema nor applyProperties) then in that case set the dataset name to whatever user has selected
@@ -224,7 +227,7 @@ angular.module(PKG.name + '.commons')
                   } else {
                     initialized = true;
 
-                    if (schema) {
+                    if ($scope.$parent.node['isSchemaApplied'] && schema) {
                       EventPipe.emit('dataset.selected', schema, null, true, $scope.model);
                     }
                   }
