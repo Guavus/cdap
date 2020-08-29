@@ -27,8 +27,11 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hdfs.security.token.delegation.DelegationTokenIdentifier;
 import org.apache.hadoop.security.Credentials;
 import org.apache.hadoop.security.UserGroupInformation;
+import org.apache.hadoop.security.token.Token;
+import org.apache.hadoop.security.token.TokenIdentifier;
 import org.apache.spark.SparkConf;
 import org.apache.twill.filesystem.FileContextLocationFactory;
 import org.apache.twill.filesystem.Location;
@@ -36,6 +39,7 @@ import org.apache.twill.filesystem.LocationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -194,6 +198,7 @@ public class SparkDriverService extends AbstractExecutionThreadService {
       // Update this property so that the executor will pick it up. It can't get set from the client side,
       // otherwise the AM process will try to look for keytab file
       SparkRuntimeEnv.setProperty("spark.yarn.credentials.file", credentialsFile.toURI().toString());
+      SparkRuntimeEnv.setProperty("spark.yarn.credentials.updateTime", String.valueOf(getUpdateTime(updateIntervalMs)));
       return new SparkCredentialsUpdater(createCredentialsSupplier(client, credentialsDir), credentialsDir,
                                          credentialsFile.getName(), updateIntervalMs,
                                          TimeUnit.DAYS.toMillis(daysToKeepFiles), numFilesToKeep);
@@ -259,5 +264,27 @@ public class SparkDriverService extends AbstractExecutionThreadService {
     } else {
       LOG.warn("Ignoring unsupported command {}", command);
     }
+  }
+
+  private long getUpdateTime(long updateIntervalMs) {
+    try {
+      UserGroupInformation ugi = UserGroupInformation.getCurrentUser();
+      Credentials creds = ugi.getCredentials();
+      for (Token<? extends TokenIdentifier> token : creds.getAllTokens()) {
+        if (DelegationTokenIdentifier.HDFS_DELEGATION_KIND.equals(token.getKind())) {
+          DelegationTokenIdentifier identifier = new DelegationTokenIdentifier();
+          try (DataInputStream input = new DataInputStream(new ByteArrayInputStream(token.getIdentifier()))) {
+            identifier.readFields(input);
+
+            // Delay by a minute to let driver fetch credentials from Execution service
+            return Math.min(Long.MAX_VALUE, (long) (
+                identifier.getIssueDate() + 0.8 * updateIntervalMs + TimeUnit.MINUTES.toMillis(1)));
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.warn("Exception computing updateTime: {}", e);
+    }
+    return Long.MAX_VALUE;
   }
 }
