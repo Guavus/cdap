@@ -89,27 +89,27 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>${jetty9.version}</version>
+      <version>${jetty8.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-security</artifactId>
-      <version>${jetty9.version}</version>
+      <version>${jetty8.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
-      <version>${jetty9.version}</version>
+      <version>${jetty8.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-jaspi</artifactId>
-      <version>${jetty9.version}</version>
+      <version>${jetty8.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
-      <version>${jetty9.version}</version>
+      <version>${jetty8.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.components</groupId>
